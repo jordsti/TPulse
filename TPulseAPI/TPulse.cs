@@ -106,7 +106,7 @@ namespace TPulseAPI
 		public static readonly string VersionCodename = "Get forked!";
 
 		public static string SavePath = TPulsePaths.GetPath(TPulsePath.SavePath);
-
+        //why so many static field urgggg
 		public static TPPlayer[] Players = new TPPlayer[Main.maxPlayers];
 		public static BanManager Bans;
 		public static WarpManager Warps;
@@ -164,12 +164,44 @@ namespace TPulseAPI
             PlugInHandler.AddPlugIn(this);
 		}
 
+        #region PlayerHandling
+        public bool IsUserOnline(int userId)
+        {
+            for (int i = 0; i < Players.Length; i++)
+            {
+                if (Players[i] != null)
+                {
+                    if (Players[i].UserID == userId)
+                        return true;
+                }
+            }
 
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+            return false;
+        }
+
+        public TPPlayer GetOnlinePlayerByUserId(int userId)
+        {
+            for (int i = 0; i < Players.Length; i++)
+            {
+                if (Players[i] != null)
+                {
+                    TPPlayer p = Players[i];
+                    if (p.UserID == userId)
+                        return p;
+                }
+            }
+
+            return null;
+        }
+        #endregion
+
+
+        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		public override void Initialize()
 		{
 			HandleCommandLine(Environment.GetCommandLineArgs());
-
+            //need to replace SavePath and use TPulsePath
+            //HERE
 			if (!Directory.Exists(SavePath))
 				Directory.CreateDirectory(SavePath);
 
@@ -177,6 +209,7 @@ namespace TPulseAPI
 			string logFilename;
 			try
 			{
+                //same has above
 				logFilename = Path.Combine(SavePath, now.ToString(LogFormat)+".log");
 			}
 			catch(Exception)
@@ -191,6 +224,7 @@ namespace TPulseAPI
 #endif
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
+            //wtf is this condition
             if (Version.Major >= 4)
             {
                 getTPulseWelcome();                
