@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Channel.cs" />
+    <Compile Include="ChannelManager.cs" />
     <Compile Include="TChatChannels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

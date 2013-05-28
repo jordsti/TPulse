@@ -19,7 +19,7 @@ namespace TFriends
 
         public TFriends(Main game) : base(game)
         {
-
+            PlugInHandler.AddPlugIn(this);
         }
 
         //Plug-In Info

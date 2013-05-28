@@ -34,12 +34,57 @@ using Rests;
 using Terraria;
 using TPulseAPI.DB;
 using TPulseAPI.Net;
+using TPulseAPI.Events;
 
 namespace TPulseAPI
 {
 	[APIVersion(1, 12)]
 	public class TPulse : TerrariaPlugin
 	{
+
+        //test event
+        private event PlayerConnectionHandler _onPlayerJoin;
+        private event PlayerConnectionHandler _onPlayerLeave;
+
+        public event PlayerConnectionHandler OnPlayerJoin
+        {
+            add
+            {
+                _onPlayerJoin += value;
+            }
+
+            remove
+            {
+                _onPlayerJoin -= value;
+            }
+        }
+
+
+        public event PlayerConnectionHandler OnPlayerLeave
+        {
+            add
+            {
+                _onPlayerLeave += value;
+            }
+
+            remove
+            {
+                _onPlayerLeave -= value;
+            }
+        }
+
+        private void onPlayerJoin(TPPlayer player)
+        {
+            if (_onPlayerJoin != null)
+                _onPlayerJoin.Invoke(new PlayerConnectionEventArgs(player, PlayerConnectionAction.Join));
+        }
+
+        private void onPlayerLeave(TPPlayer player)
+        {
+            if (_onPlayerLeave != null)
+                _onPlayerLeave.Invoke(new PlayerConnectionEventArgs(player, PlayerConnectionAction.Leave));
+        }
+
 		private const string LogFormatDefault = "yyyy-MM-dd_HH-mm-ss";
 		private static string LogFormat = LogFormatDefault;
 		private static bool LogClear = false;
@@ -102,6 +147,7 @@ namespace TPulseAPI
 		{
 			Config = new ConfigFile();
 			Order = 0;
+            PlugInHandler.AddPlugIn(this);
 		}
 
 
@@ -815,7 +861,10 @@ namespace TPulseAPI
 				Utils.ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
 				handler.Handled = true;
 				return;
-			}            
+			}
+            
+            //All is good
+            onPlayerJoin(player);
 		}
 
 		private void OnLeave(int ply)
@@ -845,6 +894,8 @@ namespace TPulseAPI
 				{
 					RememberedPos.InsertLeavePos(tsplr.Name, tsplr.IP, (int) (tsplr.X/16), (int) (tsplr.Y/16));
 				}
+
+                onPlayerLeave(tsplr);
 			}
 		}
 

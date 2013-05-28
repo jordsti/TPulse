@@ -23,6 +23,13 @@ namespace TChatChannels
 
         }
 
+
+        public Channel(string name, byte red, byte green, byte blue)
+            : this(name, new Color(red, green, blue))
+        {
+
+        }
+
         public Channel(string name, Color textColor)
         {
             IsLoginRequired = false;
@@ -67,6 +74,11 @@ namespace TChatChannels
                 Players.Remove(player);
                 BroadcastMessage(String.Format("{0} has left", player.Name));
             }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} r:{1} g:{2} b:{3}", Name, TextColor.R, TextColor.G, TextColor.B);
         }
 
     }
