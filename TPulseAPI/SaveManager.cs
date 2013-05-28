@@ -21,14 +21,17 @@ using System.ComponentModel;
 using System.Threading;
 using System.Diagnostics;
 using Terraria;
+using TPulseAPI.Events;
 
 namespace TPulseAPI
 {
+    //too much singleton for me errr
 	class SaveManager : IDisposable
 	{
 		// Singleton
         // too much singleton into this code
 		private static readonly SaveManager instance = new SaveManager();
+
 		private SaveManager() 
 		{
 			_saveThread = new Thread(SaveWorker);
@@ -36,6 +39,28 @@ namespace TPulseAPI
 			_saveThread.Start();
 		}
 		public static SaveManager Instance { get { return instance; } }
+
+        //Event
+        private event WorldSavedHandler _onWorldSaved;
+
+        public event WorldSavedHandler OnWorldSaved
+        {
+            add
+            {
+                _onWorldSaved += value;
+            }
+            remove
+            {
+                _onWorldSaved -= value;
+            }
+        }
+
+        private void onWorldSaved(WorldSavedEventArgs args)
+        {
+            if (_onWorldSaved != null)
+                _onWorldSaved.Invoke(args);
+        }
+
 
 		// Producer Consumer
 		private EventWaitHandle _wh = new AutoResetEvent(false);
@@ -54,6 +79,7 @@ namespace TPulseAPI
 			try
 			{
 				TPulse.Utils.Broadcast("Saving world. Momentary lag might result from this.", Color.Red);
+
 			}
 			catch (Exception ex)
 			{
@@ -127,6 +153,10 @@ namespace TPulseAPI
 								}
 								else
 									WorldGen.saveWorld(task.resetTime);
+
+                                //throw the event here
+                                onWorldSaved(new WorldSavedEventArgs(DateTime.Now, Main.worldPathName));
+
 								TPulse.Utils.Broadcast("World saved.", Color.Yellow);
 								Log.Info(string.Format("World saved at ({0})", Main.worldPathName));
 							}

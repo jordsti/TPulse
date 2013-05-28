@@ -8,6 +8,7 @@ using System.IO;
 using Terraria;
 using TPulseAPI;
 using TPulseAPI.DB;
+using TPulseAPI.Events;
 
 namespace TFriends
 {
@@ -57,8 +58,12 @@ namespace TFriends
 
         //Initialization
 
+        private TPulse tPulse;
+
         public override void Initialize()
         {
+            tPulse = (TPulse)PlugInHandler.GetPluginByType(typeof(TPulse));
+
             //Loading Friends DB
             if (File.Exists(FriendsDB.DefaultFile))
             {
@@ -76,8 +81,8 @@ namespace TFriends
             Commands.ChatCommands.Add(new Command("", MessageCommand, "fmsg"));
             //Commands.ChatCommands.Add(new Command("", MessageCommand, "sendcoord"));
             Commands.OnPlayerLogin += new PlayerLoginHandler(PlayerLogin);
-            Hooks.WorldHooks.SaveWorld += new Hooks.WorldHooks.SaveWorldD(WorldHooks_SaveWorld);
-
+            //Hooks.WorldHooks.SaveWorld += new Hooks.WorldHooks.SaveWorldD(WorldHooks_SaveWorld);
+            tPulse.OnWorldSaved += new WorldSavedHandler(OnWorldSaved);
         }
 
         private void PlayerLogin(PlayerLoginEventArgs args)
@@ -101,7 +106,7 @@ namespace TFriends
         }
 
 
-        private void WorldHooks_SaveWorld(bool resettime, HandledEventArgs e)
+        private void OnWorldSaved(WorldSavedEventArgs args)
         {
             //Need to save friend db
             Console.Write("Saving friends list...");

@@ -88,6 +88,7 @@
     <Compile Include="DB\BaseManager.cs" />
     <Compile Include="DB\RegionManager.cs" />
     <Compile Include="Events\PlayerConnectionEvent.cs" />
+    <Compile Include="Events\WorldSavedEvent.cs" />
     <Compile Include="PlayerLoginEvent.cs" />
     <Compile Include="PlugInHandler.cs" />
     <Compile Include="SaveManager.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Rest\RestVerbs.cs" />
     <Compile Include="Rest\SecureRest.cs" />
     <Compile Include="StatTracker.cs" />
+    <Compile Include="TPulsePath.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="TPulse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -15,7 +15,7 @@ namespace TChatChannels
 
         protected List<TPPlayer> Players = new List<TPPlayer>();
 
-        public bool IsLoginRequired { get; set; }
+        public int Count { get { return Players.Count; } }
 
         public Channel(string name)
             : this(name, Color.White)
@@ -32,9 +32,13 @@ namespace TChatChannels
 
         public Channel(string name, Color textColor)
         {
-            IsLoginRequired = false;
             TextColor = textColor;
             Name = name;
+        }
+
+        public bool ContainsPlayer(TPPlayer player)
+        {
+            return Players.Contains(player);
         }
 
         protected void BroadcastMessage(string message)

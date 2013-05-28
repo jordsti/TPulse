@@ -167,6 +167,23 @@ namespace TPulseAPI
 			Permissions = permissions;
 		}
 
+
+        public bool ContainsGroup(string name)
+        {
+            if (Name.ToLower() == name.ToLower())
+            {
+                return true;
+            }
+            else if (Parent != null)
+            {
+                return Parent.ContainsGroup(name);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Checks to see if a group has a specified permission.
         /// </summary>

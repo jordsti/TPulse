@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using TPulseAPI;
 
 namespace TChatChannels
 {
@@ -19,7 +20,7 @@ namespace TChatChannels
 
         public ChannelManager(string channelsFile)
         {
-            ChannelsFile = channelsFile;
+            ChannelsFile = TPulsePaths.Combine(TPulsePath.SavePath, channelsFile);
             DefaultChannel = null;
             LoadChannelsFile();
         }
@@ -150,39 +151,21 @@ namespace TChatChannels
             
         }
 
-        protected List<String> GetCommentLines()
-        {
-            List<String> comments = new List<string>();
-            StreamReader reader = new StreamReader(ChannelsFile);
-
-            string line = reader.ReadLine();
-
-            while (line.Length != 0)
-            {
-                if (line.StartsWith("#"))
-                {
-                    comments.Add(line);
-                }
-            }
-
-            reader.Close();
-            return comments;
-        }
 
         public void Save()
         {
-            List<String> comments = GetCommentLines();
-
+            //need to fix this to keep comments
             StreamWriter writer = new StreamWriter(ChannelsFile);
 
-            foreach (String c in comments)
+            /*foreach (String c in comments)
             {
                 writer.WriteLine(c);
-            }
+            }*/
 
             foreach (Channel c in Channels)
             {
                 writer.WriteLine(c.ToString());
+
             }
 
             writer.Close();

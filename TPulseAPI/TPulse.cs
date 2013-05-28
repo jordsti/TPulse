@@ -42,7 +42,21 @@ namespace TPulseAPI
 	public class TPulse : TerrariaPlugin
 	{
 
-        //test event
+        //Save Manager Event
+        //err don't like to do this that way
+        public event WorldSavedHandler OnWorldSaved
+        {
+            add
+            {
+                SaveManager.Instance.OnWorldSaved += value;
+            }
+            remove
+            {
+                SaveManager.Instance.OnWorldSaved -= value;
+            }
+        }
+
+        //Player Connection Event
         private event PlayerConnectionHandler _onPlayerJoin;
         private event PlayerConnectionHandler _onPlayerLeave;
 
@@ -91,7 +105,7 @@ namespace TPulseAPI
 		public static readonly Version VersionNum = Assembly.GetExecutingAssembly().GetName().Version;
 		public static readonly string VersionCodename = "Get forked!";
 
-		public static string SavePath = "tpulse";
+		public static string SavePath = TPulsePaths.GetPath(TPulsePath.SavePath);
 
 		public static TPPlayer[] Players = new TPPlayer[Main.maxPlayers];
 		public static BanManager Bans;
@@ -179,20 +193,20 @@ namespace TPulseAPI
 
             if (Version.Major >= 4)
             {
-                getTPulseAscii();                
+                getTPulseWelcome();                
             }
 
 
 			try
 			{
                 //need to put pid file into constants
-				if (File.Exists(Path.Combine(SavePath, "tpulse.pid")))
+				if (File.Exists(TPulsePaths.GetPath(TPulsePath.ProcessFile)))
 				{
 					Log.ConsoleInfo(
 						"TPulse was improperly shut down. Please use the exit command in the future to prevent this.");
-					File.Delete(Path.Combine(SavePath, "tpulse.pid"));
+                    File.Delete(TPulsePaths.GetPath(TPulsePath.ProcessFile));
 				}
-				File.WriteAllText(Path.Combine(SavePath, "tpulse.pid"), Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));
+                File.WriteAllText(TPulsePaths.GetPath(TPulsePath.ProcessFile), Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));
 
 				ConfigFile.ConfigRead += OnConfigRead;
 				FileTools.SetupConfig();
@@ -201,7 +215,7 @@ namespace TPulseAPI
 
 				if (Config.StorageType.ToLower() == "sqlite")
 				{
-					string sql = Path.Combine(SavePath, "tpulse.sqlite");
+					string sql = TPulsePaths.GetPath(TPulsePath.SqliteFile);
 					DB = new SqliteConnection(string.Format("uri=file://{0},Version=3", sql));
 				}
 				else if (Config.StorageType.ToLower() == "mysql")
@@ -230,7 +244,7 @@ namespace TPulseAPI
 					throw new Exception("Invalid storage type");
 				}
 
-				Backups = new BackupManager(Path.Combine(SavePath, "backups"));
+				Backups = new BackupManager(TPulsePaths.GetPath(TPulsePath.BackupPath));
 				Backups.KeepFor = Config.BackupKeepFor;
 				Backups.Interval = Config.BackupInterval;
 				Bans = new BanManager(DB);
@@ -247,7 +261,7 @@ namespace TPulseAPI
 				RestManager = new RestManager(RestApi);
 				RestManager.RegisterRestfulCommands();
 
-				var geoippath = Path.Combine(SavePath, "GeoIP.dat");
+				var geoippath = TPulsePaths.GetPath(TPulsePath.GeoIPFile);
 				if (Config.EnableGeoIP && File.Exists(geoippath))
 					Geo = new GeoIPCountry(geoippath);
 
@@ -297,23 +311,9 @@ namespace TPulseAPI
 			}
 		}
 
-	    private static void getTPulseAscii()
+	    private static void getTPulseWelcome()
 	    {
-// ReSharper disable LocalizableElement
-	        /*Console.Write("              ___          ___          ___          ___          ___ \n" +
-	                      "     ___     /  /\\        /__/\\        /  /\\        /  /\\        /__/|    \n" +
-	                      "    /  /\\   /  /:/_       \\  \\:\\      /  /::\\      /  /:/       |  |:|    \n" +
-	                      "   /  /:/  /  /:/ /\\       \\__\\:\\    /  /:/\\:\\    /  /:/        |  |:|    \n" +
-	                      "  /  /:/  /  /:/ /::\\  ___ /  /::\\  /  /:/  \\:\\  /  /:/  ___  __|  |:|    \n" +
-	                      " /  /::\\ /__/:/ /:/\\:\\/__/\\  /:/\\:\\/__/:/ \\__\\:\\/__/:/  /  /\\/__/\\_|:|____\n" +
-	                      "/__/:/\\:\\\\  \\:\\/:/~/:/\\  \\:\\/:/__\\/\\  \\:\\ /  /:/\\  \\:\\ /  /:/\\  \\:\\/:::::/\n" +
-	                      "\\__\\/  \\:\\\\  \\::/ /:/  \\  \\::/      \\  \\:\\  /:/  \\  \\:\\  /:/  \\  \\::/~~~~ \n" +
-	                      "     \\  \\:\\\\__\\/ /:/    \\  \\:\\       \\  \\:\\/:/    \\  \\:\\/:/    \\  \\:\\     \n" +
-	                      "      \\__\\/  /__/:/      \\  \\:\\       \\  \\::/      \\  \\::/      \\  \\:\\    \n" +
-	                      "             \\__\\/        \\__\\/        \\__\\/        \\__\\/        \\__\\/    \n" +
-	                      "");*/
             Console.WriteLine("TPulse is a recently forked version of TShock");
-// ReSharper restore LocalizableElement
 	    }
 
 	    private RestObject RestApi_Verify(string username, string password)
@@ -374,9 +374,9 @@ namespace TPulseAPI
                 WorldHooks.ChristmasCheck -= OnXmasCheck;
                 NetHooks.NameCollision -= NetHooks_NameCollision;
 
-				if (File.Exists(Path.Combine(SavePath, "tpulse.pid")))
+				if (File.Exists(TPulsePaths.GetPath(TPulsePath.ProcessFile)))
 				{
-					File.Delete(Path.Combine(SavePath, "tpulse.pid"));
+                    File.Delete(TPulsePaths.GetPath(TPulsePath.ProcessFile));
 				}
 
 				RestApi.Dispose();
@@ -550,7 +550,7 @@ namespace TPulseAPI
 		private void OnPostInit()
 		{
 			SetConsoleTitle();
-			if (!File.Exists(Path.Combine(SavePath, "auth.lck")) && !File.Exists(Path.Combine(SavePath, "authcode.txt")))
+			if (!File.Exists(TPulsePaths.GetPath(TPulsePath.AuthLockFile)) && !File.Exists(TPulsePaths.GetPath(TPulsePath.AuthCodeFile)))
 			{
 				var r = new Random((int) DateTime.Now.ToBinary());
 				AuthToken = r.Next(100000, 10000000);
@@ -558,15 +558,15 @@ namespace TPulseAPI
 				Console.WriteLine("TPulse Notice: To become SuperAdmin, join the game and type /auth " + AuthToken);
 				Console.WriteLine("This token will display until disabled by verification. (/auth-verify)");
 				Console.ForegroundColor = ConsoleColor.Gray;
-				FileTools.CreateFile(Path.Combine(SavePath, "authcode.txt"));
-				using (var tw = new StreamWriter(Path.Combine(SavePath, "authcode.txt")))
+                FileTools.CreateFile(TPulsePaths.GetPath(TPulsePath.AuthCodeFile));
+                using (var tw = new StreamWriter(TPulsePaths.GetPath(TPulsePath.AuthCodeFile)))
 				{
 					tw.WriteLine(AuthToken);
 				}
 			}
-			else if (File.Exists(Path.Combine(SavePath, "authcode.txt")))
+            else if (File.Exists(TPulsePaths.GetPath(TPulsePath.AuthCodeFile)))
 			{
-				using (var tr = new StreamReader(Path.Combine(SavePath, "authcode.txt")))
+                using (var tr = new StreamReader(TPulsePaths.GetPath(TPulsePath.AuthCodeFile)))
 				{
 					AuthToken = Convert.ToInt32(tr.ReadLine());
 				}
@@ -1055,7 +1055,7 @@ namespace TPulseAPI
 				return;
 			}
 			player.LoginMS= DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-			
+			//some work to do on this method
 			Utils.ShowFileToUser(player, "motd.txt");
 
 			if (Config.PvPMode == "always" && !player.TPlayer.hostile)

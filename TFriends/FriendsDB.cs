@@ -5,19 +5,20 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using TPulseAPI;
 
 namespace TFriends
 {
     [Serializable]
     public class FriendsDB
     {
-        public const string DefaultFile = "friends.db";
+        public static string DefaultFile { get; protected set; }
 
         protected List<FriendList> FLists = new List<FriendList>();
 
         public FriendsDB()
         {
-
+            DefaultFile = TPulsePaths.Combine(TPulsePath.SavePath, "friends.db");
         }
 
         protected static BinaryFormatter bf = new BinaryFormatter();
