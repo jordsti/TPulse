@@ -50,7 +50,8 @@ namespace TPulseAPI.DB
 
 			// Load Permissions from the DB
 			LoadPermisions();
-
+            //need to change those permissions for the groups
+            //set some preset, 
 			// Add default groups if they don't exist
 			AddDefaultGroup("guest", "", "canbuild,canregister,canlogin,canpartychat,cantalkinthird");
 			AddDefaultGroup("default", "guest", "warp,canchangepassword");

@@ -53,7 +53,14 @@ namespace TChatChannels
 
         public override void Initialize()
         {
+            //Commands
+            //  /join : to join a channel
+            //  /channel : super-command
+            //      add : add channel (need group < admin)
+            //      del : delete a channel (need group < admin)
+            //      list : listing
 
+            
         }
     }
 }
