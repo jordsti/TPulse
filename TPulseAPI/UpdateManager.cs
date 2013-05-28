@@ -23,7 +23,7 @@ using Newtonsoft.Json;
 
 namespace TPulseAPI
 {
-	internal class UpdateManager
+	/*internal class UpdateManager
 	{
         //need to customize this
 		private static string updateUrl = "http://shankshock.com/tshock-update.json";
@@ -99,5 +99,5 @@ namespace TPulseAPI
 				player.SendMessage(changes[j], Color.Red);
 			}
 		}
-	}
+	}*/
 }

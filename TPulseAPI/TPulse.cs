@@ -66,7 +66,7 @@ namespace TPulseAPI
 		public static SecureRest RestApi;
 		public static RestManager RestManager;
 		public static Utils Utils = Utils.Instance;
-		public static StatTracker StatTracker = new StatTracker();
+		//public static StatTracker StatTracker = new StatTracker();
 		/// <summary>
 		/// Used for implementing REST Tokens prior to the REST system starting up.
 		/// </summary>
@@ -538,7 +538,7 @@ namespace TPulseAPI
 
             Regions.ReloadAllRegions();
 
-			StatTracker.CheckIn();
+			//StatTracker.CheckIn();
 			FixChestStacks();
 
             
@@ -564,8 +564,8 @@ namespace TPulseAPI
 
 		private void OnUpdate()
 		{
-			UpdateManager.UpdateProcedureCheck();
-			StatTracker.CheckIn();
+			//UpdateManager.UpdateProcedureCheck();
+			//StatTracker.CheckIn();
 			if (Backups.IsBackupTime)
 				Backups.Backup();
 			//call these every second, not every update

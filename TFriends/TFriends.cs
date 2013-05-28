@@ -83,6 +83,9 @@ namespace TFriends
         private void PlayerLogin(PlayerLoginEventArgs args)
         {
             FriendList fl = FriendsList.GetListByUserID(args.Player.UserID);
+            
+            if (fl == null)
+                return;
 
             foreach (FUser fu in fl.Friends)
             {

@@ -1276,7 +1276,7 @@ namespace TPulseAPI
 		private static void CheckUpdates(CommandArgs args)
 		{
             args.Player.SendInfoMessage("An update check has been queued.");
-			ThreadPool.QueueUserWorkItem(UpdateManager.CheckUpdate);
+			//ThreadPool.QueueUserWorkItem(UpdateManager.CheckUpdate);
 		}
 
 		#endregion Server Maintenence Commands

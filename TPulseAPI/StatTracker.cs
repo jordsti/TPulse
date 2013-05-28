@@ -23,7 +23,7 @@ using Terraria;
 
 namespace TPulseAPI
 {
-	public class StatTracker
+	/*public class StatTracker
 	{
 		private Utils Utils = TPulse.Utils;
 		public DateTime lastcheck = DateTime.MinValue;
@@ -95,5 +95,5 @@ namespace TPulseAPI
 				}
 			}
 		}
-	}
+	}*/
 }
