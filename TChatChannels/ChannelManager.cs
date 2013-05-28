@@ -155,14 +155,14 @@ namespace TChatChannels
         public void Save()
         {
             List<String> comments = new List<string>();
-            //need to fix this to keep comments
+            
             FileStream fstream = File.OpenRead(ChannelsFile);
 
             StreamReader reader = new StreamReader(fstream);
 
             string line = reader.ReadLine();
 
-            while (line.Length != 0)
+            while (line != null && line.Length != 0)
             {
                 string tline = line.Trim();
 
@@ -181,16 +181,17 @@ namespace TChatChannels
 
             foreach (String c in comments)
             {
-                writer.WriteLine(c);
+                if (c != null)
+                {
+                    writer.WriteLine(c);
+                }
             }
 
             foreach (Channel c in Channels)
             {
                 writer.WriteLine(c.ToString());
-                Console.WriteLine(c.ToString());
             }
 
-            Console.WriteLine("flushing");
             writer.Flush();
             writer.Close();
         }

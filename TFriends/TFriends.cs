@@ -79,10 +79,47 @@ namespace TFriends
 
             Commands.ChatCommands.Add(new Command("", FriendCommand, "friend"));
             Commands.ChatCommands.Add(new Command("", MessageCommand, "fmsg"));
+            Commands.ChatCommands.Add(new Command("", MessageAllCommand, "fall"));
             //Commands.ChatCommands.Add(new Command("", MessageCommand, "sendcoord"));
             Commands.OnPlayerLogin += new PlayerLoginHandler(PlayerLogin);
             //Hooks.WorldHooks.SaveWorld += new Hooks.WorldHooks.SaveWorldD(WorldHooks_SaveWorld);
             tPulse.OnWorldSaved += new WorldSavedHandler(OnWorldSaved);
+        }
+
+        private void MessageAllCommand(CommandArgs args)
+        {
+            TPPlayer player = args.Player;
+
+            if(player.IsLoggedIn)
+            {
+                FriendList fl = FriendsList.GetListByUserID(player.UserID);
+
+                if (fl != null)
+                {
+                    string message = "";
+
+                    for (int i = 0; i < args.Parameters.Count; i++)
+                    {
+                        message += args.Parameters[i] + " ";
+                    }
+
+                    foreach (FUser fu in fl.Friends)
+                    {
+                        TPPlayer pdest = GetOnlinePlayerById(fu.ID);
+
+                        if (pdest != null)
+                        {
+                            pdest.SendInfoMessage(String.Format("{0}: {1}", player.UserAccountName, message));
+                        }
+                    }
+
+                    player.SendInfoMessage(String.Format("{0}: {1}", "To All", message));
+                }
+            }
+            else
+            {
+                player.SendErrorMessage("Friends: You're not logged in!");
+            }
         }
 
         private void PlayerLogin(PlayerLoginEventArgs args)

@@ -87,13 +87,6 @@ namespace TChatChannels
             
             Channels.AddRange(Manager.ChatChannels);
 
-            if (DefaultChannel != null)
-            {
-                //LogFile please...
-                Console.WriteLine("Default channel is " + DefaultChannel.Name);
-            }
-
-
             //Connection hooks
 
             tPulse.OnPlayerJoin += new PlayerConnectionHandler(PlayerJoinServer);
@@ -118,6 +111,34 @@ namespace TChatChannels
 
         protected void ChannelMessage(CommandArgs args)
         {
+            TPPlayer player = args.Player;
+
+            Channel pChannel = null;
+
+            foreach (Channel c in Channels)
+            {
+                if (c.ContainsPlayer(player))
+                {
+                    pChannel = c;
+                    break;
+                }
+            }
+
+            if (pChannel == null)
+            {
+                player.SendErrorMessage("Channels: You're not in a channel!");
+            }
+            else
+            {
+                string message = "";
+
+                for(int i=0; i<args.Parameters.Count; i++)
+                {
+                    message += args.Parameters[i] + " ";
+                }
+
+                pChannel.Send(player, message);
+            }
 
         }
 
@@ -165,7 +186,7 @@ namespace TChatChannels
 
             if (args.Parameters.Count > 1)
             {
-                if (player.Group.ContainsGroup("admin") || player.Group.ContainsGroup("superadmin"))
+                if ((player.Group.ContainsGroup("admin") || player.Group.ContainsGroup("superadmin")) && player.IsLoggedIn)
                 {
                     string pram = args.Parameters[0];
 
