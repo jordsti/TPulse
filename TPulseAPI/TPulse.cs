@@ -225,10 +225,10 @@ namespace TPulseAPI
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             //wtf is this condition
-            if (Version.Major >= 4)
-            {
+            //if (Version.Major >= 4)
+            //{
                 getTPulseWelcome();                
-            }
+            //}
 
 
 			try
@@ -299,7 +299,7 @@ namespace TPulseAPI
 				if (Config.EnableGeoIP && File.Exists(geoippath))
 					Geo = new GeoIPCountry(geoippath);
 
-				Log.ConsoleInfo(string.Format("|> Version {0} ({1}) now running.", Version, VersionCodename));
+				Log.ConsoleInfo(string.Format("TPulse Version {0} ({1}) now running.", Version, VersionCodename));
 
 				GameHooks.PostInitialize += OnPostInit;
 				GameHooks.Update += OnUpdate;
@@ -347,6 +347,13 @@ namespace TPulseAPI
 
 	    private static void getTPulseWelcome()
 	    {
+            Console.WriteLine(".########.########..##.....##.##........######..########");
+            Console.WriteLine("....##....##.....##.##.....##.##.......##....##.##......");
+            Console.WriteLine("....##....##.....##.##.....##.##.......##.......##......");
+            Console.WriteLine("....##....########..##.....##.##........######..######..");
+            Console.WriteLine("....##....##........##.....##.##.............##.##......");
+            Console.WriteLine("....##....##........##.....##.##.......##....##.##......");
+            Console.WriteLine("....##....##.........#######..########..######..########");
             Console.WriteLine("TPulse is a recently forked version of TShock");
 	    }
 

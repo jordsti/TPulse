@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using TPulseAPI;
 using Terraria;
 
@@ -9,6 +10,8 @@ namespace TChatChannels
 {
     public class Channel
     {
+        public const String ChatLogFolder = "chatlog";
+
         public Color TextColor { get; protected set; }
 
         public String Name { get; protected set; }
@@ -16,6 +19,8 @@ namespace TChatChannels
         protected List<TPPlayer> Players = new List<TPPlayer>();
 
         public int Count { get { return Players.Count; } }
+
+        protected ChatLogger ChannelLog;
 
         public Channel(string name)
             : this(name, Color.White)
@@ -34,6 +39,7 @@ namespace TChatChannels
         {
             TextColor = textColor;
             Name = name;
+            ChannelLog = new ChatLogger(Path.Combine(TPulsePaths.GetPath(TPulsePath.SavePath), ChatLogFolder, Name + ".txt"));
         }
 
         public bool ContainsPlayer(TPPlayer player)
@@ -59,6 +65,8 @@ namespace TChatChannels
                 {
                     player.SendMessage(fmessage, TextColor);
                 }
+
+                ChannelLog.Write(fmessage);
             }
         }
 

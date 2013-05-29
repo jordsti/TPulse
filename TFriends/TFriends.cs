@@ -16,7 +16,8 @@ namespace TFriends
     [APIVersion(1, 12)]
     public class TFriends : TerrariaPlugin
     {
-        FriendsDB FriendsList = new FriendsDB();
+        protected FriendsDB FriendsList = new FriendsDB();
+        protected Color TextColor = new Color(41, 69, 255);
 
         public TFriends(Main game) : base(game)
         {
@@ -109,11 +110,11 @@ namespace TFriends
 
                         if (pdest != null)
                         {
-                            pdest.SendInfoMessage(String.Format("{0}: {1}", player.UserAccountName, message));
+                            pdest.SendMessage(String.Format("{0}: {1}", player.UserAccountName, message), TextColor);
                         }
                     }
 
-                    player.SendInfoMessage(String.Format("{0}: {1}", "To All", message));
+                    player.SendMessage(String.Format("{0}: {1}", "To All", message), TextColor);
                 }
             }
             else
@@ -136,7 +137,7 @@ namespace TFriends
                     TPPlayer dplayer = GetOnlinePlayerById(fu.ID);
                     if (dplayer != null)
                     {
-                        dplayer.SendInfoMessage(String.Format("{0} just logged in!", args.Player.UserAccountName));
+                        dplayer.SendMessage(String.Format("{0} just logged in!", args.Player.UserAccountName), TextColor);
                     }
                 }
             }
@@ -235,16 +236,17 @@ namespace TFriends
 
                             if (dest != null)
                             {
-                                dest.SendInfoMessage(String.Format("{0}: {1}", player.UserAccountName, message));
+                                dest.SendMessage(String.Format("{0}: {1}", player.UserAccountName, message), TextColor);
+                                player.SendMessage(String.Format("To {0}: {1}", dest.UserAccountName, message), TextColor);
                             }
                             else
                             {
-                                player.SendInfoMessage("Friends: this friend is not online");
+                                player.SendMessage("Friends: this friend is not online", TextColor);
                             }
                         }
                         else
                         {
-                            player.SendInfoMessage(String.Format("Friends: {0} is not a valid friend id", order.ToString()));
+                            player.SendMessage(String.Format("Friends: {0} is not a valid friend id", order.ToString()), TextColor);
                         }
                     }
                     else
@@ -257,16 +259,16 @@ namespace TFriends
 
                             if (dest != null)
                             {
-                                dest.SendInfoMessage(String.Format("{0}: {1}", player.UserAccountName, message));
+                                dest.SendMessage(String.Format("{0}: {1}", player.UserAccountName, message), TextColor);
                             }
                             else
                             {
-                                player.SendInfoMessage("Friends: this friend is not online");
+                                player.SendMessage("Friends: this friend is not online", TextColor);
                             }
                         }
                         else
                         {
-                            player.SendInfoMessage(String.Format("Friends: {0} is not a valid friend", name));
+                            player.SendMessage(String.Format("Friends: {0} is not a valid friend", name), TextColor);
                         }
                     }
 
@@ -320,13 +322,13 @@ namespace TFriends
 
                             if (u == null)
                             {
-                                player.SendInfoMessage(String.Format("Friends: {0} doesn't exists !", adduser));
+                                player.SendMessage(String.Format("Friends: {0} doesn't exists !", adduser), TextColor);
                                 return;
                             }
 
                             if (fl.Contains(u.Name))
                             {
-                                player.SendInfoMessage(String.Format("Friends: {0} is already in your friend list", adduser));
+                                player.SendMessage(String.Format("Friends: {0} is already in your friend list", adduser), TextColor);
                                 return;
                             }
 
@@ -334,7 +336,7 @@ namespace TFriends
 
                             fl.Friends.Add(fu);
 
-                            player.SendInfoMessage(String.Format("Friends: {0} added!", adduser));
+                            player.SendMessage(String.Format("Friends: {0} added!", adduser), TextColor);
                         }
                         else if (prams == "del")
                         {
@@ -344,11 +346,11 @@ namespace TFriends
                             if (fl.Contains(remuser))
                             {
                                 fl.RemoveUserByName(remuser);
-                                player.SendInfoMessage(String.Format("Friends: {0} deleted!", remuser));
+                                player.SendMessage(String.Format("Friends: {0} deleted!", remuser), TextColor);
                             }
                             else
                             {
-                                player.SendInfoMessage(String.Format("Friends: {0} is not in your friends list", remuser));
+                                player.SendMessage(String.Format("Friends: {0} is not in your friends list", remuser), TextColor);
                             }
                             
                         }
@@ -368,13 +370,13 @@ namespace TFriends
                             User cu = TPulse.Users.GetUserByID(player.UserID);
                             FriendList fl = GetListOrCreate(cu);
 
-                            player.SendInfoMessage(String.Format("Friends: {0} friend(s) in your list", fl.Friends.Count.ToString()));
+                            player.SendMessage(String.Format("Friends: {0} friend(s) in your list", fl.Friends.Count.ToString()), TextColor);
                             int i = 1;
                             foreach (FUser fu in fl.Friends)
                             {
                                 string status = IsUserOnline(fu.ID) ? "Online" : "Offline";
 
-                                player.SendInfoMessage(String.Format("{0} : {1} : {2}", i.ToString(), fu.Name, status));
+                                player.SendMessage(String.Format("{0} : {1} : {2}", i.ToString(), fu.Name, status), TextColor);
 
                                 i++;
                             }
@@ -382,21 +384,21 @@ namespace TFriends
                     }
                     else
                     {
-                        player.SendInfoMessage("Friends: Missing arguments");
+                        player.SendMessage("Friends: Missing arguments", TextColor);
                     }
                 }
                 else
                 {
-                    player.SendInfoMessage("Friends: You can't use friend list, because you're not logged!");
+                    player.SendMessage("Friends: You can't use friend list, because you're not logged!", TextColor);
                 }
             }
         }
 
         private void SendHelp(TPPlayer player)
         {
-            player.SendInfoMessage("Friends: /friend cmd [args]");
-            player.SendInfoMessage("Friends: Available commands");
-            player.SendInfoMessage("Friends: add, del, list, help");
+            player.SendMessage("Friends: /friend cmd [args]", TextColor);
+            player.SendMessage("Friends: Available commands", TextColor);
+            player.SendMessage("Friends: add, del, list, help", TextColor);
         }
     
     }
