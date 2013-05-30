@@ -235,7 +235,7 @@ namespace TPulseAPI
             //wtf is this condition
             //if (Version.Major >= 4)
             //{
-                getTPulseWelcome();                
+                showTPulseWelcome();                
             //}
 
 
@@ -353,8 +353,17 @@ namespace TPulseAPI
 			}
 		}
 
-	    private static void getTPulseWelcome()
+	    private static void showTPulseWelcome()
 	    {
+            
+
+            Console.WriteLine("TPulse  Copyright (C) 2013  JordSti");
+            Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;");
+            Console.WriteLine("This is free software, and you are welcome to redistribute it");
+            Console.WriteLine("under certain conditions;");
+
+
+            Console.WriteLine("........................................................");
             Console.WriteLine(".########.########..##.....##.##........######..########");
             Console.WriteLine("....##....##.....##.##.....##.##.......##....##.##......");
             Console.WriteLine("....##....##.....##.##.....##.##.......##.......##......");
@@ -362,6 +371,7 @@ namespace TPulseAPI
             Console.WriteLine("....##....##........##.....##.##.............##.##......");
             Console.WriteLine("....##....##........##.....##.##.......##....##.##......");
             Console.WriteLine("....##....##.........#######..########..######..########");
+            Console.WriteLine("........................................................");
             Console.WriteLine("TPulse is a recently forked version of TShock");
 	    }
 
