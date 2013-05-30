@@ -195,7 +195,7 @@ namespace TPulseAPI
             {
                 if (!cmd.CanRun(player))
                 {
-                    Utils.SendLogs(string.Format("{0} tried to execute /{1}.", player.Name, cmdText), Color.Red, tPulse);
+                    tPulse.SendLogs(string.Format("{0} tried to execute /{1}.", player.Name, cmdText), Color.Red, tPulse);
                     player.SendErrorMessage("You do not have access to that command.");
                 }
                 else if (!cmd.AllowServer && !player.RealPlayer)
@@ -205,7 +205,7 @@ namespace TPulseAPI
                 else
                 {
                     if (cmd.DoLog)
-                        Utils.SendLogs(string.Format("{0} executed: /{1}.", player.Name, cmdText), Color.Red, tPulse);
+                        tPulse.SendLogs(string.Format("{0} executed: /{1}.", player.Name, cmdText), Color.Red, tPulse);
                     cmd.Run(cmdText, player, args);
                 }
             }
@@ -312,7 +312,7 @@ namespace TPulseAPI
 			{
 				Log.Warn(String.Format("{0} ({1}) had {2} or more invalid login attempts and was kicked automatically.",
 					args.Player.IP, args.Player.Name, tPulse.Config.MaximumLoginAttempts));
-				Utils.Kick(args.Player, "Too many invalid login attempts.");
+                tPulse.Kick(args.Player, "Too many invalid login attempts.");
 				return;
 			}
 
@@ -685,7 +685,7 @@ namespace TPulseAPI
 				return;
 			}
 
-			var players = Utils.FindPlayer(args.Parameters[0]);
+			var players = tPulse.FindPlayer(args.Parameters[0]);
 			if (players.Count > 1)
 			{
 				var plrMatches = "";
@@ -727,7 +727,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = args.Parameters[0];
-			var players = Utils.FindPlayer(plStr);
+            var players = tPulse.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -753,7 +753,7 @@ namespace TPulseAPI
 				string reason = args.Parameters.Count > 1
 									? String.Join(" ", args.Parameters.GetRange(1, args.Parameters.Count - 1))
 									: "Misbehaviour.";
-				if (!Utils.Kick(players[0], reason, !args.Player.RealPlayer, false, args.Player.Name))
+                if (!tPulse.Kick(players[0], reason, !args.Player.RealPlayer, false, args.Player.Name))
 				{
 					args.Player.SendErrorMessage("You can't kick another admin!");
 				}
@@ -782,14 +782,14 @@ namespace TPulseAPI
 			if (args.Parameters[0].ToLower() == "list")
 			{
 				#region List bans
-				if (TPulse.Bans.GetBans().Count == 0)
+				if (tPulse.Bans.GetBans().Count == 0)
 				{
 					args.Player.SendErrorMessage("There are currently no players banned.");
 					return;
 				}
 
 				string banString = "";
-				foreach (Ban b in TPulse.Bans.GetBans())
+				foreach (Ban b in tPulse.Bans.GetBans())
 				{
 
 					if (b.Name.Trim() == "")
@@ -845,14 +845,14 @@ namespace TPulseAPI
 			if (args.Parameters[0].ToLower() == "listip")
 			{
 				#region List ip bans
-				if (TPulse.Bans.GetBans().Count == 0)
+				if (tPulse.Bans.GetBans().Count == 0)
 				{
 					args.Player.SendWarningMessage("There are currently no players banned.");
 					return;
 				}
 
 				string banString = "";
-				foreach (Ban b in TPulse.Bans.GetBans())
+				foreach (Ban b in tPulse.Bans.GetBans())
 				{
 
 					if (b.IP.Trim() == "")
@@ -911,7 +911,7 @@ namespace TPulseAPI
 				{
 					#region Add ban
 					string plStr = args.Parameters[1];
-					var players = Utils.FindPlayer(plStr);
+                    var players = tPulse.FindPlayer(plStr);
 					if (players.Count == 0)
 					{
 						args.Player.SendErrorMessage("Invalid player!");
@@ -937,7 +937,7 @@ namespace TPulseAPI
 						string reason = args.Parameters.Count > 2
 											? String.Join(" ", args.Parameters.GetRange(2, args.Parameters.Count - 2))
 											: "Misbehavior.";
-						if (!Utils.Ban(players[0], reason, !args.Player.RealPlayer, args.Player.Name))
+						if (!tPulse.Ban(players[0], reason, !args.Player.RealPlayer, args.Player.Name))
 						{
 							args.Player.SendErrorMessage("You can't ban another admin!");
 						}
@@ -952,7 +952,7 @@ namespace TPulseAPI
 					string reason = args.Parameters.Count > 2
 										? String.Join(" ", args.Parameters.GetRange(2, args.Parameters.Count - 2))
 										: "Manually added IP address ban.";
-					TPulse.Bans.AddBan(ip, "", reason);
+					tPulse.Bans.AddBan(ip, "", reason);
 					args.Player.SendSuccessMessage(ip + " banned.");
 					return;
 					#endregion Add ip ban
@@ -961,10 +961,10 @@ namespace TPulseAPI
 				{
 					#region Delete ip ban
 					var ip = args.Parameters[1];
-					var ban = TPulse.Bans.GetBanByIp(ip);
+					var ban = tPulse.Bans.GetBanByIp(ip);
 					if (ban != null)
 					{
-						if (TPulse.Bans.RemoveBan(ban.IP))
+						if (tPulse.Bans.RemoveBan(ban.IP))
 							args.Player.SendSuccessMessage(string.Format("Unbanned {0} ({1})!", ban.Name, ban.IP));
 						else
 							args.Player.SendErrorMessage(string.Format("Failed to unban {0} ({1})!", ban.Name, ban.IP));
@@ -980,10 +980,10 @@ namespace TPulseAPI
 				{
 					#region Delete ban
 					string plStr = args.Parameters[1];
-					var ban = TPulse.Bans.GetBanByName(plStr, false);
+					var ban = tPulse.Bans.GetBanByName(plStr, false);
 					if (ban != null)
 					{
-						if (TPulse.Bans.RemoveBan(ban.Name, true))
+						if (tPulse.Bans.RemoveBan(ban.Name, true))
 							args.Player.SendSuccessMessage(string.Format("Unbanned {0} ({1})!", ban.Name, ban.IP));
 						else
 							args.Player.SendErrorMessage(string.Format("Failed to unban {0} ({1})!", ban.Name, ban.IP));
@@ -1021,7 +1021,7 @@ namespace TPulseAPI
 					if (num == ClearBansCode)
 					{
 						ClearBansCode = -1;
-						if (TPulse.Bans.ClearBans())
+						if (tPulse.Bans.ClearBans())
 						{
 							Log.ConsoleInfo("Bans cleared.");
 							args.Player.SendSuccessMessage("Bans cleared.");
@@ -1068,7 +1068,7 @@ namespace TPulseAPI
 			if (tPulse.Config.ServerSideInventory)
 			{
 				args.Player.SendSuccessMessage("SSI has been saved.");
-				foreach (TPPlayer player in TPulse.Players)
+				foreach (TPPlayer player in tPulse.Players)
 				{
 					if (player != null && player.IsLoggedIn && !player.IgnoreActionsForClearingTrashCan)
 					{
@@ -1086,7 +1086,7 @@ namespace TPulseAPI
 				return;
 			}
 
-			var players = Utils.FindPlayer(args.Parameters[0]);
+            var players = tPulse.FindPlayer(args.Parameters[0]);
 			if( players.Count < 1 )
 			{
 				args.Player.SendErrorMessage("No players match " + args.Parameters[0] + "!");
@@ -1159,7 +1159,7 @@ namespace TPulseAPI
 
 			if (tPulse.Config.ServerSideInventory)
 			{
-				foreach (TPPlayer player in TPulse.Players)
+				foreach (TPPlayer player in tPulse.Players)
 				{
 					if (player != null && player.IsLoggedIn && !player.IgnoreActionsForClearingTrashCan)
 					{
@@ -1169,7 +1169,7 @@ namespace TPulseAPI
 			}
 
 			string reason = ((args.Parameters.Count > 0) ? "Server shutting down: " + String.Join(" ", args.Parameters) : "Server shutting down!");
-			Utils.StopServer(true, reason);
+            tPulse.ServerHandle.StopServer(true, reason);
 		}
 		//Added restart command
 		private void Restart(CommandArgs args)
@@ -1182,7 +1182,7 @@ namespace TPulseAPI
 			{
 				if (tPulse.Config.ServerSideInventory)
 				{
-					foreach (TPPlayer player in TPulse.Players)
+					foreach (TPPlayer player in tPulse.Players)
 					{
 						if (player != null && player.IsLoggedIn && !player.IgnoreActionsForClearingTrashCan)
 						{
@@ -1192,7 +1192,7 @@ namespace TPulseAPI
 				}
 
 				string reason = ((args.Parameters.Count > 0) ? "Server shutting down: " + String.Join(" ", args.Parameters) : "Server shutting down!");
-				Utils.StopServer(true, reason);
+                tPulse.ServerHandle.StopServer(true, reason);
 				System.Diagnostics.Process.Start(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 				Environment.Exit(0);
 			}
@@ -1201,7 +1201,7 @@ namespace TPulseAPI
 		private void OffNoSave(CommandArgs args)
 		{
 			string reason = ((args.Parameters.Count > 0) ? "Server shutting down: " + String.Join(" ", args.Parameters) : "Server shutting down!");
-			Utils.StopServer(false, reason);
+            tPulse.ServerHandle.StopServer(false, reason);
 		}
 
 		private void CheckUpdates(CommandArgs args)
@@ -1545,7 +1545,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = String.Join(" ", args.Parameters);
-			var players = Utils.FindPlayer(plStr);
+            var players = tPulse.FindPlayer(plStr);
 			if (players.Count == 0)
 				args.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -1585,14 +1585,16 @@ namespace TPulseAPI
 				{
 					if (Main.player[i].active && (Main.player[i] != args.TPlayer))
 					{
-						if (TPulse.Players[i].Teleport(args.Player.TileX, args.Player.TileY + 3))
-							TPulse.Players[i].SendSuccessMessage(string.Format("You were teleported to {0}.", args.Player.Name) + ".");
+                        if (tPulse.Players[i].Teleport(args.Player.TileX, args.Player.TileY + 3))
+                        {
+                            tPulse.Players[i].SendSuccessMessage(string.Format("You were teleported to {0}.", args.Player.Name) + ".");
+                        }
 					}
 				}
 				return;
 			}
 
-			var players = Utils.FindPlayer(plStr);
+            var players = tPulse.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -1682,7 +1684,7 @@ namespace TPulseAPI
 					page--; //Substract 1 as pages are parsed starting at 1 and not 0
 				}
 
-				var warps = TPulse.Warps.ListAllPublicWarps(Main.worldID.ToString());
+				var warps = tPulse.Warps.ListAllPublicWarps(Main.worldID.ToString());
 
 				//Check if they are trying to access a page that doesn't exist.
 				int pagecount = warps.Count/pagelimit;
@@ -1725,7 +1727,7 @@ namespace TPulseAPI
                     {
                         args.Player.SendErrorMessage("Name reserved, use a different name.");
                     }
-                    else if (TPulse.Warps.AddWarp(args.Player.TileX, args.Player.TileY, warpName, Main.worldID.ToString()))
+                    else if (tPulse.Warps.AddWarp(args.Player.TileX, args.Player.TileY, warpName, Main.worldID.ToString()))
                     {
                         args.Player.SendSuccessMessage("Warp added: " + warpName);
                     }
@@ -1745,7 +1747,7 @@ namespace TPulseAPI
                 if (args.Parameters.Count == 2)
                 {
                     string warpName = args.Parameters[1];
-                    if (TPulse.Warps.RemoveWarp(warpName))
+                    if (tPulse.Warps.RemoveWarp(warpName))
                         args.Player.SendSuccessMessage("Warp deleted: " + warpName);
                     else
                         args.Player.SendErrorMessage("Could not find the specified warp.");
@@ -1764,7 +1766,7 @@ namespace TPulseAPI
                     bool state = false;
                     if (Boolean.TryParse(args.Parameters[2], out state))
                     {
-                        if (TPulse.Warps.HideWarp(args.Parameters[1], state))
+                        if (tPulse.Warps.HideWarp(args.Parameters[1], state))
                         {
                             if (state)
                                 args.Player.SendSuccessMessage("Warp " + warpName + " is now private.");
@@ -1790,7 +1792,7 @@ namespace TPulseAPI
                     return;
                 }
 
-                var foundplr = Utils.FindPlayer(args.Parameters[1]);
+                var foundplr = tPulse.FindPlayer(args.Parameters[1]);
                 if (foundplr.Count == 0)
                 {
                     args.Player.SendErrorMessage("Invalid player!");
@@ -1802,7 +1804,7 @@ namespace TPulseAPI
                     return;
                 }
                 string warpName = args.Parameters[2];
-                var warp = TPulse.Warps.FindWarp(warpName);
+                var warp = tPulse.Warps.FindWarp(warpName);
                 var plr = foundplr[0];
                 if (warp.WarpPos != Vector2.Zero)
                 {
@@ -1822,7 +1824,7 @@ namespace TPulseAPI
             else
             {
                 string warpName = String.Join(" ", args.Parameters);
-                var warp = TPulse.Warps.FindWarp(warpName);
+                var warp = tPulse.Warps.FindWarp(warpName);
                 if (warp.WarpPos != Vector2.Zero)
                 {
                     if (args.Player.Teleport((int)warp.WarpPos.X, (int)warp.WarpPos.Y + 3))
@@ -2192,7 +2194,7 @@ namespace TPulseAPI
 			tPulse.HandleCommandLinePostConfigLoad(Environment.GetCommandLineArgs());
 			tPulse.Groups.LoadPermisions();
 			//todo: Create an event for reloads to propegate to plugins.
-            TPulse.Regions.ReloadAllRegions();
+            tPulse.Regions.ReloadAllRegions();
 			args.Player.SendSuccessMessage(
 				"Configuration, permissions, and regions reload complete. Some changes may require a server restart.");
 		}
@@ -2212,7 +2214,7 @@ namespace TPulseAPI
 		private void Save(CommandArgs args)
 		{
 			SaveManager.Instance.SaveWorld(false);
-			foreach (TPPlayer tsply in TPulse.Players.Where(tsply => tsply != null))
+			foreach (TPPlayer tsply in tPulse.Players.Where(tsply => tsply != null))
 			{
 				tsply.SaveServerInventory();
 			}
@@ -2358,7 +2360,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = args.Parameters[0];
-			var players = Utils.FindPlayer(plStr);
+            var players = tPulse.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -2392,7 +2394,7 @@ namespace TPulseAPI
 
         private void DebugRegions(CommandArgs args)
         {
-            foreach (Region r in TPulse.Regions.Regions)
+            foreach (Region r in tPulse.Regions.Regions)
             {
                 args.Player.SendMessage(r.Name + ": P: " + r.DisableBuild + " X: " + r.Area.X + " Y: " + r.Area.Y + " W: " +
                                         r.Area.Width + " H: " + r.Area.Height);
@@ -2448,7 +2450,7 @@ namespace TPulseAPI
                                 var width = Math.Abs(args.Player.TempPoints[0].X - args.Player.TempPoints[1].X);
                                 var height = Math.Abs(args.Player.TempPoints[0].Y - args.Player.TempPoints[1].Y);
 
-                                if (TPulse.Regions.AddRegion(x, y, width, height, regionName, args.Player.UserAccountName,
+                                if (tPulse.Regions.AddRegion(x, y, width, height, regionName, args.Player.UserAccountName,
                                                              Main.worldID.ToString()))
                                 {
                                     args.Player.TempPoints[0] = Point.Zero;
@@ -2476,14 +2478,14 @@ namespace TPulseAPI
                             string regionName = args.Parameters[1];
                             if (args.Parameters[2].ToLower() == "true")
                             {
-                                if (TPulse.Regions.SetRegionState(regionName, true))
+                                if (tPulse.Regions.SetRegionState(regionName, true))
                                     args.Player.SendMessage("Protected region " + regionName, Color.Yellow);
                                 else
                                     args.Player.SendMessage("Could not find specified region", Color.Red);
                             }
                             else if (args.Parameters[2].ToLower() == "false")
                             {
-                                if (TPulse.Regions.SetRegionState(regionName, false))
+                                if (tPulse.Regions.SetRegionState(regionName, false))
                                     args.Player.SendMessage("Unprotected region " + regionName, Color.Yellow);
                                 else
                                     args.Player.SendMessage("Could not find specified region", Color.Red);
@@ -2500,7 +2502,7 @@ namespace TPulseAPI
                         if (args.Parameters.Count > 1)
                         {
                             string regionName = String.Join(" ", args.Parameters.GetRange(1, args.Parameters.Count - 1));
-                            if (TPulse.Regions.DeleteRegion(regionName))
+                            if (tPulse.Regions.DeleteRegion(regionName))
                                 args.Player.SendMessage("Deleted region " + regionName, Color.Yellow);
                             else
                                 args.Player.SendMessage("Could not find specified region", Color.Red);
@@ -2537,7 +2539,7 @@ namespace TPulseAPI
                             }
                             if (tPulse.Users.GetUserByName(playerName) != null)
                             {
-                                if (TPulse.Regions.AddNewUser(regionName, playerName))
+                                if (tPulse.Regions.AddNewUser(regionName, playerName))
                                 {
                                     args.Player.SendMessage("Added user " + playerName + " to " + regionName, Color.Yellow);
                                 }
@@ -2572,7 +2574,7 @@ namespace TPulseAPI
                         }
                         if (tPulse.Users.GetUserByName(playerName) != null)
                         {
-                            if (TPulse.Regions.RemoveUser(regionName, playerName))
+                            if (tPulse.Regions.RemoveUser(regionName, playerName))
                             {
                                 args.Player.SendMessage("Removed user " + playerName + " from " + regionName, Color.Yellow);
                             }
@@ -2607,7 +2609,7 @@ namespace TPulseAPI
                             }
                             if (tPulse.Groups.GroupExists(group))
                             {
-                                if (TPulse.Regions.AllowGroup(regionName, group))
+                                if (tPulse.Regions.AllowGroup(regionName, group))
                                 {
                                     args.Player.SendMessage("Added group " + group + " to " + regionName, Color.Yellow);
                                 }
@@ -2642,7 +2644,7 @@ namespace TPulseAPI
                         }
                         if (tPulse.Groups.GroupExists(group))
                         {
-                            if (TPulse.Regions.RemoveGroup(regionName, group))
+                            if (tPulse.Regions.RemoveGroup(regionName, group))
                             {
                                 args.Player.SendMessage("Removed group " + group + " from " + regionName, Color.Yellow);
                             }
@@ -2677,7 +2679,7 @@ namespace TPulseAPI
                             page--; //Substract 1 as pages are parsed starting at 1 and not 0
                         }
 
-                        var regions = TPulse.Regions.ListAllRegions(Main.worldID.ToString());
+                        var regions = tPulse.Regions.ListAllRegions(Main.worldID.ToString());
 
                         // Are there even any regions to display?
                         if (regions.Count == 0)
@@ -2723,7 +2725,7 @@ namespace TPulseAPI
                         if (args.Parameters.Count > 1)
                         {
                             string regionName = String.Join(" ", args.Parameters.GetRange(1, args.Parameters.Count - 1));
-                            Region r = TPulse.Regions.GetRegionByName(regionName);
+                            Region r = tPulse.Regions.GetRegionByName(regionName);
 
                             if (r == null)
                             {
@@ -2754,7 +2756,7 @@ namespace TPulseAPI
                             int z = 0;
                             if (int.TryParse(args.Parameters[2], out z))
                             {
-                                if (TPulse.Regions.SetZ(regionName, z))
+                                if (tPulse.Regions.SetZ(regionName, z))
                                     args.Player.SendMessage("Region's z is now " + z, Color.Yellow);
                                 else
                                     args.Player.SendMessage("Could not find specified region", Color.Red);
@@ -2806,10 +2808,10 @@ namespace TPulseAPI
                             }
                             int addAmount;
                             int.TryParse(args.Parameters[3], out addAmount);
-                            if (TPulse.Regions.resizeRegion(args.Parameters[1], addAmount, direction))
+                            if (tPulse.Regions.resizeRegion(args.Parameters[1], addAmount, direction))
                             {
                                 args.Player.SendMessage("Region Resized Successfully!", Color.Yellow);
-                                TPulse.Regions.ReloadAllRegions();
+                                tPulse.Regions.ReloadAllRegions();
                             }
                             else
                             {
@@ -2926,8 +2928,8 @@ namespace TPulseAPI
 			}
 
 			var playerList = args.Player.Group.HasPermission(Permissions.seeids)
-								 ? Utils.GetPlayers(true)
-								 : Utils.GetPlayers(false);
+                                 ? tPulse.GetPlayers(true)
+                                 : tPulse.GetPlayers(false);
 
 			//Check if they are trying to access a page that doesn't exist.
 			int pagecount = playerList.Count / pagelimit;
@@ -3058,7 +3060,7 @@ namespace TPulseAPI
 			else if (playerTeam != 0)
 			{
 				string msg = string.Format("<{0}> {1}", args.Player.Name, String.Join(" ", args.Parameters));
-				foreach (TPPlayer player in TPulse.Players)
+				foreach (TPPlayer player in tPulse.Players)
 				{
 					if (player != null && player.Active && player.Team == playerTeam)
 						player.SendMessage(msg, Main.teamColor[playerTeam].R, Main.teamColor[playerTeam].G, Main.teamColor[playerTeam].B);
@@ -3076,7 +3078,7 @@ namespace TPulseAPI
 				return;
 			}
 
-			var players = Utils.FindPlayer(args.Parameters[0]);
+            var players = tPulse.FindPlayer(args.Parameters[0]);
 			if (players.Count == 0)
 				args.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -3122,7 +3124,7 @@ namespace TPulseAPI
 				return;
 			}
 
-			var players = Utils.FindPlayer(args.Parameters[0]);
+            var players = tPulse.FindPlayer(args.Parameters[0]);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -3169,7 +3171,7 @@ namespace TPulseAPI
 			int annoy = 5;
 			int.TryParse(args.Parameters[1], out annoy);
 
-			var players = Utils.FindPlayer(args.Parameters[0]);
+            var players = tPulse.FindPlayer(args.Parameters[0]);
 			if (players.Count == 0)
 				args.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -3195,7 +3197,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = String.Join(" ", args.Parameters);
-			var players = Utils.FindPlayer(plStr);
+            var players = tPulse.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -3346,7 +3348,7 @@ namespace TPulseAPI
 				var item = items[0];
 				if (item.type >= 1 && item.type < Main.maxItemTypes)
 				{
-					var players = Utils.FindPlayer(plStr);
+                    var players = tPulse.FindPlayer(plStr);
 					if (players.Count == 0)
 					{
 						args.Player.SendErrorMessage("Invalid player!");
@@ -3430,7 +3432,7 @@ namespace TPulseAPI
 			if (args.Parameters.Count > 0)
 			{
 				string plStr = String.Join(" ", args.Parameters);
-				var players = Utils.FindPlayer(plStr);
+                var players = tPulse.FindPlayer(plStr);
 				if (players.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid player!");
@@ -3520,7 +3522,7 @@ namespace TPulseAPI
 			}
 			int id = 0;
 			int time = 60;
-			var foundplr = Utils.FindPlayer(args.Parameters[0]);
+            var foundplr = tPulse.FindPlayer(args.Parameters[0]);
 			if (foundplr.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");

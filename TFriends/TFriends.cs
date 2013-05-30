@@ -174,11 +174,11 @@ namespace TFriends
 
         private bool IsUserOnline(int userId)
         {
-            for (int i = 0; i < TPulse.Players.Length; i++)
+            for (int i = 0; i < tPulse.Players.Length; i++)
             {
-                if (TPulse.Players[i] != null)
+                if (tPulse.Players[i] != null)
                 {
-                    if (TPulse.Players[i].UserID == userId)
+                    if (tPulse.Players[i].UserID == userId)
                         return true;
                 }
             }
@@ -190,12 +190,12 @@ namespace TFriends
 
         private TPPlayer GetOnlinePlayerById(int id)
         {
-            for (int i = 0; i < TPulse.Players.Length; i++)
+            for (int i = 0; i < tPulse.Players.Length; i++)
             {
-                if (TPulse.Players[i] != null)
+                if (tPulse.Players[i] != null)
                 {
-                    if (TPulse.Players[i].UserID == id)
-                        return TPulse.Players[i];
+                    if (tPulse.Players[i].UserID == id)
+                        return tPulse.Players[i];
                 }
             }
 

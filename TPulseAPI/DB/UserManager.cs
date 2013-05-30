@@ -142,7 +142,7 @@ namespace TPulseAPI.DB
 					throw new UserNotExistException(user.Name);
 				
 				// Update player group reference for any logged in player
-				foreach (var player in TPulse.Players.Where(p => null != p && p.UserAccountName == user.Name))
+				foreach (var player in tPulse.Players.Where(p => null != p && p.UserAccountName == user.Name))
 				{
 					player.Group = grp;
 				}

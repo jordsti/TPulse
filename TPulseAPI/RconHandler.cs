@@ -234,7 +234,7 @@ namespace TPulseAPI
 					Netplay.password != "" ? 1 : 0) + "\n";
 				if (challenge != "")
 					statusstring += @"\challenge\" + challenge;
-				foreach (TPPlayer player in TPulse.Players)
+				foreach (TPPlayer player in tPulse.Players)
 				{
 					if (player != null && player.Active)
 						statusstring += (string.Format("0 0 {0}\n", player.Name));
@@ -257,13 +257,13 @@ namespace TPulseAPI
 				WorldGen.genRand = new Random();
 			if (text.StartsWith("exit"))
 			{
-				Utils.StopServer();
+				tPulse.ServerHandle.StopServer();
 				return "Server shutting down.";
 			}
 			else if (text.StartsWith("playing") || text.StartsWith("/playing"))
 			{
 				int count = 0;
-				foreach (TPPlayer player in TPulse.Players)
+				foreach (TPPlayer player in tPulse.Players)
 				{
 					if (player != null && player.Active)
 					{
@@ -279,7 +279,7 @@ namespace TPulseAPI
 				Response += "map: " + Main.worldName + "\n";
 				Response += "num score ping name            lastmsg address            qport rate\n";
 				int count = 0;
-				foreach (TPPlayer player in TPulse.Players)
+				foreach (TPPlayer player in tPulse.Players)
 				{
 					if (player != null && player.Active)
 					{

@@ -36,6 +36,7 @@ using Terraria;
 using TPulseAPI.DB;
 using TPulseAPI.Net;
 using TPulseAPI.Events;
+using TPulseAPI.Server;
 
 namespace TPulseAPI
 {
@@ -110,10 +111,12 @@ namespace TPulseAPI
 
 		public static string SavePath = TPulsePaths.GetPath(TPulsePath.SavePath);
         //why so many static field urgggg
-		public static TPPlayer[] Players = new TPPlayer[Main.maxPlayers];
-		public static BanManager Bans;
-		public static WarpManager Warps;
-        public static RegionManager Regions;
+
+        public ServerHandler ServerHandle { get; protected set; }
+		public TPPlayer[] Players {get; protected set; }
+        public BanManager Bans { get; protected set; }
+        public WarpManager Warps { get; protected set; }
+        public RegionManager Regions { get; protected set; }
         public BackupManager Backups { get; protected set; }
         public GroupManager Groups { get; protected set; }
         public UserManager Users { get; protected set; }
@@ -164,9 +167,13 @@ namespace TPulseAPI
 		{
 			Config = new ConfigFile();
 			Order = 0;
-            PlugInHandler.AddPlugIn(this);
+            Players = new TPPlayer[Main.maxPlayers];
 
+            PlugInHandler.AddPlugIn(this);
+            
             Commands = new Commands(this);
+
+            ServerHandle = new ServerHandler(this);
 		}
 
         #region PlayerHandling
@@ -202,10 +209,172 @@ namespace TPulseAPI
 
         #region methods from utils
 
+        public bool Kick(TPPlayer player, string reason, string adminUserName)
+        {
+            return Kick(player, reason, false, false, adminUserName);
+        }
+
+        /// <summary>
+        /// Kicks a player from the server..
+        /// </summary>
+        /// <param name="ply">int player</param>
+        /// <param name="reason">string reason</param>
+        /// <param name="force">bool force (default: false)</param>
+        /// <param name="silent">bool silent (default: false)</param>
+        /// <param name="adminUserName">string adminUserName (default: null)</param>
+        /// <param name="saveSSI">bool saveSSI (default: false)</param>
+        public bool Kick(TPPlayer player, string reason, bool force = false, bool silent = false, string adminUserName = null, bool saveSSI = false)
+        {
+            if (!player.ConnectionAlive)
+                return true;
+            if (force || !player.Group.HasPermission(Permissions.immunetokick))
+            {
+                string playerName = player.Name;
+                player.SilentKickInProgress = silent;
+                if (player.IsLoggedIn && saveSSI)
+                    player.SaveServerInventory();
+                player.Disconnect(string.Format("Kicked: {0}", reason));
+                Log.ConsoleInfo(string.Format("Kicked {0} for : {1}", playerName, reason));
+                string verb = force ? "force " : "";
+                if (!silent)
+                {
+                    if (string.IsNullOrWhiteSpace(adminUserName))
+                        Utils.Broadcast(string.Format("{0} was {1}kicked for {2}", playerName, verb, reason.ToLower()), Color.Green);
+                    else
+                        Utils.Broadcast(string.Format("{0} {1}kicked {2} for {3}", adminUserName, verb, playerName, reason.ToLower()), Color.Green);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void ForceKick(TPPlayer player, string reason, bool silent = false, bool saveSSI = false)
+        {
+            Kick(player, reason, true, silent, null, saveSSI);
+        }
+
+        public void ForceKickAll(string reason)
+        {
+            foreach (TPPlayer player in Players)
+            {
+                if (player != null && player.Active)
+                {
+                    ForceKick(player, reason, false, true);
+                }
+            }
+        }
+
+        public List<TPPlayer> FindPlayer(string plr)
+        {
+            var found = new List<TPPlayer>();
+            // Avoid errors caused by null search
+            if (plr == null)
+                return found;
+
+            byte plrID;
+            if (byte.TryParse(plr, out plrID))
+            {
+                TPPlayer player = Players[plrID];
+                if (player != null && player.Active)
+                {
+                    return new List<TPPlayer> { player };
+                }
+            }
+
+            string plrLower = plr.ToLower();
+            foreach (TPPlayer player in Players)
+            {
+                if (player != null)
+                {
+                    // Must be an EXACT match
+                    if (player.Name == plr)
+                        return new List<TPPlayer> { player };
+                    if (player.Name.ToLower().StartsWith(plrLower))
+                        found.Add(player);
+                }
+            }
+            return found;
+        }
+
+        public void SendLogs(string log, Color color, TPulse tPulse)
+        {
+            Log.Info(log);
+            TPPlayer.Server.SendMessage(log, color);
+            foreach (TPPlayer player in Players)
+            {
+                if (player != null && player.Active && player.Group.HasPermission(Permissions.logs) && player.DisplayLogs &&
+                    tPulse.Config.DisableSpewLogs == false)
+                    player.SendMessage(log, color);
+            }
+        }
+
+        public string GetPlayerIP(string playername)
+        {
+            foreach (TPPlayer player in Players)
+            {
+                if (player != null && player.Active)
+                {
+                    if (playername.ToLower() == player.Name.ToLower())
+                    {
+                        return player.IP;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public List<string> GetPlayers(bool includeIDs)
+        {
+            var players = new List<string>();
+
+            foreach (TPPlayer ply in Players)
+            {
+                if (ply != null && ply.Active)
+                {
+                    if (includeIDs)
+                    {
+                        players.Add(ply.Name + " (IX: " + ply.Index + ", ID: " + ply.UserID + ")");
+                    }
+                    else
+                    {
+                        players.Add(ply.Name);
+                    }
+                }
+            }
+
+            return players;
+        }
+
+        public bool Ban(TPPlayer player, string reason, string adminUserName)
+        {
+            return Ban(player, reason, false, adminUserName);
+        }
+
+        public bool Ban(TPPlayer player, string reason, bool force = false, string adminUserName = null)
+        {
+            if (!player.ConnectionAlive)
+                return true;
+            if (force || !player.Group.HasPermission(Permissions.immunetoban))
+            {
+                string ip = player.IP;
+                string playerName = player.Name;
+                Bans.AddBan(ip, playerName, reason);
+                player.Disconnect(string.Format("Banned: {0}", reason));
+                Log.ConsoleInfo(string.Format("Banned {0} for : {1}", playerName, reason));
+                string verb = force ? "force " : "";
+                if (string.IsNullOrWhiteSpace(adminUserName))
+                    Utils.Broadcast(string.Format("{0} was {1}banned for {2}", playerName, verb, reason.ToLower()));
+                else
+                    Utils.Broadcast(string.Format("{0} {1}banned {2} for {3}", adminUserName, verb, playerName, reason.ToLower()));
+                return true;
+            }
+            return false;
+        }
+
         public string GetPlayersWithIds()
         {
             var sb = new StringBuilder();
-            foreach (TPPlayer player in TPulse.Players)
+            foreach (TPPlayer player in Players)
             {
                 if (player != null && player.Active)
                 {
@@ -478,7 +647,7 @@ namespace TPulseAPI
         void NetHooks_NameCollision(int who, string name, HandledEventArgs e)
         {
             string ip = Utils.GetRealIP(Netplay.serverSock[who].tcpClient.Client.RemoteEndPoint.ToString());
-            foreach (TPPlayer ply in TPulse.Players)
+            foreach (TPPlayer ply in Players)
             {
                 if (ply == null)
                 {
@@ -490,7 +659,7 @@ namespace TPulseAPI
                     {
                         if (ply.State < 2)
                         {
-                            Utils.ForceKick(ply, "Name collision and this client has no world data.", true, false);
+                            ForceKick(ply, "Name collision and this client has no world data.", true, false);
                             e.Handled = true;
                             return;
                         }
@@ -883,7 +1052,7 @@ namespace TPulseAPI
 
 			if (Utils.ActivePlayers() + 1 > Config.MaxSlots + 20)
 			{
-				Utils.ForceKick(player, Config.ServerFullNoReservedReason, true, false);
+				ForceKick(player, Config.ServerFullNoReservedReason, true, false);
 				handler.Handled = true;
 				return;
 			}
@@ -895,14 +1064,14 @@ namespace TPulseAPI
 
 			if (ban != null)
 			{
-				Utils.ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
+				ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
 				handler.Handled = true;
 				return;
 			}
 
 			if (!FileTools.OnWhitelist(player.IP, this))
 			{
-				Utils.ForceKick(player, Config.WhitelistKickReason, true, false);
+				ForceKick(player, Config.WhitelistKickReason, true, false);
 				handler.Handled = true;
 				return;
 			}
@@ -915,7 +1084,7 @@ namespace TPulseAPI
 				{
 					if (Config.KickProxyUsers)
 					{
-						Utils.ForceKick(player, "Proxies are not allowed.", true, false);
+						ForceKick(player, "Proxies are not allowed.", true, false);
 						handler.Handled = true;
 						return;
 					}
@@ -948,7 +1117,7 @@ namespace TPulseAPI
 
 			if (ban != null)
 			{
-				Utils.ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
+				ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
 				handler.Handled = true;
 				return;
 			}

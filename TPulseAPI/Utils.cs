@@ -57,7 +57,9 @@ namespace TPulseAPI
 			return mess.Split(':')[0];
 		}
 
-		/*/// <summary>
+        #region to be removed
+
+        /*/// <summary>
 		/// Used for some places where a list of players might be used.
 		/// </summary>
 		/// <returns>String of players seperated by commas.</returns>
@@ -78,7 +80,7 @@ namespace TPulseAPI
 			}
 			return sb.ToString();
 		}*/
-
+        /*
         /// <summary>
         /// Returns a list of current players on the server
         /// </summary>
@@ -105,9 +107,7 @@ namespace TPulseAPI
 
             return players;
         }
-
-        #region To be Removed
-
+        */
         /*/// <summary>
         /// Used for some places where a list of players might be used.
         /// </summary>
@@ -132,8 +132,7 @@ namespace TPulseAPI
             return sb.ToString();
         }*/
 
-        #endregion
-
+        /*
         /// <summary>
 		/// Finds a player and gets IP as string
 		/// </summary>
@@ -151,7 +150,9 @@ namespace TPulseAPI
 				}
 			}
 			return null;
-		}
+		}*/
+
+        #endregion
 
 		/// <summary>
 		/// It's a clamp function
@@ -216,7 +217,7 @@ namespace TPulseAPI
             TPPlayer.Server.SendMessage(Main.player[ply].name + ": " + msg, red, green, blue);
             Log.Info(string.Format("Broadcast: {0}", Main.player[ply].name + ": " + msg));
         }
-
+        /*
 		/// <summary>
 		/// Sends message to all users with 'logs' permission.
 		/// </summary>
@@ -234,7 +235,7 @@ namespace TPulseAPI
 					player.SendMessage(log, color);
 			}
 		}
-
+        */
 		/// <summary>
 		/// The number of active players on the server.
 		/// </summary>
@@ -244,7 +245,7 @@ namespace TPulseAPI
 		{
 			return Main.player.Where(p => null != p && p.active).Count();
 		}
-
+        /*
 		/// <summary>
 		/// Finds a TSPlayer based on name or ID
 		/// </summary>
@@ -282,7 +283,7 @@ namespace TPulseAPI
 			}
 			return found;
 		}
-
+        */
 		/// <summary>
 		/// Gets a random clear tile in range
 		/// </summary>
@@ -542,7 +543,7 @@ namespace TPulseAPI
 			}
 			return GetPrefixByName(idOrName);
 		}
-
+        /*
 		/// <summary>
 		/// Kicks all player from the server without checking for immunetokick permission.
 		/// </summary>
@@ -557,8 +558,8 @@ namespace TPulseAPI
 					ForceKick(player, reason, false, true);
 				}
 			}
-		}
-
+		}*/
+        /*
 		/// <summary>
 		/// Stops the server after kicking all players with a reason message, and optionally saving the world
 		/// </summary>
@@ -578,8 +579,8 @@ namespace TPulseAPI
 
 			// Disconnect after kick as that signifies server is exiting and could cause a race
 			Netplay.disconnect = true;
-		}
-
+		}*/
+        /*
 #if COMPAT_SIGS
 		[Obsolete("This method is for signature compatibility for external code only")]
 		public static void ForceKick(TPPlayer player, string reason)
@@ -587,6 +588,8 @@ namespace TPulseAPI
 			Kick(player, reason, true, false, string.Empty);
 		}
 #endif
+         * */
+        /*
 		/// <summary>
 		/// Kicks a player from the server without checking for immunetokick permission.
 		/// </summary>
@@ -596,8 +599,8 @@ namespace TPulseAPI
 		public static void ForceKick(TPPlayer player, string reason, bool silent = false, bool saveSSI = false)
 		{
 			Kick(player, reason, true, silent, null, saveSSI);
-		}
-
+		}*/
+        /*
 #if COMPAT_SIGS
 		[Obsolete("This method is for signature compatibility for external code only")]
 		public static bool Kick(TPPlayer player, string reason, string adminUserName)
@@ -637,8 +640,11 @@ namespace TPulseAPI
 				return true;
 			}
 			return false;
-		}
+		}*/
 
+        #region to be removed
+
+        /*
 #if COMPAT_SIGS
 		[Obsolete("This method is for signature compatibility for external code only")]
 		public static bool Ban(TPPlayer player, string reason, string adminUserName)
@@ -646,6 +652,8 @@ namespace TPulseAPI
 			return Ban(player, reason, false, adminUserName);
 		}
 #endif
+ * */
+        /*
 		/// <summary>
 		/// Bans and kicks a player from the server.
 		/// </summary>
@@ -673,8 +681,10 @@ namespace TPulseAPI
 			}
 			return false;
 		}
+        */
+        #endregion
 
-		/// <summary>
+        /// <summary>
 		/// Shows a file to the user.
 		/// </summary>
 		/// <param name="ply">int player</param>
