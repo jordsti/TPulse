@@ -112,7 +112,10 @@ namespace TPulseAPI
 		public static string SavePath = TPulsePaths.GetPath(TPulsePath.SavePath);
         //why so many static field urgggg
 
+        //Handler
         public ServerHandler ServerHandle { get; protected set; }
+        public PlayerHandler PlayerHandle { get; protected set; }
+
 		public TPPlayer[] Players {get; protected set; }
         public BanManager Bans { get; protected set; }
         public WarpManager Warps { get; protected set; }
@@ -174,6 +177,7 @@ namespace TPulseAPI
             Commands = new Commands(this);
 
             ServerHandle = new ServerHandler(this);
+            PlayerHandle = new PlayerHandler(this);
 		}
 
         #region PlayerHandling
@@ -208,97 +212,6 @@ namespace TPulseAPI
         #endregion
 
         #region methods from utils
-        [Obsolete("Put this into a PlayerManager class")]
-        public bool Kick(TPPlayer player, string reason, string adminUserName)
-        {
-            return Kick(player, reason, false, false, adminUserName);
-        }
-
-        /// <summary>
-        /// Kicks a player from the server..
-        /// </summary>
-        /// <param name="ply">int player</param>
-        /// <param name="reason">string reason</param>
-        /// <param name="force">bool force (default: false)</param>
-        /// <param name="silent">bool silent (default: false)</param>
-        /// <param name="adminUserName">string adminUserName (default: null)</param>
-        /// <param name="saveSSI">bool saveSSI (default: false)</param>
-        [Obsolete("Put this into a PlayerManager class")]
-        public bool Kick(TPPlayer player, string reason, bool force = false, bool silent = false, string adminUserName = null, bool saveSSI = false)
-        {
-            if (!player.ConnectionAlive)
-                return true;
-            if (force || !player.Group.HasPermission(Permissions.immunetokick))
-            {
-                string playerName = player.Name;
-                player.SilentKickInProgress = silent;
-                if (player.IsLoggedIn && saveSSI)
-                    player.SaveServerInventory();
-                player.Disconnect(string.Format("Kicked: {0}", reason));
-                Log.ConsoleInfo(string.Format("Kicked {0} for : {1}", playerName, reason));
-                string verb = force ? "force " : "";
-                if (!silent)
-                {
-                    if (string.IsNullOrWhiteSpace(adminUserName))
-                        Utils.Broadcast(string.Format("{0} was {1}kicked for {2}", playerName, verb, reason.ToLower()), Color.Green);
-                    else
-                        Utils.Broadcast(string.Format("{0} {1}kicked {2} for {3}", adminUserName, verb, playerName, reason.ToLower()), Color.Green);
-                }
-                return true;
-            }
-            return false;
-        }
-
-        [Obsolete("Put this into a PlayerManager class")]
-        public void ForceKick(TPPlayer player, string reason, bool silent = false, bool saveSSI = false)
-        {
-            Kick(player, reason, true, silent, null, saveSSI);
-        }
-
-        [Obsolete("Put this into a PlayerManager class")]
-        public void ForceKickAll(string reason)
-        {
-            foreach (TPPlayer player in Players)
-            {
-                if (player != null && player.Active)
-                {
-                    ForceKick(player, reason, false, true);
-                }
-            }
-        }
-
-        [Obsolete("Put this into a PlayerManager class")]
-        public List<TPPlayer> FindPlayer(string plr)
-        {
-            var found = new List<TPPlayer>();
-            // Avoid errors caused by null search
-            if (plr == null)
-                return found;
-
-            byte plrID;
-            if (byte.TryParse(plr, out plrID))
-            {
-                TPPlayer player = Players[plrID];
-                if (player != null && player.Active)
-                {
-                    return new List<TPPlayer> { player };
-                }
-            }
-
-            string plrLower = plr.ToLower();
-            foreach (TPPlayer player in Players)
-            {
-                if (player != null)
-                {
-                    // Must be an EXACT match
-                    if (player.Name == plr)
-                        return new List<TPPlayer> { player };
-                    if (player.Name.ToLower().StartsWith(plrLower))
-                        found.Add(player);
-                }
-            }
-            return found;
-        }
 
         //put this into a logtools maybe ?
         public void SendLogs(string log, Color color, TPulse tPulse)
@@ -670,7 +583,7 @@ namespace TPulseAPI
                     {
                         if (ply.State < 2)
                         {
-                            ForceKick(ply, "Name collision and this client has no world data.", true, false);
+                            PlayerHandle.ForceKick(ply, "Name collision and this client has no world data.", true, false);
                             e.Handled = true;
                             return;
                         }
@@ -1063,7 +976,7 @@ namespace TPulseAPI
 
 			if (Utils.ActivePlayers() + 1 > Config.MaxSlots + 20)
 			{
-				ForceKick(player, Config.ServerFullNoReservedReason, true, false);
+                PlayerHandle.ForceKick(player, Config.ServerFullNoReservedReason, true, false);
 				handler.Handled = true;
 				return;
 			}
@@ -1075,14 +988,14 @@ namespace TPulseAPI
 
 			if (ban != null)
 			{
-				ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
+                PlayerHandle.ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
 				handler.Handled = true;
 				return;
 			}
 
 			if (!FileTools.OnWhitelist(player.IP, this))
 			{
-				ForceKick(player, Config.WhitelistKickReason, true, false);
+                PlayerHandle.ForceKick(player, Config.WhitelistKickReason, true, false);
 				handler.Handled = true;
 				return;
 			}
@@ -1095,7 +1008,7 @@ namespace TPulseAPI
 				{
 					if (Config.KickProxyUsers)
 					{
-						ForceKick(player, "Proxies are not allowed.", true, false);
+                        PlayerHandle.ForceKick(player, "Proxies are not allowed.", true, false);
 						handler.Handled = true;
 						return;
 					}
@@ -1128,7 +1041,7 @@ namespace TPulseAPI
 
 			if (ban != null)
 			{
-				ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
+                PlayerHandle.ForceKick(player, string.Format("You are banned: {0}", ban.Reason), true, false);
 				handler.Handled = true;
 				return;
 			}

@@ -22,12 +22,12 @@ namespace TPulseAPI.Server
         /// <param name="reason">string reason (default: "Server shutting down!")</param>
         public void StopServer(bool save = true, string reason = "Server shutting down!")
         {
-            tPulse.ForceKickAll(reason);
+            tPulse.PlayerHandle.ForceKickAll(reason);
             if (save)
                 SaveManager.Instance.SaveWorld();
 
             // Save takes a while so kick again
-            tPulse.ForceKickAll(reason);
+            tPulse.PlayerHandle.ForceKickAll(reason);
 
             // Broadcast so console can see we are shutting down as well
             Utils.Broadcast(reason, Color.Red);

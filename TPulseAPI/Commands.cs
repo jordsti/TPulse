@@ -312,7 +312,7 @@ namespace TPulseAPI
 			{
 				Log.Warn(String.Format("{0} ({1}) had {2} or more invalid login attempts and was kicked automatically.",
 					args.Player.IP, args.Player.Name, tPulse.Config.MaximumLoginAttempts));
-                tPulse.Kick(args.Player, "Too many invalid login attempts.");
+                tPulse.PlayerHandle.Kick(args.Player, "Too many invalid login attempts.");
 				return;
 			}
 
@@ -685,7 +685,7 @@ namespace TPulseAPI
 				return;
 			}
 
-			var players = tPulse.FindPlayer(args.Parameters[0]);
+            var players = tPulse.PlayerHandle.FindPlayer(args.Parameters[0]);
 			if (players.Count > 1)
 			{
 				var plrMatches = "";
@@ -727,7 +727,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = args.Parameters[0];
-            var players = tPulse.FindPlayer(plStr);
+            var players = tPulse.PlayerHandle.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -753,7 +753,7 @@ namespace TPulseAPI
 				string reason = args.Parameters.Count > 1
 									? String.Join(" ", args.Parameters.GetRange(1, args.Parameters.Count - 1))
 									: "Misbehaviour.";
-                if (!tPulse.Kick(players[0], reason, !args.Player.RealPlayer, false, args.Player.Name))
+                if (!tPulse.PlayerHandle.Kick(players[0], reason, !args.Player.RealPlayer, false, args.Player.Name))
 				{
 					args.Player.SendErrorMessage("You can't kick another admin!");
 				}
@@ -911,7 +911,7 @@ namespace TPulseAPI
 				{
 					#region Add ban
 					string plStr = args.Parameters[1];
-                    var players = tPulse.FindPlayer(plStr);
+                    var players = tPulse.PlayerHandle.FindPlayer(plStr);
 					if (players.Count == 0)
 					{
 						args.Player.SendErrorMessage("Invalid player!");
@@ -1086,7 +1086,7 @@ namespace TPulseAPI
 				return;
 			}
 
-            var players = tPulse.FindPlayer(args.Parameters[0]);
+            var players = tPulse.PlayerHandle.FindPlayer(args.Parameters[0]);
 			if( players.Count < 1 )
 			{
 				args.Player.SendErrorMessage("No players match " + args.Parameters[0] + "!");
@@ -1293,7 +1293,7 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC eater = Utils.GetNPCById(13);
+            NPC eater = GameResources.GetNPCById(13);
             TPPlayer.Server.SpawnNPC(eater.type, eater.name, amount, args.Player.TileX, args.Player.TileY);
             Utils.Broadcast(string.Format("{0} has spawned eater of worlds {1} times!", args.Player.Name, amount));
         }
@@ -1313,7 +1313,7 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC eye = Utils.GetNPCById(4);
+            NPC eye = GameResources.GetNPCById(4);
             TPPlayer.Server.SetTime(false, 0.0);
             TPPlayer.Server.SpawnNPC(eye.type, eye.name, amount, args.Player.TileX, args.Player.TileY);
             Utils.Broadcast(string.Format("{0} has spawned eye {1} times!", args.Player.Name, amount));
@@ -1334,7 +1334,7 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC king = Utils.GetNPCById(50);
+            NPC king = GameResources.GetNPCById(50);
             TPPlayer.Server.SpawnNPC(king.type, king.name, amount, args.Player.TileX, args.Player.TileY);
             Utils.Broadcast(string.Format("{0} has spawned king slime {1} times!", args.Player.Name, amount));
         }
@@ -1354,7 +1354,7 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC skeletron = Utils.GetNPCById(35);
+            NPC skeletron = GameResources.GetNPCById(35);
             TPPlayer.Server.SetTime(false, 0.0);
             TPPlayer.Server.SpawnNPC(skeletron.type, skeletron.name, amount, args.Player.TileX, args.Player.TileY);
             Utils.Broadcast(string.Format("{0} has spawned skeletron {1} times!", args.Player.Name, amount));
@@ -1387,8 +1387,8 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC retinazer = Utils.GetNPCById(125);
-            NPC spaz = Utils.GetNPCById(126);
+            NPC retinazer = GameResources.GetNPCById(125);
+            NPC spaz = GameResources.GetNPCById(126);
             TPPlayer.Server.SetTime(false, 0.0);
             TPPlayer.Server.SpawnNPC(retinazer.type, retinazer.name, amount, args.Player.TileX, args.Player.TileY);
             TPPlayer.Server.SpawnNPC(spaz.type, spaz.name, amount, args.Player.TileX, args.Player.TileY);
@@ -1410,7 +1410,7 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC destroyer = Utils.GetNPCById(134);
+            NPC destroyer = GameResources.GetNPCById(134);
             TPPlayer.Server.SetTime(false, 0.0);
             TPPlayer.Server.SpawnNPC(destroyer.type, destroyer.name, amount, args.Player.TileX, args.Player.TileY);
             Utils.Broadcast(string.Format("{0} has spawned the destroyer {1} times!", args.Player.Name, amount));
@@ -1431,7 +1431,7 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs);
-            NPC prime = Utils.GetNPCById(127);
+            NPC prime = GameResources.GetNPCById(127);
             TPPlayer.Server.SetTime(false, 0.0);
             TPPlayer.Server.SpawnNPC(prime.type, prime.name, amount, args.Player.TileX, args.Player.TileY);
             Utils.Broadcast(string.Format("{0} has spawned skeletron prime {1} times!", args.Player.Name, amount));
@@ -1452,14 +1452,14 @@ namespace TPulseAPI
                 return;
             }
             amount = Math.Min(amount, Main.maxNPCs / 4);
-            NPC retinazer = Utils.GetNPCById(125);
-            NPC spaz = Utils.GetNPCById(126);
-            NPC destroyer = Utils.GetNPCById(134);
-            NPC prime = Utils.GetNPCById(127);
-            NPC eater = Utils.GetNPCById(13);
-            NPC eye = Utils.GetNPCById(4);
-            NPC king = Utils.GetNPCById(50);
-            NPC skeletron = Utils.GetNPCById(35);
+            NPC retinazer = GameResources.GetNPCById(125);
+            NPC spaz = GameResources.GetNPCById(126);
+            NPC destroyer = GameResources.GetNPCById(134);
+            NPC prime = GameResources.GetNPCById(127);
+            NPC eater = GameResources.GetNPCById(13);
+            NPC eye = GameResources.GetNPCById(4);
+            NPC king = GameResources.GetNPCById(50);
+            NPC skeletron = GameResources.GetNPCById(35);
             TPPlayer.Server.SetTime(false, 0.0);
             TPPlayer.Server.SpawnNPC(retinazer.type, retinazer.name, amount, args.Player.TileX, args.Player.TileY);
             TPPlayer.Server.SpawnNPC(spaz.type, spaz.name, amount, args.Player.TileX, args.Player.TileY);
@@ -1494,7 +1494,7 @@ namespace TPulseAPI
 
             amount = Math.Min(amount, Main.maxNPCs);
 
-            var npcs = Utils.GetNPCByIdOrName(args.Parameters[0]);
+            var npcs = GameResources.GetNPCByIdOrName(args.Parameters[0]);
             if (npcs.Count == 0)
             {
                 args.Player.SendMessage("Invalid mob type!", Color.Red);
@@ -1545,7 +1545,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = String.Join(" ", args.Parameters);
-            var players = tPulse.FindPlayer(plStr);
+            var players = tPulse.PlayerHandle.FindPlayer(plStr);
 			if (players.Count == 0)
 				args.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -1594,7 +1594,7 @@ namespace TPulseAPI
 				return;
 			}
 
-            var players = tPulse.FindPlayer(plStr);
+            var players = tPulse.PlayerHandle.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -1792,7 +1792,7 @@ namespace TPulseAPI
                     return;
                 }
 
-                var foundplr = tPulse.FindPlayer(args.Parameters[1]);
+                var foundplr = tPulse.PlayerHandle.FindPlayer(args.Parameters[1]);
                 if (foundplr.Count == 0)
                 {
                     args.Player.SendErrorMessage("Invalid player!");
@@ -2011,7 +2011,7 @@ namespace TPulseAPI
 		{
 			if (args.Parameters.Count == 1)
 			{
-				var items = Utils.GetItemByIdOrName(args.Parameters[0]);
+                var items = GameResources.GetItemByIdOrName(args.Parameters[0]);
 				if (items.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid item type!");
@@ -2044,7 +2044,7 @@ namespace TPulseAPI
 		{
 			if (args.Parameters.Count == 1)
 			{
-				var items = Utils.GetItemByIdOrName(args.Parameters[0]);
+                var items = GameResources.GetItemByIdOrName(args.Parameters[0]);
 				if (items.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid item type!");
@@ -2082,7 +2082,7 @@ namespace TPulseAPI
 		{
 			if (args.Parameters.Count == 2)
 			{
-				var items = Utils.GetItemByIdOrName(args.Parameters[0]);
+                var items = GameResources.GetItemByIdOrName(args.Parameters[0]);
 				if (items.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid item type!");
@@ -2131,7 +2131,7 @@ namespace TPulseAPI
 		{
 			if (args.Parameters.Count == 2)
 			{
-				var items = Utils.GetItemByIdOrName(args.Parameters[0]);
+                var items = GameResources.GetItemByIdOrName(args.Parameters[0]);
 				if (items.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid item type!");
@@ -2360,7 +2360,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = args.Parameters[0];
-            var players = tPulse.FindPlayer(plStr);
+            var players = tPulse.PlayerHandle.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -3078,7 +3078,7 @@ namespace TPulseAPI
 				return;
 			}
 
-            var players = tPulse.FindPlayer(args.Parameters[0]);
+            var players = tPulse.PlayerHandle.FindPlayer(args.Parameters[0]);
 			if (players.Count == 0)
 				args.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -3124,7 +3124,7 @@ namespace TPulseAPI
 				return;
 			}
 
-            var players = tPulse.FindPlayer(args.Parameters[0]);
+            var players = tPulse.PlayerHandle.FindPlayer(args.Parameters[0]);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -3171,7 +3171,7 @@ namespace TPulseAPI
 			int annoy = 5;
 			int.TryParse(args.Parameters[1], out annoy);
 
-            var players = tPulse.FindPlayer(args.Parameters[0]);
+            var players = tPulse.PlayerHandle.FindPlayer(args.Parameters[0]);
 			if (players.Count == 0)
 				args.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -3197,7 +3197,7 @@ namespace TPulseAPI
 			}
 
 			string plStr = String.Join(" ", args.Parameters);
-            var players = tPulse.FindPlayer(plStr);
+            var players = tPulse.PlayerHandle.FindPlayer(plStr);
 			if (players.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -3258,11 +3258,11 @@ namespace TPulseAPI
 			else if (args.Parameters.Count == 3)
 			{
 				int.TryParse(args.Parameters[1], out itemAmount);
-				var found = Utils.GetPrefixByIdOrName(args.Parameters[2]);
+                var found = GameResources.GetPrefixByIdOrName(args.Parameters[2]);
 				if (found.Count == 1)
 					prefix = found[0];
 			}
-			var items = Utils.GetItemByIdOrName(args.Parameters[0]);
+            var items = GameResources.GetItemByIdOrName(args.Parameters[0]);
 			if (items.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid item type!");
@@ -3321,7 +3321,7 @@ namespace TPulseAPI
 			}
 			int itemAmount = 0;
 			int prefix = 0;
-			var items = Utils.GetItemByIdOrName(args.Parameters[0]);
+            var items = GameResources.GetItemByIdOrName(args.Parameters[0]);
 			args.Parameters.RemoveAt(0);
 			string plStr = args.Parameters[0];
 			args.Parameters.RemoveAt(0);
@@ -3330,7 +3330,7 @@ namespace TPulseAPI
 			else if (args.Parameters.Count == 2)
 			{
 				int.TryParse(args.Parameters[0], out itemAmount);
-				var found = Utils.GetPrefixByIdOrName(args.Parameters[1]);
+                var found = GameResources.GetPrefixByIdOrName(args.Parameters[1]);
 				if (found.Count == 1)
 					prefix = found[0];
 			}
@@ -3348,7 +3348,7 @@ namespace TPulseAPI
 				var item = items[0];
 				if (item.type >= 1 && item.type < Main.maxItemTypes)
 				{
-                    var players = tPulse.FindPlayer(plStr);
+                    var players = tPulse.PlayerHandle.FindPlayer(plStr);
 					if (players.Count == 0)
 					{
 						args.Player.SendErrorMessage("Invalid player!");
@@ -3432,7 +3432,7 @@ namespace TPulseAPI
 			if (args.Parameters.Count > 0)
 			{
 				string plStr = String.Join(" ", args.Parameters);
-                var players = tPulse.FindPlayer(plStr);
+                var players = tPulse.PlayerHandle.FindPlayer(plStr);
 				if (players.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid player!");
@@ -3458,8 +3458,8 @@ namespace TPulseAPI
 				playerToHeal = args.Player;
 			}
 
-			Item heart = Utils.GetItemById(58);
-			Item star = Utils.GetItemById(184);
+            Item heart = GameResources.GetItemById(58);
+            Item star = GameResources.GetItemById(184);
 			for (int i = 0; i < 20; i++)
 				playerToHeal.GiveItem(heart.type, heart.name, heart.width, heart.height, heart.maxStack);
 			for (int i = 0; i < 10; i++)
@@ -3486,7 +3486,7 @@ namespace TPulseAPI
 			int time = 60;
 			if (!int.TryParse(args.Parameters[0], out id))
 			{
-				var found = Utils.GetBuffByName(args.Parameters[0]);
+				var found = GameResources.GetBuffByName(args.Parameters[0]);
 				if (found.Count == 0)
 				{
 					args.Player.SendErrorMessage("Invalid buff name!");
@@ -3507,7 +3507,7 @@ namespace TPulseAPI
 					time = 60;
 				args.Player.SetBuff(id, time*60);
 				args.Player.SendSuccessMessage(string.Format("You have buffed yourself with {0}({1}) for {2} seconds!",
-													  Utils.GetBuffName(id), Utils.GetBuffDescription(id), (time)));
+                                                      GameResources.GetBuffName(id), GameResources.GetBuffDescription(id), (time)));
 			}
 			else
 				args.Player.SendErrorMessage("Invalid buff ID!");
@@ -3522,7 +3522,7 @@ namespace TPulseAPI
 			}
 			int id = 0;
 			int time = 60;
-            var foundplr = tPulse.FindPlayer(args.Parameters[0]);
+            var foundplr = tPulse.PlayerHandle.FindPlayer(args.Parameters[0]);
 			if (foundplr.Count == 0)
 			{
 				args.Player.SendErrorMessage("Invalid player!");
@@ -3537,7 +3537,7 @@ namespace TPulseAPI
 			{
 				if (!int.TryParse(args.Parameters[1], out id))
 				{
-					var found = Utils.GetBuffByName(args.Parameters[1]);
+                    var found = GameResources.GetBuffByName(args.Parameters[1]);
 					if (found.Count == 0)
 					{
 						args.Player.SendErrorMessage("Invalid buff name!");
@@ -3558,11 +3558,11 @@ namespace TPulseAPI
 						time = 60;
 					foundplr[0].SetBuff(id, time*60);
 					args.Player.SendSuccessMessage(string.Format("You have buffed {0} with {1}({2}) for {3} seconds!",
-														  foundplr[0].Name, Utils.GetBuffName(id),
-														  Utils.GetBuffDescription(id), (time)));
+                                                          foundplr[0].Name, GameResources.GetBuffName(id),
+                                                          GameResources.GetBuffDescription(id), (time)));
 					foundplr[0].SendSuccessMessage(string.Format("{0} has buffed you with {1}({2}) for {3} seconds!",
-														  args.Player.Name, Utils.GetBuffName(id),
-														  Utils.GetBuffDescription(id), (time)));
+                                                          args.Player.Name, GameResources.GetBuffName(id),
+                                                          GameResources.GetBuffDescription(id), (time)));
 				}
 				else
 					args.Player.SendErrorMessage("Invalid buff ID!");

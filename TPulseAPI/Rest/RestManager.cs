@@ -525,7 +525,7 @@ namespace TPulseAPI
 				return ret;
 
 			TPPlayer player = (TPPlayer)ret;
-			TPulse.ForceKick(player, null == parameters["reason"] ? "Kicked via web" : parameters["reason"], false, true);
+            TPulse.PlayerHandle.ForceKick(player, null == parameters["reason"] ? "Kicked via web" : parameters["reason"], false, true);
 			return RestResponse("Player " + player.Name + " was kicked");
 		}
 
@@ -538,7 +538,7 @@ namespace TPulseAPI
 			TPPlayer player = (TPPlayer)ret;
 			var reason = null == parameters["reason"] ? "Banned via web" : parameters["reason"];
 			TPulse.Bans.AddBan(player.IP, player.Name, reason);
-			TPulse.ForceKick(player, reason, false, true);
+            TPulse.PlayerHandle.ForceKick(player, reason, false, true);
 			return RestResponse("Player " + player.Name + " was banned");
 		}
 
@@ -685,7 +685,7 @@ namespace TPulseAPI
 			if (string.IsNullOrWhiteSpace(name))
 				return RestMissingParam("player");
 
-			var found = TPulse.FindPlayer(name);
+			var found = TPulse.PlayerHandle.FindPlayer(name);
 			switch(found.Count)
 			{
 				case 1:

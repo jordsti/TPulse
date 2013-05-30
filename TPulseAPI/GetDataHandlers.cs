@@ -1236,7 +1236,7 @@ namespace TPulseAPI
 
 			if (max > 400 && max > args.Player.FirstMaxHP)
 			{
-                tPulse.ForceKick(args.Player, "Hacked Client Detected.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Hacked Client Detected.", true);
 				return false;
 			}
 
@@ -1262,7 +1262,7 @@ namespace TPulseAPI
 
 			if (max > 400 && max > args.Player.FirstMaxMP)
 			{
-                tPulse.ForceKick(args.Player, "Hacked Client Detected.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Hacked Client Detected.", true);
 				return false;
 			}
 
@@ -1280,19 +1280,19 @@ namespace TPulseAPI
 
 			if (OnPlayerInfo(playerid, hair, male, difficulty, name))
 			{
-                tPulse.ForceKick(args.Player, "A plugin cancelled the event.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "A plugin cancelled the event.", true);
 				return true;
 			}
 
 			if (name.Trim().Length == 0)
 			{
-                tPulse.ForceKick(args.Player, "Empty Name.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Empty Name.", true);
 				return true;
 			}
 			var ban = tPulse.Bans.GetBanByName(name);
 			if (ban != null)
 			{
-				tPulse.ForceKick(args.Player, string.Format("You are banned: {0}", ban.Reason), true);
+                tPulse.PlayerHandle.ForceKick(args.Player, string.Format("You are banned: {0}", ban.Reason), true);
 				return true;
 			}
 			if (args.Player.ReceivedInfo)
@@ -1301,12 +1301,12 @@ namespace TPulseAPI
 			}
 			if (tPulse.Config.MediumcoreOnly && difficulty < 1)
 			{
-                tPulse.ForceKick(args.Player, "Server is set to mediumcore and above characters only!", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Server is set to mediumcore and above characters only!", true);
 				return true;
 			}
 			if (tPulse.Config.HardcoreOnly && difficulty < 2)
 			{
-                tPulse.ForceKick(args.Player, "Server is set to hardcore characters only!", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Server is set to hardcore characters only!", true);
 				return true;
 			}
 			args.Player.Difficulty = difficulty;
@@ -1396,7 +1396,7 @@ namespace TPulseAPI
                     tPulse.Commands.HandlePlayerLogin(new PlayerLoginEventArgs(args.Player));
 					return true;
 				}
-                tPulse.ForceKick(args.Player, "Invalid user account password.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Invalid user account password.", true);
 				return true;
 			}
 			if (!string.IsNullOrEmpty(tPulse.Config.ServerPassword))
@@ -1409,11 +1409,11 @@ namespace TPulseAPI
 					NetMessage.SendData((int) PacketTypes.WorldInfo, args.Player.Index);
 					return true;
 				}
-                tPulse.ForceKick(args.Player, "Incorrect server password", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Incorrect server password", true);
 				return true;
 			}
 
-            tPulse.ForceKick(args.Player, "Bad password attempt", true);
+            tPulse.PlayerHandle.ForceKick(args.Player, "Bad password attempt", true);
 			return true;
 		}
 
@@ -1424,12 +1424,12 @@ namespace TPulseAPI
             args.Player.RequestedSection = true;
 			if (String.IsNullOrEmpty(args.Player.Name))
 			{
-                tPulse.ForceKick(args.Player, "Blank name.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "Blank name.", true);
 				return true;
 			}
 			if (TPulse.HackedHealth(args.Player) && !args.Player.Group.HasPermission(Permissions.ignorestathackdetection))
 			{
-                tPulse.ForceKick(args.Player, "You have hacked health/mana, please use a different character.", true);
+                tPulse.PlayerHandle.ForceKick(args.Player, "You have hacked health/mana, please use a different character.", true);
 				return true;
 			}
 
@@ -1441,7 +1441,7 @@ namespace TPulseAPI
 			if (Utils.ActivePlayers() + 1 > tPulse.Config.MaxSlots &&
 				!args.Player.Group.HasPermission(Permissions.reservedslot))
 			{
-                tPulse.ForceKick(args.Player, tPulse.Config.ServerFullReason, true);
+                tPulse.PlayerHandle.ForceKick(args.Player, tPulse.Config.ServerFullReason, true);
 				return true;
 			}
 
@@ -2296,11 +2296,11 @@ namespace TPulseAPI
 						if (tPulse.Config.BanOnMediumcoreDeath)
 						{
 							if (!tPulse.Ban(args.Player, tPulse.Config.MediumcoreBanReason))
-                                tPulse.ForceKick(args.Player, "Death results in a ban, but can't ban you.", true);
+                                tPulse.PlayerHandle.ForceKick(args.Player, "Death results in a ban, but can't ban you.", true);
 						}
 						else
 						{
-                            tPulse.ForceKick(args.Player, tPulse.Config.MediumcoreKickReason, true, false);
+                            tPulse.PlayerHandle.ForceKick(args.Player, tPulse.Config.MediumcoreKickReason, true, false);
 						}
 						return true;
 					}
