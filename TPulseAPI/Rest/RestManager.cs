@@ -30,10 +30,12 @@ namespace TPulseAPI
 	public class RestManager
 	{
 		private Rest Rest;
+        private TPulse TPulse;
 
-		public RestManager(Rest rest)
+		public RestManager(Rest rest, TPulse tPulse)
 		{
 			Rest = rest;
+            TPulse = tPulse;
 		}
 
 		public void RegisterRestfulCommands()
@@ -94,7 +96,7 @@ namespace TPulseAPI
 				return RestMissingParam("cmd");
 
 			TSRestPlayer tr = new TSRestPlayer();
-			Commands.HandleCommand(tr, parameters["cmd"]);
+			TPulse.Commands.HandleCommand(tr, parameters["cmd"]);
 			return RestResponse(string.Join("\n", tr.GetCommandOutput()));
 		}
 

@@ -50,6 +50,11 @@ namespace TPulseAPI
 	{
 		private static Dictionary<PacketTypes, GetDataHandlerDelegate> GetDataHandlerDelegates;
 		public static int[] WhitelistBuffMaxTime;
+
+        //adding TPulse instance
+
+        private static TPulse tPulse;
+
 		#region Events
 		
 		/// <summary>
@@ -1119,6 +1124,8 @@ namespace TPulseAPI
 		#endregion
 		public static void InitGetDataHandler()
 		{
+            tPulse = (TPulse)PlugInHandler.GetPluginByType(typeof(TPulse));
+
 			#region Blacklists
 
 			WhitelistBuffMaxTime = new int[Main.maxBuffs];
@@ -1385,7 +1392,7 @@ namespace TPulseAPI
 			        args.Player.SendMessage("Authenticated as " + args.Player.Name + " successfully.", Color.LimeGreen);
 					Log.ConsoleInfo(args.Player.Name + " authenticated successfully as user " + args.Player.Name + ".");
                     //Hooks.PlayerLoginEvent.OnPlayerLogin(args.Player);
-                    Commands.HandlePlayerLogin(new PlayerLoginEventArgs(args.Player));
+                    tPulse.Commands.HandlePlayerLogin(new PlayerLoginEventArgs(args.Player));
 					return true;
 				}
 				TPulse.Utils.ForceKick(args.Player, "Invalid user account password.", true);

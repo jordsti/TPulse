@@ -171,8 +171,15 @@ namespace TPulseAPI
 
 	    [Description("User can force the server to Christmas mode.")] public static readonly string xmas;
 
+        //temporary for rewrite for non-static class
+        private static TPulse tPulse;
+
         static Permissions()
 		{
+            //getting the instance of TPulse
+
+            tPulse = (TPulse)PlugInHandler.GetPluginByType(typeof(TPulse));
+
 			foreach (var field in typeof (Permissions).GetFields())
 			{
 				field.SetValue(null, field.Name);
@@ -189,9 +196,10 @@ namespace TPulseAPI
         /// <returns>List of commands</returns>
 		private static List<Command> GetCommands(string perm)
 		{
-			if (Commands.ChatCommands.Count < 1)
-				Commands.InitCommands();
-			return Commands.ChatCommands.Where(c => c.Permission == perm).ToList();
+            //removing this
+			//if (Commands.ChatCommands.Count < 1)
+			//	Commands.InitCommands();
+			return tPulse.Commands.ChatCommands.Where(c => c.Permission == perm).ToList();
 		}
 
         /// <summary>

@@ -41,6 +41,10 @@ namespace TPulseAPI
 		private static Thread heartbeat;
 		private static Thread listen;
 
+        //temporary static instance  of TPulse
+
+        private static TPulse tPulse = (TPulse)PlugInHandler.GetPluginByType(typeof(TPulse));
+
 		public static void ShutdownAllThreads()
 		{
 			if (Started)
@@ -299,10 +303,10 @@ namespace TPulseAPI
 			}
 			else if (text.StartsWith("/"))
 			{
-				if (!Commands.HandleCommand(TPPlayer.Server, text))
+				if (!tPulse.Commands.HandleCommand(TPPlayer.Server, text))
 					return "Invalid command.";
 			}
-			else if (!Commands.HandleCommand(TPPlayer.Server, "/" + text))
+            else if (!tPulse.Commands.HandleCommand(TPPlayer.Server, "/" + text))
 				return "Invalid command.";
 			return "";
 		}

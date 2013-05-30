@@ -99,7 +99,13 @@ namespace TPulseAPI
                 _onPlayerLeave.Invoke(new PlayerConnectionEventArgs(player, PlayerConnectionAction.Leave));
         }
 
-		private const string LogFormatDefault = "yyyy-MM-dd_HH-mm-ss";
+        #region NewCode
+
+        public Commands Commands { get; set; }
+
+        #endregion
+
+        private const string LogFormatDefault = "yyyy-MM-dd_HH-mm-ss";
 		private static string LogFormat = LogFormatDefault;
 		private static bool LogClear = false;
 		public static readonly Version VersionNum = Assembly.GetExecutingAssembly().GetName().Version;
@@ -113,7 +119,7 @@ namespace TPulseAPI
         public static RegionManager Regions;
 		public static BackupManager Backups;
 		public static GroupManager Groups;
-		public static UserManager Users;
+        public static UserManager Users { get; protected set; }
 		public static ItemManager Itembans;
 		public static RememberedPosManager RememberedPos;
 		public static InventoryManager InventoryDB;
@@ -162,6 +168,8 @@ namespace TPulseAPI
 			Config = new ConfigFile();
 			Order = 0;
             PlugInHandler.AddPlugIn(this);
+
+            Commands = new Commands();
 		}
 
         #region PlayerHandling
@@ -292,7 +300,7 @@ namespace TPulseAPI
 				RestApi = new SecureRest(Netplay.serverListenIP, Config.RestApiPort);
 				RestApi.Verify += RestApi_Verify;
 				RestApi.Port = Config.RestApiPort;
-				RestManager = new RestManager(RestApi);
+				RestManager = new RestManager(RestApi, this);
 				RestManager.RegisterRestfulCommands();
 
 				var geoippath = TPulsePaths.GetPath(TPulsePath.GeoIPFile);

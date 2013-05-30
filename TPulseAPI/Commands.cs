@@ -30,103 +30,27 @@ using System.Reflection;
 
 namespace TPulseAPI
 {
+    //making this class not static
+
 	public delegate void CommandDelegate(CommandArgs args);
 
-	public class CommandArgs : EventArgs
-	{
-		public string Message { get; private set; }
-		public TPPlayer Player { get; private set; }
-
-
-		/// <summary>
-		/// Parameters passed to the arguement. Does not include the command name.
-		/// IE '/kick "jerk face"' will only have 1 argument
-		/// </summary>
-		public List<string> Parameters { get; private set; }
-
-		public Player TPlayer
-		{
-			get { return Player.TPlayer; }
-		}
-
-		public CommandArgs(string message, TPPlayer ply, List<string> args)
-		{
-			Message = message;
-			Player = ply;
-			Parameters = args;
-		}
-	}
-
-	public class Command
-	{
-		public string Name
-		{
-			get { return Names[0]; }
-		}
-
-		public List<string> Names { get; protected set; }
-        public bool AllowServer { get; set; }
-		public bool DoLog { get; set; }
-		public string Permission { get; protected set; }
-		private CommandDelegate command;
-
-		public Command(string permissionneeded, CommandDelegate cmd, params string[] names)
-			: this(cmd, names)
-		{
-			Permission = permissionneeded;
-		}
-
-		public Command(CommandDelegate cmd, params string[] names)
-		{
-			if (names == null || names.Length < 1)
-				throw new NotSupportedException();
-			Permission = null;
-			Names = new List<string>(names);
-			command = cmd;
-			AllowServer = true;
-			DoLog = true;
-		}
-
-		public bool Run(string msg, TPPlayer ply, List<string> parms)
-		{
-			if (!ply.Group.HasPermission(Permission))
-				return false;
-
-			try
-			{
-				command(new CommandArgs(msg, ply, parms));
-			}
-			catch (Exception e)
-			{
-				ply.SendErrorMessage("Command failed, check logs for more details.");
-				Log.Error(e.ToString());
-			}
-
-			return true;
-		}
-
-		public bool HasAlias(string name)
-		{
-			return Names.Contains(name);
-		}
-
-		public bool CanRun(TPPlayer ply)
-		{
-			return ply.Group.HasPermission(Permission);
-		}
-	}
-
-	public static class Commands
+	public class Commands
 	{
         //Player Login Event Handling
 
-        private static event PlayerLoginHandler _onPlayerLogin;
+        private event PlayerLoginHandler _onPlayerLogin;
 
-		public static List<Command> ChatCommands = new List<Command>();
+        public List<Command> ChatCommands { get; protected set; }
 
 		private delegate void AddChatCommand(string permission, CommandDelegate command, params string[] names);
 
-        public static event PlayerLoginHandler OnPlayerLogin
+
+        public Commands()
+        {
+            ChatCommands = new List<Command>();
+        }
+
+        public event PlayerLoginHandler OnPlayerLogin
         {
             add
             {
@@ -138,13 +62,14 @@ namespace TPulseAPI
             }
         }
 
-        public static void HandlePlayerLogin(PlayerLoginEventArgs args)
+        public void HandlePlayerLogin(PlayerLoginEventArgs args)
         {
             if (_onPlayerLogin != null)
                 _onPlayerLogin.Invoke(args);
         }
 
-		public static void InitCommands()
+        //call this in the constructor maybe?
+		public void InitCommands()
 		{
 			AddChatCommand add = (p, c, n) => ChatCommands.Add(new Command(p, c, n));
             ChatCommands.Add(new Command(AuthToken, "auth") { AllowServer = false });
@@ -238,7 +163,7 @@ namespace TPulseAPI
 		    //add(null, TestCallbackCommand, "test");
 		}
 
-		public static bool HandleCommand(TPPlayer player, string text)
+		public bool HandleCommand(TPPlayer player, string text)
 		{
 			string cmdText = text.Remove(0, 1);
 
@@ -284,6 +209,9 @@ namespace TPulseAPI
 		    return true;
 		}
 
+
+
+#region static method
 		/// <summary>
 		/// Parses a string of parameters into a list. Handles quotes.
 		/// </summary>
@@ -365,7 +293,7 @@ namespace TPulseAPI
 		{
 			return c == ' ' || c == '\t' || c == '\n';
 		}
-
+#endregion
         //private static void TestCallbackCommand(CommandArgs args)
         //{
         //    Action<object> a = (s) => { ((CommandArgs)s).Player.SendSuccessMessage("This is your callack"); };
@@ -375,7 +303,7 @@ namespace TPulseAPI
 
 		#region Account commands
 
-		public static void AttemptLogin(CommandArgs args)
+		public void AttemptLogin(CommandArgs args)
 		{
 			if (args.Player.LoginAttempts > TPulse.Config.MaximumLoginAttempts && (TPulse.Config.MaximumLoginAttempts != -1))
 			{
@@ -483,7 +411,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void PasswordUser(CommandArgs args)
+		private void PasswordUser(CommandArgs args)
 		{
 			try
 			{
@@ -516,7 +444,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void RegisterUser(CommandArgs args)
+		private void RegisterUser(CommandArgs args)
 		{
 			try
 			{
@@ -560,7 +488,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void ManageUsers(CommandArgs args)
+		private void ManageUsers(CommandArgs args)
 		{
 			// This guy needs to be here so that people don't get exceptions when they type /user
 			if (args.Parameters.Count < 1)
@@ -726,7 +654,7 @@ namespace TPulseAPI
 
 		#region Stupid commands
 
-		public static void ServerInfo(CommandArgs args)
+		public void ServerInfo(CommandArgs args)
 		{
 			args.Player.SendInfoMessage("Memory usage: " + Process.GetCurrentProcess().WorkingSet64);
 			args.Player.SendInfoMessage("Allocated memory: " + Process.GetCurrentProcess().VirtualMemorySize64);
@@ -736,7 +664,7 @@ namespace TPulseAPI
 			args.Player.SendInfoMessage("Machine name: " + Environment.MachineName);
 		}
 
-		public static void WorldInfo(CommandArgs args)
+		public void WorldInfo(CommandArgs args)
 		{
 			args.Player.SendInfoMessage("World name: " + Main.worldName);
 			args.Player.SendInfoMessage("World ID: " + Main.worldID);
@@ -746,7 +674,7 @@ namespace TPulseAPI
 
 		#region Player Management Commands
 
-		private static void GrabUserUserInfo(CommandArgs args)
+		private void GrabUserUserInfo(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -782,7 +710,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Kick(CommandArgs args)
+		private void Kick(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -829,7 +757,7 @@ namespace TPulseAPI
 			}
 		}
 
-        private static void DeprecateBans(CommandArgs args)
+        private void DeprecateBans(CommandArgs args)
         {
             args.Player.SendInfoMessage("Syntax: /ban [option] [arguments]");
             args.Player.SendInfoMessage("Options: list, listip, clear, add, addip, del, delip");
@@ -838,7 +766,7 @@ namespace TPulseAPI
             return;
         }
 
-		private static void Ban(CommandArgs args)
+		private void Ban(CommandArgs args)
 		{
 			if (args.Parameters.Count == 0 || args.Parameters[0].ToLower() == "help")
 			{
@@ -1112,9 +1040,9 @@ namespace TPulseAPI
 			args.Player.SendErrorMessage("Type /ban help for more information.");
 		}
 
-		private static int ClearBansCode = -1;
+		private int ClearBansCode = -1;
 
-		public static void Whitelist(CommandArgs args)
+		public void Whitelist(CommandArgs args)
 		{
 			if (args.Parameters.Count == 1)
 			{
@@ -1126,13 +1054,13 @@ namespace TPulseAPI
 			}
 		}
 
-		public static void DisplayLogs(CommandArgs args)
+		public void DisplayLogs(CommandArgs args)
 		{
 			args.Player.DisplayLogs = (!args.Player.DisplayLogs);
 			args.Player.SendSuccessMessage("You will " + (args.Player.DisplayLogs ? "now" : "no longer") + " receive logs.");
 		}
 
-		public static void SaveSSI(CommandArgs args )
+		public void SaveSSI(CommandArgs args )
 		{
 			if (TPulse.Config.ServerSideInventory)
 			{
@@ -1147,7 +1075,7 @@ namespace TPulseAPI
 			}
 		}
 
-		public static void OverrideSSI( CommandArgs args )
+		public void OverrideSSI( CommandArgs args )
 		{
 			if( args.Parameters.Count < 1 )
 			{
@@ -1174,7 +1102,7 @@ namespace TPulseAPI
 			}
 		}
 
-        private static void ForceXmas(CommandArgs args)
+        private void ForceXmas(CommandArgs args)
         {
             if(args.Parameters.Count == 0)
             {
@@ -1210,7 +1138,7 @@ namespace TPulseAPI
 
 		#region Server Maintenence Commands
 
-		private static void Broadcast(CommandArgs args)
+		private void Broadcast(CommandArgs args)
 		{
 			string message = "";
 
@@ -1223,7 +1151,7 @@ namespace TPulseAPI
 			return;
 		}
 
-		private static void Off(CommandArgs args)
+		private void Off(CommandArgs args)
 		{
 
 			if (TPulse.Config.ServerSideInventory)
@@ -1241,7 +1169,7 @@ namespace TPulseAPI
 			TPulse.Utils.StopServer(true, reason);
 		}
 		//Added restart command
-		private static void Restart(CommandArgs args)
+		private void Restart(CommandArgs args)
 		{
 			if (Main.runningMono)
 			{
@@ -1267,13 +1195,13 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void OffNoSave(CommandArgs args)
+		private void OffNoSave(CommandArgs args)
 		{
 			string reason = ((args.Parameters.Count > 0) ? "Server shutting down: " + String.Join(" ", args.Parameters) : "Server shutting down!");
 			TPulse.Utils.StopServer(false, reason);
 		}
 
-		private static void CheckUpdates(CommandArgs args)
+		private void CheckUpdates(CommandArgs args)
 		{
             args.Player.SendInfoMessage("An update check has been queued.");
 			//ThreadPool.QueueUserWorkItem(UpdateManager.CheckUpdate);
@@ -1283,14 +1211,14 @@ namespace TPulseAPI
 
         #region Cause Events and Spawn Monsters Commands
 
-        private static void DropMeteor(CommandArgs args)
+        private void DropMeteor(CommandArgs args)
 		{
 			WorldGen.spawnMeteor = false;
 			WorldGen.dropMeteor();
             args.Player.SendInfoMessage("A meteor has been triggered.");
 		}
 
-		private static void Star(CommandArgs args)
+		private void Star(CommandArgs args)
 		{
 			int penis56 = 12;
 			int penis57 = Main.rand.Next(Main.maxTilesX - 50) + 100;
@@ -1307,19 +1235,19 @@ namespace TPulseAPI
             args.Player.SendInfoMessage("An attempt has been made to spawn a star.");
 		}
 
-		private static void Fullmoon(CommandArgs args)
+		private void Fullmoon(CommandArgs args)
 		{
 			TPPlayer.Server.SetFullMoon(true);
 			TPulse.Utils.Broadcast(string.Format("{0} turned on the full moon.", args.Player.Name), Color.Green);
 		}
 
-		private static void Bloodmoon(CommandArgs args)
+		private void Bloodmoon(CommandArgs args)
 		{
 			TPPlayer.Server.SetBloodMoon(true);
 			TPulse.Utils.Broadcast(string.Format("{0} turned on the blood moon.", args.Player.Name), Color.Green);
 		}
 
-		private static void Invade(CommandArgs args)
+		private void Invade(CommandArgs args)
 		{
 			if (Main.invasionSize <= 0)
 			{
@@ -1333,7 +1261,7 @@ namespace TPulseAPI
 			}
 		}
 
-        private static void StartHardMode(CommandArgs args)
+        private void StartHardMode(CommandArgs args)
         {
             if (!TPulse.Config.DisableHardmode)
                 WorldGen.StartHardmode();
@@ -1341,14 +1269,14 @@ namespace TPulseAPI
                 args.Player.SendMessage("Hardmode is disabled via config.", Color.Red);
         }
 
-        private static void DisableHardMode(CommandArgs args)
+        private void DisableHardMode(CommandArgs args)
         {
             Main.hardMode = false;
             args.Player.SendMessage("Hardmode is now disabled.", Color.Green);
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void Eater(CommandArgs args)
+        private void Eater(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1368,7 +1296,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void Eye(CommandArgs args)
+        private void Eye(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1389,7 +1317,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void King(CommandArgs args)
+        private void King(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1409,7 +1337,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void Skeletron(CommandArgs args)
+        private void Skeletron(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1430,7 +1358,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void WoF(CommandArgs args)
+        private void WoF(CommandArgs args)
         {
             if (Main.wof >= 0 || (args.Player.Y / 16f < (Main.maxTilesY - 205)))
             {
@@ -1442,7 +1370,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void Twins(CommandArgs args)
+        private void Twins(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1465,7 +1393,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void Destroyer(CommandArgs args)
+        private void Destroyer(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1486,7 +1414,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void SkeletronPrime(CommandArgs args)
+        private void SkeletronPrime(CommandArgs args)
         {
             if (args.Parameters.Count > 1)
             {
@@ -1507,7 +1435,7 @@ namespace TPulseAPI
         }
 
         [Obsolete("This specific command for spawning mobs will replaced soon.")]
-        private static void Hardcore(CommandArgs args) // TODO: Add all 8 bosses
+        private void Hardcore(CommandArgs args) // TODO: Add all 8 bosses
         {
             if (args.Parameters.Count > 1)
             {
@@ -1541,7 +1469,7 @@ namespace TPulseAPI
             TPulse.Utils.Broadcast(string.Format("{0} has spawned all bosses {1} times!", args.Player.Name, amount));
         }
 
-        private static void SpawnMob(CommandArgs args)
+        private void SpawnMob(CommandArgs args)
         {
             if (args.Parameters.Count < 1 || args.Parameters.Count > 2)
             {
@@ -1592,19 +1520,19 @@ namespace TPulseAPI
 
 		#region Teleport Commands
 
-		private static void Home(CommandArgs args)
+		private void Home(CommandArgs args)
 		{
 			args.Player.Spawn();
 			args.Player.SendSuccessMessage("Teleported to your spawnpoint.");
 		}
 
-		private static void Spawn(CommandArgs args)
+		private void Spawn(CommandArgs args)
 		{
 			if (args.Player.Teleport(Main.spawnTileX, Main.spawnTileY))
 				args.Player.SendSuccessMessage("Teleported to the map's spawnpoint.");
 		}
 
-		private static void TP(CommandArgs args)
+		private void TP(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -1636,7 +1564,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void TPHere(CommandArgs args)
+		private void TPHere(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -1680,7 +1608,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void TPAllow(CommandArgs args)
+		private void TPAllow(CommandArgs args)
 		{
 			if (!args.Player.TPAllow)
 				args.Player.SendSuccessMessage("You have removed your teleportation protection.");
@@ -1689,7 +1617,7 @@ namespace TPulseAPI
 			args.Player.TPAllow = !args.Player.TPAllow;
 		}
 
-        private static void DeprecateWarp(CommandArgs args)
+        private void DeprecateWarp(CommandArgs args)
         {
             if (args.Player.Group.HasPermission(Permissions.managewarp))
             {
@@ -1706,7 +1634,7 @@ namespace TPulseAPI
             }
         }
 
-		private static void Warp(CommandArgs args)
+		private void Warp(CommandArgs args)
 		{
 		    bool hasManageWarpPermission = args.Player.Group.HasPermission(Permissions.managewarp);
             if (args.Parameters.Count < 1)
@@ -1907,7 +1835,7 @@ namespace TPulseAPI
 
 		#region Group Management
 
-		private static void AddGroup(CommandArgs args)
+		private void AddGroup(CommandArgs args)
 		{
 			if (args.Parameters.Count > 0)
 			{
@@ -1925,7 +1853,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void DeleteGroup(CommandArgs args)
+		private void DeleteGroup(CommandArgs args)
 		{
 			if (args.Parameters.Count > 0)
 			{
@@ -1941,7 +1869,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void ModifyGroup(CommandArgs args)
+		private void ModifyGroup(CommandArgs args)
 		{
 			if (args.Parameters.Count > 2)
 			{
@@ -1995,7 +1923,7 @@ namespace TPulseAPI
 			args.Player.SendErrorMessage("Incorrect format: /modgroup add|del <group name> <permission to add or remove>");
 		}
 
-		private static void ViewGroups(CommandArgs args)
+		private void ViewGroups(CommandArgs args)
 		{
 			if (args.Parameters.Count > 0)
 			{
@@ -2073,7 +2001,7 @@ namespace TPulseAPI
 
 		#region Item Management
 
-		private static void AddItem(CommandArgs args)
+		private void AddItem(CommandArgs args)
 		{
 			if (args.Parameters.Count == 1)
 			{
@@ -2106,7 +2034,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void DeleteItem(CommandArgs args)
+		private void DeleteItem(CommandArgs args)
 		{
 			if (args.Parameters.Count == 1)
 			{
@@ -2139,12 +2067,12 @@ namespace TPulseAPI
 			}
 		}
 		
-		private static void ListItems(CommandArgs args)
+		private void ListItems(CommandArgs args)
 		{
 			args.Player.SendInfoMessage("The banned items are: " + String.Join(",", TPulse.Itembans.ItemBans) + ".");
 		}
 		
-		private static void AddItemGroup(CommandArgs args)
+		private void AddItemGroup(CommandArgs args)
 		{
 			if (args.Parameters.Count == 2)
 			{
@@ -2193,7 +2121,7 @@ namespace TPulseAPI
 			}
 		}		
 
-		private static void DeleteItemGroup(CommandArgs args)
+		private void DeleteItemGroup(CommandArgs args)
 		{
 			if (args.Parameters.Count == 2)
 			{
@@ -2246,7 +2174,7 @@ namespace TPulseAPI
 
 		#region Server Config Commands
 
-		private static void SetSpawn(CommandArgs args)
+		private void SetSpawn(CommandArgs args)
 		{
 			Main.spawnTileX = args.Player.TileX + 1;
 			Main.spawnTileY = args.Player.TileY + 3;
@@ -2254,7 +2182,7 @@ namespace TPulseAPI
 			args.Player.SendSuccessMessage("Spawn has now been set at your location.");
 		}
 
-		private static void Reload(CommandArgs args)
+		private void Reload(CommandArgs args)
 		{
 			FileTools.SetupConfig();
 			TPulse.HandleCommandLinePostConfigLoad(Environment.GetCommandLineArgs());
@@ -2265,7 +2193,7 @@ namespace TPulseAPI
 				"Configuration, permissions, and regions reload complete. Some changes may require a server restart.");
 		}
 
-		private static void ServerPassword(CommandArgs args)
+		private void ServerPassword(CommandArgs args)
 		{
 			if (args.Parameters.Count != 1)
 			{
@@ -2277,7 +2205,7 @@ namespace TPulseAPI
 			args.Player.SendSuccessMessage(string.Format("Server password has been changed to: {0}.", passwd));
 		}
 
-		private static void Save(CommandArgs args)
+		private void Save(CommandArgs args)
 		{
 			SaveManager.Instance.SaveWorld(false);
 			foreach (TPPlayer tsply in TPulse.Players.Where(tsply => tsply != null))
@@ -2287,7 +2215,7 @@ namespace TPulseAPI
 			args.Player.SendSuccessMessage("Save succeeded.");
 		}
 
-		private static void Settle(CommandArgs args)
+		private void Settle(CommandArgs args)
 		{
 			if (Liquid.panicMode)
 			{
@@ -2298,7 +2226,7 @@ namespace TPulseAPI
 			args.Player.SendInfoMessage("Settling liquids.");
 		}
 
-		private static void MaxSpawns(CommandArgs args)
+		private void MaxSpawns(CommandArgs args)
 		{
 			if (args.Parameters.Count != 1)
 			{
@@ -2328,7 +2256,7 @@ namespace TPulseAPI
 			TPPlayer.All.SendInfoMessage(string.Format("{0} changed the maximum spawns to {1}.", args.Player.Name, amount));
 		}
 
-		private static void SpawnRate(CommandArgs args)
+		private void SpawnRate(CommandArgs args)
 		{
 			if (args.Parameters.Count != 1)
 			{
@@ -2374,7 +2302,7 @@ namespace TPulseAPI
 
 		#region Time/PvpFun Commands
 
-		private static void Time(CommandArgs args)
+		private void Time(CommandArgs args)
 		{
 			if (args.Parameters.Count != 1)
 			{
@@ -2412,7 +2340,7 @@ namespace TPulseAPI
 
         //TODO: Come back here
 
-		private static void Slap(CommandArgs args)
+		private void Slap(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1 || args.Parameters.Count > 2)
 			{
@@ -2458,7 +2386,7 @@ namespace TPulseAPI
 
         #region Region Commands
 
-        private static void DebugRegions(CommandArgs args)
+        private void DebugRegions(CommandArgs args)
         {
             foreach (Region r in TPulse.Regions.Regions)
             {
@@ -2471,7 +2399,7 @@ namespace TPulseAPI
             }
         }
 
-        private static void Region(CommandArgs args)
+        private void Region(CommandArgs args)
         {
             string cmd = "help";
             if (args.Parameters.Count > 0)
@@ -2911,13 +2839,13 @@ namespace TPulseAPI
 
         #region World Protection Commands
 
-        private static void ToggleAntiBuild(CommandArgs args)
+        private void ToggleAntiBuild(CommandArgs args)
 		{
 			TPulse.Config.DisableBuild = (TPulse.Config.DisableBuild == false);
 			TPPlayer.All.SendSuccessMessage(string.Format("Anti-build is now {0}.", (TPulse.Config.DisableBuild ? "on" : "off")));
 		}
 
-		private static void ProtectSpawn(CommandArgs args)
+		private void ProtectSpawn(CommandArgs args)
 		{
 			TPulse.Config.SpawnProtection = (TPulse.Config.SpawnProtection == false);
 			TPPlayer.All.SendSuccessMessage(string.Format("Spawn is now {0}.", (TPulse.Config.SpawnProtection ? "protected" : "open")));
@@ -2927,7 +2855,7 @@ namespace TPulseAPI
 
 		#region General Commands
 
-		private static void Help(CommandArgs args)
+		private void Help(CommandArgs args)
 		{
 			args.Player.SendInfoMessage("TPulse Commands:");
 			int page = 1;
@@ -2967,13 +2895,13 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void GetVersion(CommandArgs args)
+		private void GetVersion(CommandArgs args)
 		{
 			args.Player.SendInfoMessage(string.Format("TPulse: {0} ({1}): ({2}/{3})", TPulse.VersionNum, TPulse.VersionCodename,
 												  TPulse.Utils.ActivePlayers(), TPulse.Config.MaxSlots));
 		}
 
-		private static void ListConnectedPlayers(CommandArgs args)
+		private void ListConnectedPlayers(CommandArgs args)
 		{
 			//How many players per page
 			const int pagelimit = 15;
@@ -3030,7 +2958,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void AuthToken(CommandArgs args)
+		private void AuthToken(CommandArgs args)
 		{
 			if (TPulse.AuthToken == 0)
 			{
@@ -3074,7 +3002,7 @@ namespace TPulseAPI
 			Log.Warn(args.Player.IP + " attempted to use an incorrect auth code.");
 		}
 
-		private static void AuthVerify(CommandArgs args)
+		private void AuthVerify(CommandArgs args)
 		{
 			if (TPulse.AuthToken == 0)
 			{
@@ -3099,7 +3027,7 @@ namespace TPulseAPI
 			TPulse.AuthToken = 0;
 		}
 
-		private static void ThirdPerson(CommandArgs args)
+		private void ThirdPerson(CommandArgs args)
 		{
 			if (args.Parameters.Count == 0)
 			{
@@ -3112,7 +3040,7 @@ namespace TPulseAPI
 				TPPlayer.All.SendMessage(string.Format("*{0} {1}", args.Player.Name, String.Join(" ", args.Parameters)), 205, 133, 63);
 		}
 
-		private static void PartyChat(CommandArgs args)
+		private void PartyChat(CommandArgs args)
 		{
 			if (args.Parameters.Count == 0)
 			{
@@ -3136,7 +3064,7 @@ namespace TPulseAPI
 				args.Player.SendErrorMessage("You are not in a party!");
 		}
 
-		private static void Mute(CommandArgs args)
+		private void Mute(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -3170,17 +3098,19 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Motd(CommandArgs args)
+		private void Motd(CommandArgs args)
 		{
+            //change this
 			TPulse.Utils.ShowFileToUser(args.Player, "motd.txt");
 		}
 
-		private static void Rules(CommandArgs args)
+		private void Rules(CommandArgs args)
 		{
+            //same here, to be changed
 			TPulse.Utils.ShowFileToUser(args.Player, "rules.txt");
 		}
 
-		private static void Whisper(CommandArgs args)
+		private void Whisper(CommandArgs args)
 		{
 			if (args.Parameters.Count < 2)
 			{
@@ -3210,7 +3140,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Reply(CommandArgs args)
+		private void Reply(CommandArgs args)
 		{
 			if (args.Player.mute)
 				args.Player.SendErrorMessage("You are muted.");
@@ -3225,7 +3155,7 @@ namespace TPulseAPI
 					"You haven't previously received any whispers. Please use /whisper to whisper to other people.");
 		}
 
-		private static void Annoy(CommandArgs args)
+		private void Annoy(CommandArgs args)
 		{
 			if (args.Parameters.Count != 2)
 			{
@@ -3252,7 +3182,7 @@ namespace TPulseAPI
 
 		#region Cheat Commands
 
-		private static void Kill(CommandArgs args)
+		private void Kill(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -3279,7 +3209,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Butcher(CommandArgs args)
+		private void Butcher(CommandArgs args)
 		{
 			if (args.Parameters.Count > 1)
 			{
@@ -3303,7 +3233,7 @@ namespace TPulseAPI
 			TPPlayer.All.SendSuccessMessage(string.Format("Killed {0} NPCs.", killcount));
 		}
 		
-		private static void Item(CommandArgs args)
+		private void Item(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
@@ -3365,7 +3295,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Give(CommandArgs args)
+		private void Give(CommandArgs args)
 		{
 			if (args.Parameters.Count < 2)
 			{
@@ -3452,7 +3382,7 @@ namespace TPulseAPI
 			}
 		}
 
-		public static void ClearItems(CommandArgs args)
+		public void ClearItems(CommandArgs args)
 		{
 			int radius = 50;
 			if (args.Parameters.Count > 0)
@@ -3490,7 +3420,7 @@ namespace TPulseAPI
 			args.Player.SendSuccessMessage("All " + count + " items within a radius of " + radius + " have been deleted.");
 		}
 
-		private static void Heal(CommandArgs args)
+		private void Heal(CommandArgs args)
 		{
 			TPPlayer playerToHeal;
 			if (args.Parameters.Count > 0)
@@ -3539,7 +3469,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Buff(CommandArgs args)
+		private void Buff(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1 || args.Parameters.Count > 2)
 			{
@@ -3577,7 +3507,7 @@ namespace TPulseAPI
 				args.Player.SendErrorMessage("Invalid buff ID!");
 		}
 
-		private static void GBuff(CommandArgs args)
+		private void GBuff(CommandArgs args)
 		{
 			if (args.Parameters.Count < 2 || args.Parameters.Count > 3)
 			{
@@ -3633,7 +3563,7 @@ namespace TPulseAPI
 			}
 		}
 
-		private static void Grow(CommandArgs args)
+		private void Grow(CommandArgs args)
 		{
 			if (args.Parameters.Count != 1)
 			{

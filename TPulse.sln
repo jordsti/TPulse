@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TChatChannels", "TChatChann
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPluginSample", "TPluginSample\TPluginSample.csproj", "{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TKit", "TKit\TKit.csproj", "{D50E2277-252F-469D-99B4-90EE8B67DFDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,13 +54,22 @@ Global
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5FD3F7AD-5FEE-4A86-8BE4-1EBC4B011194}.Release|x86.ActiveCfg = Release|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -144,6 +144,7 @@ namespace TChatChannels
                 writer.WriteLine("#First channel defined is the default one");
                 writer.WriteLine("#[ChannelName] r:[red] g:[green] b:[blue]");
                 writer.WriteLine("General r:175 g:224 b:27");
+                writer.Flush();
                 writer.Close();
 
                 LoadChannelsFile();

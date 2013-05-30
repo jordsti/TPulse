@@ -78,11 +78,11 @@ namespace TFriends
 
            //Adding commands
 
-            Commands.ChatCommands.Add(new Command("", FriendCommand, "friend"));
-            Commands.ChatCommands.Add(new Command("", MessageCommand, "fmsg"));
-            Commands.ChatCommands.Add(new Command("", MessageAllCommand, "fall"));
+            tPulse.Commands.ChatCommands.Add(new Command("", FriendCommand, "friend"));
+            tPulse.Commands.ChatCommands.Add(new Command("", MessageCommand, "fmsg"));
+            tPulse.Commands.ChatCommands.Add(new Command("", MessageAllCommand, "fall"));
             //Commands.ChatCommands.Add(new Command("", MessageCommand, "sendcoord"));
-            Commands.OnPlayerLogin += new PlayerLoginHandler(PlayerLogin);
+            tPulse.Commands.OnPlayerLogin += new PlayerLoginHandler(PlayerLogin);
             //Hooks.WorldHooks.SaveWorld += new Hooks.WorldHooks.SaveWorldD(WorldHooks_SaveWorld);
             tPulse.OnWorldSaved += new WorldSavedHandler(OnWorldSaved);
         }

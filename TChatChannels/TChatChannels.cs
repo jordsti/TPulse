@@ -78,10 +78,10 @@ namespace TChatChannels
             //  /cmsg : send a message in the channel
             //can be null be aware !
 
-            Commands.ChatCommands.Add(new Command("", JoinCommand, "join"));
-            Commands.ChatCommands.Add(new Command("", LeaveCommand, "leave"));
-            Commands.ChatCommands.Add(new Command("", ChannelCommand, "channel"));
-            Commands.ChatCommands.Add(new Command("", ChannelMessage, "cmsg"));
+            tPulse.Commands.ChatCommands.Add(new Command("", JoinCommand, "join"));
+            tPulse.Commands.ChatCommands.Add(new Command("", LeaveCommand, "leave"));
+            tPulse.Commands.ChatCommands.Add(new Command("", ChannelCommand, "channel"));
+            tPulse.Commands.ChatCommands.Add(new Command("", ChannelMessage, "cmsg"));
             
             DefaultChannel = Manager.DefaultChannel;
             
