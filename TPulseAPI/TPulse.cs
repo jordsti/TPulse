@@ -208,7 +208,7 @@ namespace TPulseAPI
         #endregion
 
         #region methods from utils
-
+        [Obsolete("Put this into a PlayerManager class")]
         public bool Kick(TPPlayer player, string reason, string adminUserName)
         {
             return Kick(player, reason, false, false, adminUserName);
@@ -223,6 +223,7 @@ namespace TPulseAPI
         /// <param name="silent">bool silent (default: false)</param>
         /// <param name="adminUserName">string adminUserName (default: null)</param>
         /// <param name="saveSSI">bool saveSSI (default: false)</param>
+        [Obsolete("Put this into a PlayerManager class")]
         public bool Kick(TPPlayer player, string reason, bool force = false, bool silent = false, string adminUserName = null, bool saveSSI = false)
         {
             if (!player.ConnectionAlive)
@@ -248,11 +249,13 @@ namespace TPulseAPI
             return false;
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public void ForceKick(TPPlayer player, string reason, bool silent = false, bool saveSSI = false)
         {
             Kick(player, reason, true, silent, null, saveSSI);
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public void ForceKickAll(string reason)
         {
             foreach (TPPlayer player in Players)
@@ -264,6 +267,7 @@ namespace TPulseAPI
             }
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public List<TPPlayer> FindPlayer(string plr)
         {
             var found = new List<TPPlayer>();
@@ -296,6 +300,7 @@ namespace TPulseAPI
             return found;
         }
 
+        //put this into a logtools maybe ?
         public void SendLogs(string log, Color color, TPulse tPulse)
         {
             Log.Info(log);
@@ -308,6 +313,7 @@ namespace TPulseAPI
             }
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public string GetPlayerIP(string playername)
         {
             foreach (TPPlayer player in Players)
@@ -323,6 +329,7 @@ namespace TPulseAPI
             return null;
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public List<string> GetPlayers(bool includeIDs)
         {
             var players = new List<string>();
@@ -345,11 +352,13 @@ namespace TPulseAPI
             return players;
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public bool Ban(TPPlayer player, string reason, string adminUserName)
         {
             return Ban(player, reason, false, adminUserName);
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public bool Ban(TPPlayer player, string reason, bool force = false, string adminUserName = null)
         {
             if (!player.ConnectionAlive)
@@ -371,6 +380,7 @@ namespace TPulseAPI
             return false;
         }
 
+        [Obsolete("Put this into a PlayerManager class")]
         public string GetPlayersWithIds()
         {
             var sb = new StringBuilder();
@@ -389,6 +399,7 @@ namespace TPulseAPI
             }
             return sb.ToString();
         }
+
 
         public Group GetGroup(string groupName)
         {
