@@ -27,10 +27,12 @@ namespace TPulseAPI
 {
 	public class TPPlayer
 	{
+
+        private static TPulse tPulse = PlugInHandler.GetPluginByType(typeof(TPulse)) as TPulse;
         /// <summary>
         /// This represents the server as a player.
         /// </summary>
-		public static readonly TPServerPlayer Server = new TPServerPlayer();
+		public static readonly TPServerPlayer Server = new TPServerPlayer(tPulse.Config.SuperAdminChatRGB, tPulse.Config.SuperAdminChatPrefix, tPulse.Config.SuperAdminChatSuffix);
 
         /// <summary>
         /// This player represents all the players.
@@ -296,9 +298,10 @@ namespace TPulseAPI
         /// <returns>bool - True/false if it saved successfully</returns>
         public bool SaveServerInventory()
         {
-            if (!TPulse.Config.ServerSideInventory)
+            if (!tPulse.Config.ServerSideInventory)
             {
                 return false;
+
             }
             try
             {
@@ -381,7 +384,7 @@ namespace TPulseAPI
 			TilesDestroyed = new Dictionary<Vector2, TileData>();
 			TilesCreated = new Dictionary<Vector2, TileData>();
 			Index = index;
-			Group = new Group(TPulse.Config.DefaultGuestGroupName);
+			Group = new Group(tPulse.Config.DefaultGuestGroupName);
 			IceTiles = new List<Point>();
             AwaitingResponse = new Dictionary<string, Action<object>>();
 		}
@@ -392,7 +395,7 @@ namespace TPulseAPI
 			TilesCreated = new Dictionary<Vector2, TileData>();
 			Index = -1;
 			FakePlayer = new Player {name = playerName, whoAmi = -1};
-			Group = new Group(TPulse.Config.DefaultGuestGroupName);
+			Group = new Group(tPulse.Config.DefaultGuestGroupName);
             AwaitingResponse = new Dictionary<string, Action<object>>();
 		}
 
@@ -407,7 +410,7 @@ namespace TPulseAPI
 			if (sock == null)
 				return;
 
-			TPulse.PacketBuffer.Flush(sock);
+			tPulse.PacketBuffer.Flush(sock);
 		}
 
 
@@ -436,7 +439,7 @@ namespace TPulseAPI
 											 (NPC.downedBoss3 ? WorldInfoFlag.DownedBoss3 : WorldInfoFlag.None) |
 											 (Main.hardMode ? WorldInfoFlag.HardMode : WorldInfoFlag.None) |
 											 (NPC.downedClown ? WorldInfoFlag.DownedClown : WorldInfoFlag.None),
-								WorldName = TPulse.Config.UseServerName ? TPulse.Config.ServerName : Main.worldName
+								WorldName = tPulse.Config.UseServerName ? tPulse.Config.ServerName : Main.worldName
 							};
 				msg.PackFull(ms);
 				SendRawData(ms.ToArray());
@@ -557,7 +560,7 @@ namespace TPulseAPI
 
         public bool GiveItemCheck(int type, string name, int width, int height, int stack, int prefix = 0)
         {
-            if (TPulse.Itembans.ItemIsBanned(name) && TPulse.Config.PreventBannedItemSpawn)
+            if (TPulse.Itembans.ItemIsBanned(name) && tPulse.Config.PreventBannedItemSpawn)
                 return false;
 
             GiveItem(type,name,width,height,stack,prefix);
@@ -693,7 +696,7 @@ namespace TPulseAPI
 			if (!RealPlayer || !ConnectionAlive)
 				return false;
 
-			return TPulse.SendBytes(Netplay.serverSock[Index], data);
+			return tPulse.SendBytes(Netplay.serverSock[Index], data);
 		}
 
         /// <summary>
@@ -712,144 +715,6 @@ namespace TPulseAPI
         }
 	}
 
-	public class TSRestPlayer : TPServerPlayer
-	{
-		internal List<string> CommandReturn = new List<string>();
-
-		public TSRestPlayer()
-		{
-			Group = new SuperAdminGroup();
-            AwaitingResponse = new Dictionary<string, Action<object>>();
-		}
-
-		public override void SendMessage(string msg)
-		{
-			SendMessage(msg, 0, 255, 0);
-		}
-
-		public override void SendMessage(string msg, Color color)
-		{
-			SendMessage(msg, color.R, color.G, color.B);
-		}
-
-		public override void SendMessage(string msg, byte red, byte green, byte blue)
-		{
-			CommandReturn.Add(msg);
-		}
-
-		public List<string> GetCommandOutput()
-		{
-			return CommandReturn;
-		}
-	}
-
-	public class TPServerPlayer : TPPlayer
-	{
-		public TPServerPlayer()
-			: base("Server")
-		{
-			Group = new SuperAdminGroup();
-		}
-
-        public override void SendErrorMessage(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(msg);
-            Console.ResetColor();
-        }
-
-        public override void SendInfoMessage(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(msg);
-            Console.ResetColor();
-        }
-
-        public override void SendSuccessMessage(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(msg);
-            Console.ResetColor();
-        }
-
-        public override void SendWarningMessage(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(msg);
-            Console.ResetColor();
-        }
-
-		public override void SendMessage(string msg)
-		{
-			SendMessage(msg, 0, 255, 0);
-		}
-
-		public override void SendMessage(string msg, Color color)
-		{
-			SendMessage(msg, color.R, color.G, color.B);
-		}
-
-		public override void SendMessage(string msg, byte red, byte green, byte blue)
-		{
-			Console.WriteLine(msg);
-			//RconHandler.Response += msg + "\n";
-		}
-
-		public void SetFullMoon(bool fullmoon)
-		{
-			Main.moonPhase = 0;
-			SetTime(false, 0);
-		}
-
-		public void SetBloodMoon(bool bloodMoon)
-		{
-			Main.bloodMoon = bloodMoon;
-			SetTime(false, 0);
-		}
-
-		public void SetTime(bool dayTime, double time)
-		{
-			Main.dayTime = dayTime;
-			Main.time = time;
-			NetMessage.SendData((int) PacketTypes.TimeSet, -1, -1, "", 0, 0, Main.sunModY, Main.moonModY);
-			NetMessage.syncPlayers();
-		}
-
-		public void SpawnNPC(int type, string name, int amount, int startTileX, int startTileY, int tileXRange = 100,
-							 int tileYRange = 50)
-		{
-			for (int i = 0; i < amount; i++)
-			{
-				int spawnTileX;
-				int spawnTileY;
-				Utils.GetRandomClearTileWithInRange(startTileX, startTileY, tileXRange, tileYRange, out spawnTileX,
-														   out spawnTileY);
-				int npcid = NPC.NewNPC(spawnTileX*16, spawnTileY*16, type, 0);
-				// This is for special slimes
-				Main.npc[npcid].SetDefaults(name);
-			}
-		}
-
-		public void StrikeNPC(int npcid, int damage, float knockBack, int hitDirection)
-		{
-			Main.npc[npcid].StrikeNPC(damage, knockBack, hitDirection);
-			NetMessage.SendData((int) PacketTypes.NpcStrike, -1, -1, "", npcid, damage, knockBack, hitDirection);
-		}
-
-		public void RevertTiles(Dictionary<Vector2, TileData> tiles)
-		{
-			// Update Main.Tile first so that when tile sqaure is sent it is correct
-			foreach (KeyValuePair<Vector2, TileData> entry in tiles)
-			{
-				Main.tile[(int) entry.Key.X, (int) entry.Key.Y].Data = entry.Value;
-			}
-			// Send all players updated tile sqaures
-			foreach (Vector2 coords in tiles.Keys)
-			{
-				All.SendTileSquare((int) coords.X, (int) coords.Y, 3);
-			}
-		}
-	}
 
 	public class PlayerData
 	{

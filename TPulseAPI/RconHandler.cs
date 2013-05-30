@@ -208,9 +208,9 @@ namespace TPulseAPI
 				var infostring =
 					string.Format(
 						@"\_TPulse_ver\{6}\mapname\{1}\sv_maxclients\{2}\clients\{3}\sv_privateClients\{4}\hconly\{5}\gamename\TERRARIA\protocol\100\sv_hostname\{0}\g_needPass\{7}",
-						TPulse.Config.ServerName, Main.worldName, Main.maxNetPlayers,
-						Utils.ActivePlayers(), Main.maxNetPlayers - TPulse.Config.MaxSlots,
-						TPulse.Config.HardcoreOnly ? 1 : 0, TPulse.VersionNum,
+						tPulse.Config.ServerName, Main.worldName, Main.maxNetPlayers,
+						Utils.ActivePlayers(), Main.maxNetPlayers - tPulse.Config.MaxSlots,
+						tPulse.Config.HardcoreOnly ? 1 : 0, TPulse.VersionNum,
 						Netplay.password != "" ? 1 : 0);
 				if (challenge != "")
 					infostring += @"\challenge\" + challenge;
@@ -228,9 +228,9 @@ namespace TPulseAPI
 				response = "statusResponse\n";
 				var statusstring = string.Format(
 					@"\_TPulse_ver\{6}\mapname\{1}\sv_maxclients\{2}\clients\{3}\sv_privateClients\{4}\hconly\{5}\gamename\TERRARIA\protocol\100\sv_hostname\{0}\g_needPass\{7}",
-					TPulse.Config.ServerName, Main.worldName, Main.maxNetPlayers,
-					Utils.ActivePlayers(), Main.maxNetPlayers - TPulse.Config.MaxSlots,
-					TPulse.Config.HardcoreOnly ? 1 : 0, TPulse.VersionNum,
+					tPulse.Config.ServerName, Main.worldName, Main.maxNetPlayers,
+					Utils.ActivePlayers(), Main.maxNetPlayers - tPulse.Config.MaxSlots,
+					tPulse.Config.HardcoreOnly ? 1 : 0, TPulse.VersionNum,
 					Netplay.password != "" ? 1 : 0) + "\n";
 				if (challenge != "")
 					statusstring += @"\challenge\" + challenge;
@@ -297,9 +297,9 @@ namespace TPulseAPI
 			}
 			else if (text == "autosave")
 			{
-				Main.autoSave = TPulse.Config.AutoSave = !TPulse.Config.AutoSave;
-				Log.ConsoleInfo("AutoSave " + (TPulse.Config.AutoSave ? "Enabled" : "Disabled"));
-				return "AutoSave " + (TPulse.Config.AutoSave ? "Enabled" : "Disabled");
+				Main.autoSave = tPulse.Config.AutoSave = !tPulse.Config.AutoSave;
+				Log.ConsoleInfo("AutoSave " + (tPulse.Config.AutoSave ? "Enabled" : "Disabled"));
+				return "AutoSave " + (tPulse.Config.AutoSave ? "Enabled" : "Disabled");
 			}
 			else if (text.StartsWith("/"))
 			{
@@ -366,7 +366,7 @@ namespace TPulseAPI
 						{
 							Log.Error(e.ToString());
 						}
-					listener.Send(packet, packet.Length, TPulse.Config.MasterServer, 27950);
+					listener.Send(packet, packet.Length, tPulse.Config.MasterServer, 27950);
 					LastHeartbeat = DateTime.UtcNow;
 				}
 				Thread.Sleep(10000);

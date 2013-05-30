@@ -295,14 +295,14 @@ namespace TPulseAPI
     /// </summary>
 	public class SuperAdminGroup : Group
 	{
-		public SuperAdminGroup()
+		public SuperAdminGroup(float[] chatrgb, string prefix, string suffix)
 			: base("superadmin")
 		{
-			R = (byte) TPulse.Config.SuperAdminChatRGB[0];
-			G = (byte) TPulse.Config.SuperAdminChatRGB[1];
-			B = (byte) TPulse.Config.SuperAdminChatRGB[2];
-			Prefix = TPulse.Config.SuperAdminChatPrefix;
-			Suffix = TPulse.Config.SuperAdminChatSuffix;
+            R = (byte)chatrgb[0];
+            G = (byte)chatrgb[1];
+            B = (byte)chatrgb[2];
+			Prefix = prefix;
+			Suffix = suffix;
 		}
 
         /// <summary>

@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using Terraria;
 using TPulseAPI.Net;
+using TPulseAPI.Events;
 
 namespace TPulseAPI
 {
@@ -1298,12 +1299,12 @@ namespace TPulseAPI
 			{
 				return true;
 			}
-			if (TPulse.Config.MediumcoreOnly && difficulty < 1)
+			if (tPulse.Config.MediumcoreOnly && difficulty < 1)
 			{
 				Utils.ForceKick(args.Player, "Server is set to mediumcore and above characters only!", true);
 				return true;
 			}
-			if (TPulse.Config.HardcoreOnly && difficulty < 2)
+			if (tPulse.Config.HardcoreOnly && difficulty < 2)
 			{
 				Utils.ForceKick(args.Player, "Server is set to hardcore characters only!", true);
 				return true;
@@ -1318,13 +1319,13 @@ namespace TPulseAPI
 		private static bool HandleConnecting(GetDataHandlerArgs args)
 		{
 			var user = TPulse.Users.GetUserByName(args.Player.Name);
-			if (user != null && !TPulse.Config.DisableLoginBeforeJoin)
+			if (user != null && !tPulse.Config.DisableLoginBeforeJoin)
 			{
 				args.Player.RequiresPassword = true;
 				NetMessage.SendData((int) PacketTypes.PasswordRequired, args.Player.Index);
 				return true;
 			}
-			else if (!string.IsNullOrEmpty(TPulse.Config.ServerPassword))
+			else if (!string.IsNullOrEmpty(tPulse.Config.ServerPassword))
 			{
 				args.Player.RequiresPassword = true;
 				NetMessage.SendData((int) PacketTypes.PasswordRequired, args.Player.Index);
@@ -1344,7 +1345,7 @@ namespace TPulseAPI
 
 			string password = Encoding.UTF8.GetString(args.Data.ReadBytes((int) (args.Data.Length - args.Data.Position - 1)));
 			var user = TPulse.Users.GetUserByName(args.Player.Name);
-            if (user != null && !TPulse.Config.DisableLoginBeforeJoin)
+            if (user != null && !tPulse.Config.DisableLoginBeforeJoin)
 			{
 				string encrPass = Utils.HashPassword(password);
 				if (user.Password.ToUpper() == encrPass.ToUpper())
@@ -1356,9 +1357,9 @@ namespace TPulseAPI
 				        args.Player.State = 2;
 				    NetMessage.SendData((int) PacketTypes.WorldInfo, args.Player.Index);
 
-				    var group = Utils.GetGroup(user.Group);
+                    var group = Utils.GetGroup(user.Group, tPulse);
 
-				    if (TPulse.Config.ServerSideInventory)
+				    if (tPulse.Config.ServerSideInventory)
 				    {
 				        if (group.HasPermission(Permissions.bypassinventorychecks))
 				        {
@@ -1398,9 +1399,9 @@ namespace TPulseAPI
 				Utils.ForceKick(args.Player, "Invalid user account password.", true);
 				return true;
 			}
-			if (!string.IsNullOrEmpty(TPulse.Config.ServerPassword))
+			if (!string.IsNullOrEmpty(tPulse.Config.ServerPassword))
 			{
-				if (TPulse.Config.ServerPassword == password)
+				if (tPulse.Config.ServerPassword == password)
 				{
 					args.Player.RequiresPassword = false;
 					if (args.Player.State == 1)
@@ -1437,31 +1438,31 @@ namespace TPulseAPI
 				TPulse.HackedInventory(args.Player);
 			}
 
-			if (Utils.ActivePlayers() + 1 > TPulse.Config.MaxSlots &&
+			if (Utils.ActivePlayers() + 1 > tPulse.Config.MaxSlots &&
 				!args.Player.Group.HasPermission(Permissions.reservedslot))
 			{
-				Utils.ForceKick(args.Player, TPulse.Config.ServerFullReason, true);
+				Utils.ForceKick(args.Player, tPulse.Config.ServerFullReason, true);
 				return true;
 			}
 
 			NetMessage.SendData((int) PacketTypes.TimeSet, -1, -1, "", 0, 0, Main.sunModY, Main.moonModY);
 
-			if (TPulse.Config.EnableGeoIP && TPulse.Geo != null)
+			if (tPulse.Config.EnableGeoIP && tPulse.Geo != null)
 			{
 				Log.Info(string.Format("{0} ({1}) from '{2}' group from '{3}' joined. ({4}/{5})", args.Player.Name, args.Player.IP,
 									   args.Player.Group.Name, args.Player.Country, Utils.ActivePlayers(),
-									   TPulse.Config.MaxSlots));
+									   tPulse.Config.MaxSlots));
 				Utils.Broadcast(string.Format("{0} ({1}) has joined.", args.Player.Name, args.Player.Country), Color.Yellow);
 			}
 			else
 			{
 				Log.Info(string.Format("{0} ({1}) from '{2}' group joined. ({3}/{4})", args.Player.Name, args.Player.IP,
-									   args.Player.Group.Name, Utils.ActivePlayers(), TPulse.Config.MaxSlots));
+									   args.Player.Group.Name, Utils.ActivePlayers(), tPulse.Config.MaxSlots));
 				Utils.Broadcast(args.Player.Name + " has joined.", Color.Yellow);
 			}
 
-			if (TPulse.Config.DisplayIPToAdmins)
-				Utils.SendLogs(string.Format("{0} has joined. IP: {1}", args.Player.Name, args.Player.IP), Color.Blue);
+			if (tPulse.Config.DisplayIPToAdmins)
+				Utils.SendLogs(string.Format("{0} has joined. IP: {1}", args.Player.Name, args.Player.IP), Color.Blue, tPulse);
 
 			return false;
 		}
@@ -1487,7 +1488,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
@@ -1518,7 +1519,7 @@ namespace TPulseAPI
 
 					var tile = Main.tile[realx, realy];
 					var newtile = tiles[x, y];
-					if (TPulse.CheckTilePermission(args.Player, realx, realy))
+					if (tPulse.CheckTilePermission(args.Player, realx, realy))
 					{
 						continue;
 					}
@@ -1529,7 +1530,7 @@ namespace TPulseAPI
 					}*/
 					if ((tile.type == 128 && newtile.Type == 128) || (tile.type == 105 && newtile.Type == 105) || (tile.type == 139 && newtile.Type == 139))
 					{
-						if (TPulse.Config.EnableInsecureTileFixes)
+						if (tPulse.Config.EnableInsecureTileFixes)
 						{
 							return false;
 						}
@@ -1665,7 +1666,7 @@ namespace TPulseAPI
 			if (!Utils.TileValid(tileX, tileY))
 				return false;
 
-            if (args.Player.Dead && TPulse.Config.PreventDeadModification)
+            if (args.Player.Dead && tPulse.Config.PreventDeadModification)
                 return true;
 
             if (args.Player.AwaitingName)
@@ -1701,7 +1702,7 @@ namespace TPulseAPI
 				{
 					return true;
 				}
-				if (type == 1 && (tiletype == 29 || tiletype == 97) && TPulse.Config.ServerSideInventory && TPulse.Config.DisablePiggybanksOnSSI)
+				if (type == 1 && (tiletype == 29 || tiletype == 97) && tPulse.Config.ServerSideInventory && tPulse.Config.DisablePiggybanksOnSSI)
 				{
 					args.Player.SendMessage("You cannot place this tile, server side inventory is enabled.", Color.Red);
 					args.Player.SendTileSquare(tileX, tileY);
@@ -1738,13 +1739,13 @@ namespace TPulseAPI
 				}
 			}
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
 			}
 
-			if (TPulse.CheckTilePermission(args.Player, tileX, tileY, tiletype, type))
+			if (tPulse.CheckTilePermission(args.Player, tileX, tileY, tiletype, type))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
@@ -1755,20 +1756,20 @@ namespace TPulseAPI
 				return false;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, tileX, tileY))
+			if (tPulse.CheckRangePermission(args.Player, tileX, tileY))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
 			}
 
-			if (args.Player.TileKillThreshold >= TPulse.Config.TileKillThreshold)
+			if (args.Player.TileKillThreshold >= tPulse.Config.TileKillThreshold)
 			{
 				args.Player.Disable("Reached TileKill threshold.");
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
 			}
 
-			if (args.Player.TilePlaceThreshold >= TPulse.Config.TilePlaceThreshold)
+			if (args.Player.TilePlaceThreshold >= tPulse.Config.TilePlaceThreshold)
 			{
 				args.Player.Disable("Reached TilePlace threshold.");
 				args.Player.SendTileSquare(tileX, tileY);
@@ -1813,7 +1814,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (TPulse.Config.PvPMode == "disabled")
+			if (tPulse.Config.PvPMode == "disabled")
 			{
 				return true;
 			}
@@ -1831,7 +1832,7 @@ namespace TPulseAPI
 
 			args.TPlayer.hostile = pvp;
 
-			if (TPulse.Config.PvPMode == "always")
+			if (tPulse.Config.PvPMode == "always")
 			{
 				if (!pvp)
 					args.Player.Spawn();
@@ -1884,9 +1885,9 @@ namespace TPulseAPI
 			{
 				float distance = Vector2.Distance(new Vector2(pos.X/16f, pos.Y/16f),
 												  new Vector2(args.Player.LastNetPosition.X/16f, args.Player.LastNetPosition.Y/16f));
-				if (TPulse.CheckIgnores(args.Player))
+				if (tPulse.CheckIgnores(args.Player))
 				{
-					if (distance > TPulse.Config.MaxRangeForDisabled)
+					if (distance > tPulse.Config.MaxRangeForDisabled)
 					{
 						if (args.Player.IgnoreActionsForCheating != "none")
 						{
@@ -1904,7 +1905,7 @@ namespace TPulseAPI
 								"Disabled for Server Side Inventory: " + args.Player.IgnoreActionsForInventory,
 								Color.Red);
 						}
-						else if (TPulse.Config.RequireLogin && !args.Player.IsLoggedIn)
+						else if (tPulse.Config.RequireLogin && !args.Player.IsLoggedIn)
 						{
 							args.Player.SendMessage("Please /register or /login to play!", Color.Red);
 						}
@@ -1912,7 +1913,7 @@ namespace TPulseAPI
 						{
 							args.Player.SendMessage("You need to rejoin to ensure your trash can is cleared!", Color.Red);
 						}
-						else if (TPulse.Config.PvPMode == "always" && !args.TPlayer.hostile)
+						else if (tPulse.Config.PvPMode == "always" && !args.TPlayer.hostile)
 						{
 							args.Player.SendMessage("PvP is forced! Enable PvP or else you can't do anything!",
 													Color.Red);
@@ -1934,7 +1935,7 @@ namespace TPulseAPI
 				}
 
 				if (!args.Player.Group.HasPermission(Permissions.ignorenoclipdetection) &&
-					TSCheckNoclip(pos, args.TPlayer.width, args.TPlayer.height) && !TPulse.Config.IgnoreNoClip
+					TSCheckNoclip(pos, args.TPlayer.width, args.TPlayer.height) && !tPulse.Config.IgnoreNoClip
 					&& !args.TPlayer.tongued)
 				{
 					int lastTileX = (int)(args.Player.LastNetPosition.X / 16f);
@@ -2035,20 +2036,20 @@ namespace TPulseAPI
 				return true;
 			}*/
 
-            if (dmg > TPulse.Config.MaxProjDamage && !args.Player.Group.HasPermission(Permissions.ignoredamagecap))
+            if (dmg > tPulse.Config.MaxProjDamage && !args.Player.Group.HasPermission(Permissions.ignoredamagecap))
 			{
-				args.Player.Disable(String.Format("Projectile damage is higher than {0}.", TPulse.Config.MaxProjDamage));
+				args.Player.Disable(String.Format("Projectile damage is higher than {0}.", tPulse.Config.MaxProjDamage));
 				args.Player.RemoveProjectile(ident, owner);
 				return true;
 			}
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.RemoveProjectile(ident, owner);
 				return true;
 			}
 
-			if (!TPulse.Config.IgnoreProjUpdate && TPulse.CheckProjectilePermission(args.Player, index, type))
+			if (!tPulse.Config.IgnoreProjUpdate && TPulse.CheckProjectilePermission(args.Player, index, type))
 			{
 			if (type == 100)
 					{	//fix for skele prime
@@ -2062,7 +2063,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (args.Player.ProjectileThreshold >= TPulse.Config.ProjectileThreshold)
+			if (args.Player.ProjectileThreshold >= tPulse.Config.ProjectileThreshold)
 			{
 				args.Player.Disable("Reached projectile update threshold.");
 				args.Player.RemoveProjectile(ident, owner);
@@ -2077,7 +2078,7 @@ namespace TPulseAPI
 
 			if (!args.Player.Group.HasPermission(Permissions.ignoreprojectiledetection))
 			{
-				if ((type ==90) && (TPulse.Config.ProjIgnoreShrapnel))// ignore shrapnel
+				if ((type ==90) && (tPulse.Config.ProjIgnoreShrapnel))// ignore shrapnel
 					{
 						Log.Debug("Ignoring shrapnel per config..");
 					}
@@ -2112,13 +2113,13 @@ namespace TPulseAPI
 				return true;
 			}*/
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.RemoveProjectile(ident, owner);
 				return true;
 			}
 
-            if (TPulse.CheckProjectilePermission(args.Player, index, type) && type != 102 && type != 100 && !TPulse.Config.IgnoreProjKill)
+            if (TPulse.CheckProjectilePermission(args.Player, index, type) && type != 102 && type != 100 && !tPulse.Config.IgnoreProjKill)
 			{
 				args.Player.Disable("Does not have projectile permission to kill projectile.");
 				args.Player.RemoveProjectile(ident, owner);
@@ -2171,13 +2172,13 @@ namespace TPulseAPI
 			if (tileX < 0 || tileX >= Main.maxTilesX || tileY < 0 || tileY >= Main.maxTilesY)
 				return false;
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
 			}
 
-			if (args.Player.TileLiquidThreshold >= TPulse.Config.TileLiquidThreshold)
+			if (args.Player.TileLiquidThreshold >= tPulse.Config.TileLiquidThreshold)
 			{
 				args.Player.Disable("Reached TileLiquid threshold.");
 				args.Player.SendTileSquare(tileX, tileY);
@@ -2217,13 +2218,13 @@ namespace TPulseAPI
 				}
 			}
 
-			if (TPulse.CheckTilePermission(args.Player, tileX, tileY))
+			if (tPulse.CheckTilePermission(args.Player, tileX, tileY))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, tileX, tileY, 16))
+			if (tPulse.CheckRangePermission(args.Player, tileX, tileY, 16))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
@@ -2247,10 +2248,10 @@ namespace TPulseAPI
 			if (tileX < 0 || tileX >= Main.maxTilesX || tileY < 0 || tileY >= Main.maxTilesY)
 				return false;
 
-            if (args.Player.Dead && TPulse.Config.PreventDeadModification)
+            if (args.Player.Dead && tPulse.Config.PreventDeadModification)
                 return true;
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
@@ -2262,13 +2263,13 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (TPulse.CheckTilePermission(args.Player, tileX, tileY))
+			if (tPulse.CheckTilePermission(args.Player, tileX, tileY))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, tileX, tileY))
+			if (tPulse.CheckRangePermission(args.Player, tileX, tileY))
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
@@ -2288,18 +2289,18 @@ namespace TPulseAPI
 
 			if (args.Player.InitSpawn && args.TPlayer.inventory[args.TPlayer.selectedItem].type != 50)
 			{
-				if (args.TPlayer.difficulty == 1 && (TPulse.Config.KickOnMediumcoreDeath || TPulse.Config.BanOnMediumcoreDeath))
+				if (args.TPlayer.difficulty == 1 && (tPulse.Config.KickOnMediumcoreDeath || tPulse.Config.BanOnMediumcoreDeath))
 				{
 					if (args.TPlayer.selectedItem != 50)
 					{
-						if (TPulse.Config.BanOnMediumcoreDeath)
+						if (tPulse.Config.BanOnMediumcoreDeath)
 						{
-							if (!Utils.Ban(args.Player, TPulse.Config.MediumcoreBanReason))
+							if (!Utils.Ban(args.Player, tPulse.Config.MediumcoreBanReason))
 								Utils.ForceKick(args.Player, "Death results in a ban, but can't ban you.", true);
 						}
 						else
 						{
-							Utils.ForceKick(args.Player, TPulse.Config.MediumcoreKickReason, true, false);
+							Utils.ForceKick(args.Player, tPulse.Config.MediumcoreKickReason, true, false);
 						}
 						return true;
 					}
@@ -2320,17 +2321,17 @@ namespace TPulseAPI
 			if (OnChestOpen(x, y))
 				return true;
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				return true;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, x, y))
+			if (tPulse.CheckRangePermission(args.Player, x, y))
 			{
 				return true;
 			}
 
-			if (TPulse.CheckTilePermission(args.Player, x, y) && TPulse.Config.RegionProtectChests)
+			if (tPulse.CheckTilePermission(args.Player, x, y) && tPulse.Config.RegionProtectChests)
 			{
 				return true;
 			}
@@ -2354,7 +2355,7 @@ namespace TPulseAPI
 				return false;
 			}
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendData(PacketTypes.ChestItem, "", id, slot);
 				return true;
@@ -2367,12 +2368,12 @@ namespace TPulseAPI
 				return false;
 			}
 
-			if (TPulse.CheckTilePermission(args.Player, Main.chest[id].x, Main.chest[id].y) && TPulse.Config.RegionProtectChests)
+			if (tPulse.CheckTilePermission(args.Player, Main.chest[id].x, Main.chest[id].y) && tPulse.Config.RegionProtectChests)
 			{
 				return false;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, Main.chest[id].x, Main.chest[id].y))
+			if (tPulse.CheckRangePermission(args.Player, Main.chest[id].x, Main.chest[id].y))
 			{
 				return false;
 			}
@@ -2389,13 +2390,13 @@ namespace TPulseAPI
 			if (OnSignEvent(id, x, y))
 				return true;
 
-			if (TPulse.CheckTilePermission(args.Player, x, y))
+			if (tPulse.CheckTilePermission(args.Player, x, y))
 			{
 				args.Player.SendData(PacketTypes.SignNew, "", id);
 				return true;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, x, y))
+			if (tPulse.CheckRangePermission(args.Player, x, y))
 			{
 				args.Player.SendData(PacketTypes.SignNew, "", id);
 				return true;
@@ -2421,7 +2422,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (TPulse.CheckTilePermission(args.Player, x, y))
+			if (tPulse.CheckTilePermission(args.Player, x, y))
 			{
                 args.Player.SendMessage( "You do not have access to modify this area.", Color.Red);
 				args.Player.SendData(PacketTypes.UpdateNPCHome, "", id, Main.npc[id].homeTileX, Main.npc[id].homeTileY,
@@ -2448,7 +2449,7 @@ namespace TPulseAPI
 			if (OnPlayerBuff(id, type, time))
 				return true;
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendData(PacketTypes.PlayerBuff, "", id);
 				return true;
@@ -2458,7 +2459,7 @@ namespace TPulseAPI
 				args.Player.SendData(PacketTypes.PlayerBuff, "", id);
 				return true;
 			}
-			if (TPulse.CheckRangePermission(args.Player, TPulse.Players[id].TileX, TPulse.Players[id].TileY, 50))
+			if (tPulse.CheckRangePermission(args.Player, TPulse.Players[id].TileX, TPulse.Players[id].TileY, 50))
 			{
 				args.Player.SendData(PacketTypes.PlayerBuff, "", id);
 				return true;
@@ -2500,7 +2501,7 @@ namespace TPulseAPI
 				return false;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, (int) (pos.X/16f), (int) (pos.Y/16f)))
+			if (tPulse.CheckRangePermission(args.Player, (int) (pos.X/16f), (int) (pos.Y/16f)))
 			{
 				args.Player.SendData(PacketTypes.ItemDrop, "", id);
 				return true;
@@ -2513,7 +2514,7 @@ namespace TPulseAPI
 				args.Player.SendData(PacketTypes.ItemDrop, "", id);
 				return true;
 			}
-			if ((TPulse.Config.ServerSideInventory) && (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - args.Player.LoginMS < TPulse.Config.LogonDiscardThreshold))
+			if ((tPulse.Config.ServerSideInventory) && (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - args.Player.LoginMS < tPulse.Config.LogonDiscardThreshold))
 			{
 			//Player is probably trying to sneak items onto the server in their hands!!!
 				Log.ConsoleInfo(string.Format("Player {0} tried to sneak {1} onto the server!", args.Player.Name, item.name));
@@ -2521,7 +2522,7 @@ namespace TPulseAPI
 				return true;
 			
 			}
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendData(PacketTypes.ItemDrop, "", id);
 				return true;
@@ -2555,9 +2556,9 @@ namespace TPulseAPI
 			if (TPulse.Players[id] == null)
 				return true;
 
-			if (dmg > TPulse.Config.MaxDamage && !args.Player.Group.HasPermission(Permissions.ignoredamagecap) && id != args.Player.Index)
+			if (dmg > tPulse.Config.MaxDamage && !args.Player.Group.HasPermission(Permissions.ignoredamagecap) && id != args.Player.Index)
 			{
-				args.Player.Disable(String.Format("Player damage exceeded {0}.", TPulse.Config.MaxDamage));
+				args.Player.Disable(String.Format("Player damage exceeded {0}.", tPulse.Config.MaxDamage));
 				args.Player.SendData(PacketTypes.PlayerHp, "", id);
 				args.Player.SendData(PacketTypes.PlayerUpdate, "", id);
 				return true;
@@ -2570,14 +2571,14 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendData(PacketTypes.PlayerHp, "", id);
 				args.Player.SendData(PacketTypes.PlayerUpdate, "", id);
 				return true;
 			}
 
-			if (TPulse.CheckRangePermission(args.Player, TPulse.Players[id].TileX, TPulse.Players[id].TileY, 100))
+			if (tPulse.CheckRangePermission(args.Player, TPulse.Players[id].TileX, TPulse.Players[id].TileY, 100))
 			{
 				args.Player.SendData(PacketTypes.PlayerHp, "", id);
 				args.Player.SendData(PacketTypes.PlayerUpdate, "", id);
@@ -2608,14 +2609,14 @@ namespace TPulseAPI
 			if (Main.npc[id] == null)
 				return true;
 
-            if (dmg > TPulse.Config.MaxDamage && !args.Player.Group.HasPermission(Permissions.ignoredamagecap))
+            if (dmg > tPulse.Config.MaxDamage && !args.Player.Group.HasPermission(Permissions.ignoredamagecap))
 			{
-                args.Player.Disable(String.Format("NPC damage exceeded {0}.", TPulse.Config.MaxDamage ) );
+                args.Player.Disable(String.Format("NPC damage exceeded {0}.", tPulse.Config.MaxDamage ) );
 				args.Player.SendData(PacketTypes.NpcUpdate, "", id);
 				return true;
 			}
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendData(PacketTypes.NpcUpdate, "", id);
 				return true;
@@ -2628,8 +2629,8 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (TPulse.Config.RangeChecks &&
-				TPulse.CheckRangePermission(args.Player, (int) (Main.npc[id].position.X/16f), (int) (Main.npc[id].position.Y/16f),
+			if (tPulse.Config.RangeChecks &&
+				tPulse.CheckRangePermission(args.Player, (int) (Main.npc[id].position.X/16f), (int) (Main.npc[id].position.Y/16f),
 											128))
 			{
 				args.Player.SendData(PacketTypes.NpcUpdate, "", id);
@@ -2653,7 +2654,7 @@ namespace TPulseAPI
 			if (OnNPCSpecial(id, type))
 				return true;
 
-			if (type == 1 && TPulse.Config.DisableDungeonGuardian)
+			if (type == 1 && tPulse.Config.DisableDungeonGuardian)
 			{
 				args.Player.SendMessage("The Dungeon Guardian returned you to your spawn point", Color.Purple);
 				args.Player.Spawn();
@@ -2669,7 +2670,7 @@ namespace TPulseAPI
 			if (OnPlayerAnimation())
 				return true;
 
-			if (TPulse.CheckIgnores(args.Player))
+			if (tPulse.CheckIgnores(args.Player))
 			{
 				args.Player.SendData(PacketTypes.PlayerAnimation, "", args.Player.Index);
 				return true;
@@ -2700,7 +2701,7 @@ namespace TPulseAPI
 					if (!args.Player.Group.HasPermission(Permissions.usebanneditem) &&
 						TPulse.Itembans.ItemIsBanned("Invisibility Potion", args.Player))
 						buff = 0;
-					else if (TPulse.Config.DisableInvisPvP && args.TPlayer.hostile)
+					else if (tPulse.Config.DisableInvisPvP && args.TPlayer.hostile)
 						buff = 0;
 				}
 
@@ -2790,7 +2791,7 @@ namespace TPulseAPI
                     break;
             }
 
-		    Utils.SendLogs(string.Format("{0} summoned {1}", args.Player.Name, boss), Color.Red);
+		    Utils.SendLogs(string.Format("{0} summoned {1}", args.Player.Name, boss), Color.Red, tPulse);
 		    return false;
 		}
 	}

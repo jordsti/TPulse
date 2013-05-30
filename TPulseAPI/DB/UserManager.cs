@@ -28,9 +28,12 @@ namespace TPulseAPI.DB
 	public class UserManager
 	{
 		private IDbConnection database;
+        private TPulse tPulse;
 
-		public UserManager(IDbConnection db)
+		public UserManager(IDbConnection db, TPulse tPulse)
 		{
+            this.tPulse = tPulse;
+
 			database = db;
 
 			var table = new SqlTable("Users",
@@ -182,7 +185,7 @@ namespace TPulseAPI.DB
 					if (reader.Read())
 					{
 						string group = reader.Get<string>("UserGroup");
-						return Utils.GetGroup(group);
+						return Utils.GetGroup(group, tPulse);
 					}
 				}
 			}
@@ -190,7 +193,7 @@ namespace TPulseAPI.DB
 			{
 				Log.ConsoleError("GetGroupForIP SQL returned an error: " + ex);
 			}
-			return Utils.GetGroup(TPulse.Config.DefaultGuestGroupName);
+            return Utils.GetGroup(tPulse.Config.DefaultGuestGroupName, tPulse);
 		}
 
 		public Group GetGroupForIPExpensive(string ip)
@@ -203,7 +206,7 @@ namespace TPulseAPI.DB
 					{
 						if (Utils.GetIPv4Address(reader.Get<string>("IP")) == ip)
 						{
-							return Utils.GetGroup(reader.Get<string>("UserGroup"));
+                            return Utils.GetGroup(reader.Get<string>("UserGroup"), tPulse);
 						}
 					}
 				}
@@ -212,7 +215,7 @@ namespace TPulseAPI.DB
 			{
 				Log.ConsoleError("GetGroupForIP SQL returned an error: " + ex);
 			}
-			return Utils.GetGroup(TPulse.Config.DefaultGuestGroupName);
+            return Utils.GetGroup(tPulse.Config.DefaultGuestGroupName, tPulse);
 		}
 
 

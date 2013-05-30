@@ -30,8 +30,11 @@ namespace TPulseAPI.DB
 		private IDbConnection database;
 		public readonly List<Group> groups = new List<Group>();
 
-		public GroupManager(IDbConnection db)
+        private TPulse tPulse;
+
+		public GroupManager(IDbConnection db, TPulse tPulse)
 		{
+            this.tPulse = tPulse;
 			database = db;
 
 			var table = new SqlTable("GroupList",
@@ -126,7 +129,7 @@ namespace TPulseAPI.DB
 				group.Parent = parent;
 			}
 
-			string query = (TPulse.Config.StorageType.ToLower() == "sqlite")
+			string query = (tPulse.Config.StorageType.ToLower() == "sqlite")
 							? "INSERT OR IGNORE INTO GroupList (GroupName, Parent, Commands, ChatColor) VALUES (@0, @1, @2, @3);"
 							: "INSERT IGNORE INTO GroupList SET GroupName=@0, Parent=@1, Commands=@2, ChatColor=@3";
 			if (database.Query(query, name, parentname, permissions, chatcolor) == 1)
@@ -184,10 +187,10 @@ namespace TPulseAPI.DB
 			if (database.Query(query, parentname, newgroup.Permissions, string.Format("{0},{1},{2}", newgroup.R, newgroup.G, newgroup.B), name) != 1)
 				throw new GroupManagerException("Failed to update group '" + name + "'");
 
-			Group group = Utils.GetGroup(name);
+            Group group = Utils.GetGroup(name, tPulse);
 			group.ChatColor = chatcolor;
 			group.Permissions = permissions;
-			group.Parent = Utils.GetGroup(parentname);
+            group.Parent = Utils.GetGroup(parentname, tPulse);
 		}
 
 #if COMPAT_SIGS
@@ -208,7 +211,7 @@ namespace TPulseAPI.DB
 
 			if (database.Query("DELETE FROM GroupList WHERE GroupName=@0", name) == 1)
 			{
-				groups.Remove(Utils.GetGroup(name));
+                groups.Remove(Utils.GetGroup(name, tPulse));
 				return "Group " + name + " has been deleted successfully.";
 			}
 			else if (exceptions)
@@ -222,7 +225,7 @@ namespace TPulseAPI.DB
 			if (!GroupExists(name))
 				return "Error: Group doesn't exist.";
 
-			var group = Utils.GetGroup(name);
+            var group = Utils.GetGroup(name, tPulse);
 			var oldperms = group.Permissions; // Store old permissions in case of error
 			permissions.ForEach(p => group.AddPermission(p));
  
@@ -239,7 +242,7 @@ namespace TPulseAPI.DB
 			if (!GroupExists(name))
 				return "Error: Group doesn't exist.";
 
-			var group = Utils.GetGroup(name);
+            var group = Utils.GetGroup(name, tPulse);
 			var oldperms = group.Permissions; // Store old permissions in case of error
 			permissions.ForEach(p => group.RemovePermission(p));
 
@@ -255,8 +258,11 @@ namespace TPulseAPI.DB
 		{
 			// Create a temporary list so if there is an error it doesn't override the currently loaded groups with broken groups.
 			var tempgroups = new List<Group>();
-			tempgroups.Add(new SuperAdminGroup());
-
+			
+            tempgroups.Add(new SuperAdminGroup(tPulse.Config.SuperAdminChatRGB, 
+                    tPulse.Config.SuperAdminChatPrefix, 
+                    tPulse.Config.SuperAdminChatSuffix));
+                
 			if (groups == null || groups.Count < 2)
 			{
 				groups.Clear();

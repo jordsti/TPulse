@@ -99,15 +99,11 @@ namespace TPulseAPI
                 _onPlayerLeave.Invoke(new PlayerConnectionEventArgs(player, PlayerConnectionAction.Leave));
         }
 
-        #region NewCode
-
         public Commands Commands { get; set; }
 
-        #endregion
-
         private const string LogFormatDefault = "yyyy-MM-dd_HH-mm-ss";
-		private static string LogFormat = LogFormatDefault;
-		private static bool LogClear = false;
+		private string LogFormat = LogFormatDefault;
+		private bool LogClear = false;
 		public static readonly Version VersionNum = Assembly.GetExecutingAssembly().GetName().Version;
 		public static readonly string VersionCodename = "Get forked!";
 
@@ -123,13 +119,13 @@ namespace TPulseAPI
 		public static ItemManager Itembans;
 		public static RememberedPosManager RememberedPos;
 		public static InventoryManager InventoryDB;
-		public static ConfigFile Config { get; set; }
-		public static IDbConnection DB;
-		public static bool OverridePort;
-		public static PacketBufferer PacketBuffer;
-		public static GeoIPCountry Geo;
-		public static SecureRest RestApi;
-		public static RestManager RestManager;
+		public ConfigFile Config { get; set; }
+        public IDbConnection DBConnection { get; protected set; }
+		public bool OverridePort;
+        public PacketBufferer PacketBuffer { get; protected set; }
+        public GeoIPCountry Geo { get; protected set; }
+		public SecureRest RestApi;
+		public RestManager RestManager;
 		//public static Utils Utils = Utils.Instance;
 		//public static StatTracker StatTracker = new StatTracker();
 		/// <summary>
@@ -251,22 +247,22 @@ namespace TPulseAPI
                 File.WriteAllText(TPulsePaths.GetPath(TPulsePath.ProcessFile), Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));
 
 				ConfigFile.ConfigRead += OnConfigRead;
-				FileTools.SetupConfig();
+				FileTools.SetupConfig(this);
 
 				HandleCommandLinePostConfigLoad(Environment.GetCommandLineArgs());
 
 				if (Config.StorageType.ToLower() == "sqlite")
 				{
 					string sql = TPulsePaths.GetPath(TPulsePath.SqliteFile);
-					DB = new SqliteConnection(string.Format("uri=file://{0},Version=3", sql));
+					DBConnection = new SqliteConnection(string.Format("uri=file://{0},Version=3", sql));
 				}
 				else if (Config.StorageType.ToLower() == "mysql")
 				{
 					try
 					{
 						var hostport = Config.MySqlHost.Split(':');
-						DB = new MySqlConnection();
-						DB.ConnectionString =
+						DBConnection = new MySqlConnection();
+						DBConnection.ConnectionString =
 							String.Format("Server={0}; Port={1}; Database={2}; Uid={3}; Pwd={4};",
 										  hostport[0],
 										  hostport.Length > 1 ? hostport[1] : "3306",
@@ -289,14 +285,14 @@ namespace TPulseAPI
 				Backups = new BackupManager(TPulsePaths.GetPath(TPulsePath.BackupPath));
 				Backups.KeepFor = Config.BackupKeepFor;
 				Backups.Interval = Config.BackupInterval;
-				Bans = new BanManager(DB);
-				Warps = new WarpManager(DB);
-                Regions = new RegionManager(DB);
-				Users = new UserManager(DB);
-				Groups = new GroupManager(DB);
-				Itembans = new ItemManager(DB);
-				RememberedPos = new RememberedPosManager(DB);
-				InventoryDB = new InventoryManager(DB);
+				Bans = new BanManager(DBConnection);
+				Warps = new WarpManager(DBConnection);
+                Regions = new RegionManager(DBConnection);
+				Users = new UserManager(DBConnection, this);
+				Groups = new GroupManager(DBConnection, this);
+				Itembans = new ItemManager(DBConnection);
+				RememberedPos = new RememberedPosManager(DBConnection);
+				InventoryDB = new InventoryManager(DBConnection);
 				RestApi = new SecureRest(Netplay.serverListenIP, Config.RestApiPort);
 				RestApi.Verify += RestApi_Verify;
 				RestApi.Port = Config.RestApiPort;
@@ -390,7 +386,7 @@ namespace TPulseAPI
 						{Error = "Invalid username/password combination provided. Please re-submit your query with a correct pair."};
 			}
 
-			if (!Utils.GetGroup(userAccount.Group).HasPermission(Permissions.restapi) && userAccount.Group != "superadmin")
+			if (!Utils.GetGroup(userAccount.Group, this).HasPermission(Permissions.restapi) && userAccount.Group != "superadmin")
 			{
 				return new RestObject("403")
 						{
@@ -564,7 +560,7 @@ namespace TPulseAPI
 			}
 		}
 
-		public static void HandleCommandLinePostConfigLoad(string[] parms)
+		public void HandleCommandLinePostConfigLoad(string[] parms)
 		{
 			for (int i = 0; i < parms.Length; i++)
 			{
@@ -869,7 +865,7 @@ namespace TPulseAPI
 				return;
 			}
 
-			if (!FileTools.OnWhitelist(player.IP))
+			if (!FileTools.OnWhitelist(player.IP, this))
 			{
 				Utils.ForceKick(player, Config.WhitelistKickReason, true, false);
 				handler.Handled = true;
@@ -988,13 +984,13 @@ namespace TPulseAPI
 					Log.Error(ex.ToString());
 				}
 			}
-			else if (!tsplr.mute && !TPulse.Config.EnableChatAboveHeads)
+			else if (!tsplr.mute && !Config.EnableChatAboveHeads)
 			{
 				Utils.Broadcast(
 					String.Format(Config.ChatFormat, tsplr.Group.Name, tsplr.Group.Prefix, tsplr.Name, tsplr.Group.Suffix, text),
 					tsplr.Group.R, tsplr.Group.G, tsplr.Group.B);
 				e.Handled = true;
-			} else if (!tsplr.mute && TPulse.Config.EnableChatAboveHeads)
+			} else if (!tsplr.mute && Config.EnableChatAboveHeads)
 			{
 			    Utils.Broadcast(ply, String.Format(Config.ChatAboveHeadsFormat, tsplr.Group.Name, tsplr.Group.Prefix, tsplr.Name, tsplr.Group.Suffix, text), tsplr.Group.R, tsplr.Group.G, tsplr.Group.B);
 			    e.Handled = true;
@@ -1212,7 +1208,7 @@ namespace TPulseAPI
 		/// <param name="client">socket to send to</param>
 		/// <param name="bytes">bytes to send</param>
 		/// <returns>False on exception</returns>
-		public static bool SendBytes(ServerSock client, byte[] bytes)
+		public bool SendBytes(ServerSock client, byte[] bytes)
 		{
 			if (PacketBuffer != null)
 			{
@@ -1326,7 +1322,7 @@ namespace TPulseAPI
 		 * Useful stuff:
 		 * */
 
-		public static void StartInvasion()
+		public void StartInvasion()
 		{
 			Main.invasionType = 1;
 			if (Config.InfiniteInvasion)
@@ -1418,7 +1414,7 @@ namespace TPulseAPI
 			return false;
 		}
 
-		public static bool CheckRangePermission(TPPlayer player, int x, int y, int range = 32)
+		public bool CheckRangePermission(TPPlayer player, int x, int y, int range = 32)
 		{
 			if (Config.RangeChecks && ((Math.Abs(player.TileX - x) > range) || (Math.Abs(player.TileY - y) > range)))
 			{
@@ -1427,11 +1423,11 @@ namespace TPulseAPI
 			return false;
 		}
 
-        public static bool CheckTilePermission( TPPlayer player, int tileX, int tileY, byte tileType, byte actionType )
+        public bool CheckTilePermission( TPPlayer player, int tileX, int tileY, byte tileType, byte actionType )
         {
             if (!player.Group.HasPermission(Permissions.canbuild))
             {
-				if (TPulse.Config.AllowIce && actionType != 1)
+				if (Config.AllowIce && actionType != 1)
 				{
 
 					foreach (Point p in player.IceTiles)
@@ -1451,7 +1447,7 @@ namespace TPulseAPI
 					return true;
 				}
 
-				if (TPulse.Config.AllowIce && actionType == 1 && tileType == 127)
+				if (Config.AllowIce && actionType == 1 && tileType == 127)
 				{
 					player.IceTiles.Add(new Point(tileX, tileY));
 					return false;
@@ -1508,7 +1504,7 @@ namespace TPulseAPI
             return false;
         }
 
-		public static bool CheckTilePermission(TPPlayer player, int tileX, int tileY)
+		public bool CheckTilePermission(TPPlayer player, int tileX, int tileY)
 		{
 			if (!player.Group.HasPermission(Permissions.canbuild))
 			{
@@ -1564,7 +1560,7 @@ namespace TPulseAPI
 			}
 			return false;
 		}
-		public static bool CheckSpawn(int x, int y)
+		public bool CheckSpawn(int x, int y)
 		{
 			Vector2 tile = new Vector2(x, y);
 			Vector2 spawn = new Vector2(Main.spawnTileX, Main.spawnTileY);
@@ -1729,7 +1725,7 @@ namespace TPulseAPI
 			return check;
 		}
 
-		public static bool CheckIgnores(TPPlayer player)
+		public bool CheckIgnores(TPPlayer player)
 		{
 			bool check = false;
 			if (Config.PvPMode == "always" && !player.TPlayer.hostile)

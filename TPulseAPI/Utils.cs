@@ -218,14 +218,15 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="log">Message to send</param>
 		/// <param name="color">Color of the message</param>
-		public static void SendLogs(string log, Color color)
+        [Obsolete("To be move")]
+		public static void SendLogs(string log, Color color, TPulse tPulse)
 		{
 			Log.Info(log);
 			TPPlayer.Server.SendMessage(log, color);
 			foreach (TPPlayer player in TPulse.Players)
 			{
 				if (player != null && player.Active && player.Group.HasPermission(Permissions.logs) && player.DisplayLogs &&
-				    TPulse.Config.DisableSpewLogs == false)
+				    tPulse.Config.DisableSpewLogs == false)
 					player.SendMessage(log, color);
 			}
 		}
@@ -715,7 +716,8 @@ namespace TPulseAPI
 		/// Returns a Group from the name of the group
 		/// </summary>
 		/// <param name="ply">string groupName</param>
-		public static Group GetGroup(string groupName)
+        [Obsolete("To be move")]
+		public static Group GetGroup(string groupName, TPulse tPulse)
 		{
 			//first attempt on cached groups
 			for (int i = 0; i < TPulse.Groups.groups.Count; i++)
@@ -725,7 +727,7 @@ namespace TPulseAPI
 					return TPulse.Groups.groups[i];
 				}
 			}
-			return new Group(TPulse.Config.DefaultGuestGroupName);
+			return new Group(tPulse.Config.DefaultGuestGroupName);
 		}
 
 		/// <summary>

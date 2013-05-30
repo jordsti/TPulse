@@ -26,6 +26,7 @@ using System.Text;
 using System.Threading;
 using Terraria;
 using TPulseAPI.DB;
+using TPulseAPI.Events;
 using System.Reflection;
 
 namespace TPulseAPI
@@ -194,7 +195,7 @@ namespace TPulseAPI
             {
                 if (!cmd.CanRun(player))
                 {
-                    Utils.SendLogs(string.Format("{0} tried to execute /{1}.", player.Name, cmdText), Color.Red);
+                    Utils.SendLogs(string.Format("{0} tried to execute /{1}.", player.Name, cmdText), Color.Red, tPulse);
                     player.SendErrorMessage("You do not have access to that command.");
                 }
                 else if (!cmd.AllowServer && !player.RealPlayer)
@@ -204,7 +205,7 @@ namespace TPulseAPI
                 else
                 {
                     if (cmd.DoLog)
-                        Utils.SendLogs(string.Format("{0} executed: /{1}.", player.Name, cmdText), Color.Red);
+                        Utils.SendLogs(string.Format("{0} executed: /{1}.", player.Name, cmdText), Color.Red, tPulse);
                     cmd.Run(cmdText, player, args);
                 }
             }
@@ -307,10 +308,10 @@ namespace TPulseAPI
 
 		public void AttemptLogin(CommandArgs args)
 		{
-			if (args.Player.LoginAttempts > TPulse.Config.MaximumLoginAttempts && (TPulse.Config.MaximumLoginAttempts != -1))
+			if (args.Player.LoginAttempts > tPulse.Config.MaximumLoginAttempts && (tPulse.Config.MaximumLoginAttempts != -1))
 			{
 				Log.Warn(String.Format("{0} ({1}) had {2} or more invalid login attempts and was kicked automatically.",
-					args.Player.IP, args.Player.Name, TPulse.Config.MaximumLoginAttempts));
+					args.Player.IP, args.Player.Name, tPulse.Config.MaximumLoginAttempts));
 				Utils.Kick(args.Player, "Too many invalid login attempts.");
 				return;
 			}
@@ -323,7 +324,7 @@ namespace TPulseAPI
 				user = TPulse.Users.GetUserByName(args.Player.Name);
 				encrPass = Utils.HashPassword(args.Parameters[0]);
 			}
-			else if (args.Parameters.Count == 2 && TPulse.Config.AllowLoginAnyUsername)
+			else if (args.Parameters.Count == 2 && tPulse.Config.AllowLoginAnyUsername)
 			{
 				user = TPulse.Users.GetUserByName(args.Parameters[0]);
 				encrPass = Utils.HashPassword(args.Parameters[1]);
@@ -335,7 +336,7 @@ namespace TPulseAPI
 			}
 			else
 			{
-				args.Player.SendErrorMessage(String.Format("Syntax: /login{0} <password>", TPulse.Config.AllowLoginAnyUsername ? " " : " [username]"));
+				args.Player.SendErrorMessage(String.Format("Syntax: /login{0} <password>", tPulse.Config.AllowLoginAnyUsername ? " " : " [username]"));
 				args.Player.SendErrorMessage("If you forgot your password, there is no way to recover it.");
 				return;
 			}
@@ -349,9 +350,9 @@ namespace TPulseAPI
 				{
 					args.Player.PlayerData = TPulse.InventoryDB.GetPlayerData(args.Player, TPulse.Users.GetUserID(user.Name));
 
-					var group = Utils.GetGroup(user.Group);
+					var group = Utils.GetGroup(user.Group, tPulse);
 
-					if (TPulse.Config.ServerSideInventory)
+					if (tPulse.Config.ServerSideInventory)
 					{
 						if (group.HasPermission(Permissions.bypassinventorychecks))
 						{
@@ -385,7 +386,7 @@ namespace TPulseAPI
 					args.Player.SendSuccessMessage("Authenticated as " + user.Name + " successfully.");
 
 					Log.ConsoleInfo(args.Player.Name + " authenticated successfully as user: " + user.Name + ".");
-					if ((args.Player.LoginHarassed) && (TPulse.Config.RememberLeavePos))
+					if ((args.Player.LoginHarassed) && (tPulse.Config.RememberLeavePos))
 					{
 						if (TPulse.RememberedPos.GetLeavePos(args.Player.Name, args.Player.IP) != Vector2.Zero)
 						{
@@ -457,7 +458,7 @@ namespace TPulseAPI
 					user.Name = args.Player.Name;
 					user.Password = args.Parameters[0];
 				}
-				else if (args.Parameters.Count == 2 && TPulse.Config.AllowRegisterAnyUsername)
+				else if (args.Parameters.Count == 2 && tPulse.Config.AllowRegisterAnyUsername)
 				{
 					user.Name = args.Parameters[0];
 					user.Password = args.Parameters[1];
@@ -468,7 +469,7 @@ namespace TPulseAPI
 					return;
 				}
 
-				user.Group = TPulse.Config.DefaultRegistrationGroupName; // FIXME -- we should get this from the DB. --Why?
+				user.Group = tPulse.Config.DefaultRegistrationGroupName; // FIXME -- we should get this from the DB. --Why?
 
 				if (TPulse.Users.GetUserByName(user.Name) == null) // Cheap way of checking for existance of a user
 				{
@@ -1064,7 +1065,7 @@ namespace TPulseAPI
 
 		public void SaveSSI(CommandArgs args )
 		{
-			if (TPulse.Config.ServerSideInventory)
+			if (tPulse.Config.ServerSideInventory)
 			{
 				args.Player.SendSuccessMessage("SSI has been saved.");
 				foreach (TPPlayer player in TPulse.Players)
@@ -1094,7 +1095,7 @@ namespace TPulseAPI
 			{
 				args.Player.SendErrorMessage( players.Count + " players matched " + args.Parameters[0] + "!");
 			}
-			else if (TPulse.Config.ServerSideInventory)
+			else if (tPulse.Config.ServerSideInventory)
 			{
 				if( players[0] != null && players[0].IsLoggedIn && !players[0].IgnoreActionsForClearingTrashCan)
 				{
@@ -1111,18 +1112,18 @@ namespace TPulseAPI
                 args.Player.SendErrorMessage("Usage: /forcexmas [true/false]");
                 args.Player.SendInfoMessage(
                     String.Format("The server is currently {0} force Christmas mode.",
-                                (TPulse.Config.ForceXmas ? "in" : "not in")));
+                                (tPulse.Config.ForceXmas ? "in" : "not in")));
                 return;
             }
 
             if(args.Parameters[0].ToLower() == "true")
             {
-                TPulse.Config.ForceXmas = true;
+                tPulse.Config.ForceXmas = true;
                 Main.checkXMas();
             }
             else if(args.Parameters[0].ToLower() == "false")
             {
-                TPulse.Config.ForceXmas = false;
+                tPulse.Config.ForceXmas = false;
                 Main.checkXMas();
             }
             else
@@ -1133,7 +1134,7 @@ namespace TPulseAPI
 
             args.Player.SendInfoMessage(
                     String.Format("The server is currently {0} force Christmas mode.",
-                                (TPulse.Config.ForceXmas ? "in" : "not in")));
+                                (tPulse.Config.ForceXmas ? "in" : "not in")));
         }
 
 		#endregion Player Management Commands
@@ -1156,7 +1157,7 @@ namespace TPulseAPI
 		private void Off(CommandArgs args)
 		{
 
-			if (TPulse.Config.ServerSideInventory)
+			if (tPulse.Config.ServerSideInventory)
 			{
 				foreach (TPPlayer player in TPulse.Players)
 				{
@@ -1179,7 +1180,7 @@ namespace TPulseAPI
 			}
 			else
 			{
-				if (TPulse.Config.ServerSideInventory)
+				if (tPulse.Config.ServerSideInventory)
 				{
 					foreach (TPPlayer player in TPulse.Players)
 					{
@@ -1254,7 +1255,7 @@ namespace TPulseAPI
 			if (Main.invasionSize <= 0)
 			{
 				TPPlayer.All.SendInfoMessage(string.Format("{0} has started a goblin army invasion.", args.Player.Name));
-				TPulse.StartInvasion();
+				tPulse.StartInvasion();
 			}
 			else
 			{
@@ -1265,7 +1266,7 @@ namespace TPulseAPI
 
         private void StartHardMode(CommandArgs args)
         {
-            if (!TPulse.Config.DisableHardmode)
+            if (!tPulse.Config.DisableHardmode)
                 WorldGen.StartHardmode();
             else
                 args.Player.SendMessage("Hardmode is disabled via config.", Color.Red);
@@ -1966,7 +1967,7 @@ namespace TPulseAPI
 						if( TPulse.Groups.GroupExists( groupname ) )
 						{
 							string ret = String.Format("Permissions for {0}: ", groupname);
-							foreach (string p in Utils.GetGroup( groupname ).permissions)
+							foreach (string p in Utils.GetGroup( groupname, tPulse ).permissions)
 							{
 								if (ret.Length > 50)
 								{
@@ -2187,8 +2188,8 @@ namespace TPulseAPI
 
 		private void Reload(CommandArgs args)
 		{
-			FileTools.SetupConfig();
-			TPulse.HandleCommandLinePostConfigLoad(Environment.GetCommandLineArgs());
+			FileTools.SetupConfig(tPulse);
+			tPulse.HandleCommandLinePostConfigLoad(Environment.GetCommandLineArgs());
 			TPulse.Groups.LoadPermisions();
 			//todo: Create an event for reloads to propegate to plugins.
             TPulse.Regions.ReloadAllRegions();
@@ -2204,7 +2205,7 @@ namespace TPulseAPI
 				return;
 			}
 			string passwd = args.Parameters[0];
-			TPulse.Config.ServerPassword = passwd;
+			tPulse.Config.ServerPassword = passwd;
 			args.Player.SendSuccessMessage(string.Format("Server password has been changed to: {0}.", passwd));
 		}
 
@@ -2241,12 +2242,12 @@ namespace TPulseAPI
 
 			if (args.Parameters[0] == "show")
 			{
-				args.Player.SendInfoMessage("Current maximum spawns is " + TPulse.Config.DefaultMaximumSpawns + ".");
+				args.Player.SendInfoMessage("Current maximum spawns is " + tPulse.Config.DefaultMaximumSpawns + ".");
 				return;
 			}
 			
 			if(args.Parameters[0]=="default"){
-				TPulse.Config.DefaultMaximumSpawns = 5;
+				tPulse.Config.DefaultMaximumSpawns = 5;
 				NPC.defaultMaxSpawns = 5;
 				TPPlayer.All.SendInfoMessage(string.Format("{0} changed the maximum spawns to 5.", args.Player.Name));
 				return;
@@ -2255,7 +2256,7 @@ namespace TPulseAPI
 			int amount = Convert.ToInt32(args.Parameters[0]);
 			int.TryParse(args.Parameters[0], out amount);
 			NPC.defaultMaxSpawns = amount;
-			TPulse.Config.DefaultMaximumSpawns = amount;
+			tPulse.Config.DefaultMaximumSpawns = amount;
 			TPPlayer.All.SendInfoMessage(string.Format("{0} changed the maximum spawns to {1}.", args.Player.Name, amount));
 		}
 
@@ -2271,13 +2272,13 @@ namespace TPulseAPI
 
 			if (args.Parameters[0] == "show")
 			{
-				args.Player.SendInfoMessage("Current spawn rate is " + TPulse.Config.DefaultSpawnRate + ".");
+				args.Player.SendInfoMessage("Current spawn rate is " + tPulse.Config.DefaultSpawnRate + ".");
 				return;
 			}
 
 			if (args.Parameters[0] == "default")
 			{
-				TPulse.Config.DefaultSpawnRate = 600;
+				tPulse.Config.DefaultSpawnRate = 600;
 				NPC.defaultSpawnRate = 600;
 				TPPlayer.All.SendInfoMessage(string.Format("{0} changed the spawn rate to 600.", args.Player.Name));
 				return;
@@ -2297,7 +2298,7 @@ namespace TPulseAPI
 			}
 
 			NPC.defaultSpawnRate = amount;
-			TPulse.Config.DefaultSpawnRate = amount;
+			tPulse.Config.DefaultSpawnRate = amount;
 			TPPlayer.All.SendInfoMessage(string.Format("{0} changed the spawn rate to {1}.", args.Player.Name, amount));
 		}
 
@@ -2844,14 +2845,14 @@ namespace TPulseAPI
 
         private void ToggleAntiBuild(CommandArgs args)
 		{
-			TPulse.Config.DisableBuild = (TPulse.Config.DisableBuild == false);
-			TPPlayer.All.SendSuccessMessage(string.Format("Anti-build is now {0}.", (TPulse.Config.DisableBuild ? "on" : "off")));
+			tPulse.Config.DisableBuild = (tPulse.Config.DisableBuild == false);
+			TPPlayer.All.SendSuccessMessage(string.Format("Anti-build is now {0}.", (tPulse.Config.DisableBuild ? "on" : "off")));
 		}
 
 		private void ProtectSpawn(CommandArgs args)
 		{
-			TPulse.Config.SpawnProtection = (TPulse.Config.SpawnProtection == false);
-			TPPlayer.All.SendSuccessMessage(string.Format("Spawn is now {0}.", (TPulse.Config.SpawnProtection ? "protected" : "open")));
+			tPulse.Config.SpawnProtection = (tPulse.Config.SpawnProtection == false);
+			TPPlayer.All.SendSuccessMessage(string.Format("Spawn is now {0}.", (tPulse.Config.SpawnProtection ? "protected" : "open")));
 		}
 
 		#endregion World Protection Commands
@@ -2901,7 +2902,7 @@ namespace TPulseAPI
 		private void GetVersion(CommandArgs args)
 		{
 			args.Player.SendInfoMessage(string.Format("TPulse: {0} ({1}): ({2}/{3})", TPulse.VersionNum, TPulse.VersionCodename,
-												  Utils.ActivePlayers(), TPulse.Config.MaxSlots));
+												  Utils.ActivePlayers(), tPulse.Config.MaxSlots));
 		}
 
 		private void ListConnectedPlayers(CommandArgs args)
@@ -2938,7 +2939,7 @@ namespace TPulseAPI
 
 			//Display the current page and the number of pages.
 			args.Player.SendSuccessMessage(string.Format("Players: {0}/{1}",
-												  Utils.ActivePlayers(), TPulse.Config.MaxSlots));
+												  Utils.ActivePlayers(), tPulse.Config.MaxSlots));
 			args.Player.SendSuccessMessage(string.Format("Current players page {0}/{1}:", page + 1, pagecount + 1));
 
 			//Add up to pagelimit names to a list
@@ -2975,7 +2976,7 @@ namespace TPulseAPI
 				try
 				{
 					TPulse.Users.AddUser(new User(args.Player.IP, "", "", "superadmin"));
-					args.Player.Group = Utils.GetGroup("superadmin");
+					args.Player.Group = Utils.GetGroup("superadmin", tPulse);
 					args.Player.SendInfoMessage("This IP address is now superadmin. Please perform the following command:");
 					args.Player.SendInfoMessage("/user add <username>:<password> superadmin");
 					args.Player.SendInfoMessage("Creates: <username> with the password <password> as part of the superadmin group.");

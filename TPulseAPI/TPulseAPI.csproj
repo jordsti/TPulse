@@ -91,7 +91,7 @@
     <Compile Include="DB\RegionManager.cs" />
     <Compile Include="Events\PlayerConnectionEvent.cs" />
     <Compile Include="Events\WorldSavedEvent.cs" />
-    <Compile Include="PlayerLoginEvent.cs" />
+    <Compile Include="Events\PlayerLoginEvent.cs" />
     <Compile Include="PlugInHandler.cs" />
     <Compile Include="SaveManager.cs" />
     <Compile Include="DB\BanManager.cs" />
@@ -138,7 +138,9 @@
     <Compile Include="Rest\RestVerbs.cs" />
     <Compile Include="Rest\SecureRest.cs" />
     <Compile Include="StatTracker.cs" />
+    <Compile Include="TPServerPlayercs.cs" />
     <Compile Include="TPulsePath.cs" />
+    <Compile Include="TSRestPlayer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="TPulse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -196,7 +198,7 @@
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_IncrementBeforeBuild="False" BuildVersion_StartDate="2011/6/17" BuildVersion_BuildVersioningStyle="None.None.None.MonthAndDayStamp" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildAction="Both" BuildVersion_BuildVersioningStyle="None.None.None.MonthAndDayStamp" BuildVersion_StartDate="2011/6/17" BuildVersion_IncrementBeforeBuild="False" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

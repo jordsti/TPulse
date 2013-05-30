@@ -95,7 +95,7 @@ namespace TPulseAPI
 			if (string.IsNullOrWhiteSpace(parameters["cmd"]))
 				return RestMissingParam("cmd");
 
-			TSRestPlayer tr = new TSRestPlayer();
+			TSRestPlayer tr = new TSRestPlayer(TPulse.Config);
 			TPulse.Commands.HandleCommand(tr, parameters["cmd"]);
 			return RestResponse(string.Join("\n", tr.GetCommandOutput()));
 		}

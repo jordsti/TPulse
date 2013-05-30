@@ -79,7 +79,8 @@ namespace TPulseAPI
 		/// <summary>
 		/// Sets up the configuration file for all variables, and creates any missing files.
 		/// </summary>
-		public static void SetupConfig()
+        [Obsolete("Should be move into TPulse")]
+        public static void SetupConfig(TPulse tPulse)
 		{
 			if (!Directory.Exists(TPulse.SavePath))
 			{
@@ -92,10 +93,10 @@ namespace TPulseAPI
 			CreateIfNot(WhitelistPath);
 			if (File.Exists(ConfigPath))
 			{
-				TPulse.Config = ConfigFile.Read(ConfigPath);
+				tPulse.Config = ConfigFile.Read(ConfigPath);
 				// Add all the missing config properties in the json file
 			}
-			TPulse.Config.Write(ConfigPath);
+			tPulse.Config.Write(ConfigPath);
 
 		}
 
@@ -104,9 +105,10 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="ip">string ip of the user</param>
 		/// <returns>true/false</returns>
-		public static bool OnWhitelist(string ip)
+        [Obsolete("Should be move into TPulse")]
+		public static bool OnWhitelist(string ip, TPulse tPulse)
 		{
-			if (!TPulse.Config.EnableWhitelist)
+			if (!tPulse.Config.EnableWhitelist)
 			{
 				return true;
 			}
