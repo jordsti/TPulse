@@ -306,7 +306,7 @@ namespace TPulseAPI
             try
             {
                 PlayerData.CopyInventory(this);
-                TPulse.InventoryDB.InsertPlayerData(this);
+                tPulse.InventoryDB.InsertPlayerData(this);
                 return true;
             } catch (Exception e)
             {
@@ -560,7 +560,7 @@ namespace TPulseAPI
 
         public bool GiveItemCheck(int type, string name, int width, int height, int stack, int prefix = 0)
         {
-            if (TPulse.Itembans.ItemIsBanned(name) && tPulse.Config.PreventBannedItemSpawn)
+            if (tPulse.Itembans.ItemIsBanned(name) && tPulse.Config.PreventBannedItemSpawn)
                 return false;
 
             GiveItem(type,name,width,height,stack,prefix);

@@ -106,7 +106,9 @@ namespace TPulseAPI
             return players;
         }
 
-        /// <summary>
+        #region To be Removed
+
+        /*/// <summary>
         /// Used for some places where a list of players might be used.
         /// </summary>
         /// <returns>String of players and their id seperated by commas.</returns>
@@ -128,9 +130,11 @@ namespace TPulseAPI
                 }
             }
             return sb.ToString();
-        }
+        }*/
 
-		/// <summary>
+        #endregion
+
+        /// <summary>
 		/// Finds a player and gets IP as string
 		/// </summary>
 		/// <param name="playername">string playername</param>
@@ -712,7 +716,8 @@ namespace TPulseAPI
 			}
 		}
 
-		/// <summary>
+        #region to be removed
+        /*/// <summary>
 		/// Returns a Group from the name of the group
 		/// </summary>
 		/// <param name="ply">string groupName</param>
@@ -728,9 +733,9 @@ namespace TPulseAPI
 				}
 			}
 			return new Group(tPulse.Config.DefaultGuestGroupName);
-		}
-
-		/// <summary>
+		}*/
+        #endregion
+        /// <summary>
 		/// Returns an IPv4 address from a DNS query
 		/// </summary>
 		/// <param name="hostname">string ip</param>

@@ -316,17 +316,17 @@ namespace TPulseAPI
 				return;
 			}
 
-			User user = TPulse.Users.GetUserByName(args.Player.Name);
+			User user = tPulse.Users.GetUserByName(args.Player.Name);
 			string encrPass = "";
 
 			if (args.Parameters.Count == 1)
 			{
-				user = TPulse.Users.GetUserByName(args.Player.Name);
+				user = tPulse.Users.GetUserByName(args.Player.Name);
 				encrPass = Utils.HashPassword(args.Parameters[0]);
 			}
 			else if (args.Parameters.Count == 2 && tPulse.Config.AllowLoginAnyUsername)
 			{
-				user = TPulse.Users.GetUserByName(args.Parameters[0]);
+				user = tPulse.Users.GetUserByName(args.Parameters[0]);
 				encrPass = Utils.HashPassword(args.Parameters[1]);
 				if (String.IsNullOrEmpty(args.Parameters[0]))
 				{
@@ -348,9 +348,9 @@ namespace TPulseAPI
 				}
 				else if (user.Password.ToUpper() == encrPass.ToUpper())
 				{
-					args.Player.PlayerData = TPulse.InventoryDB.GetPlayerData(args.Player, TPulse.Users.GetUserID(user.Name));
+					args.Player.PlayerData = tPulse.InventoryDB.GetPlayerData(args.Player, tPulse.Users.GetUserID(user.Name));
 
-					var group = Utils.GetGroup(user.Group, tPulse);
+					var group = tPulse.GetGroup(user.Group);
 
 					if (tPulse.Config.ServerSideInventory)
 					{
@@ -374,23 +374,23 @@ namespace TPulseAPI
 
 					args.Player.Group = group;
 					args.Player.UserAccountName = user.Name;
-					args.Player.UserID = TPulse.Users.GetUserID(args.Player.UserAccountName);
+					args.Player.UserID = tPulse.Users.GetUserID(args.Player.UserAccountName);
 					args.Player.IsLoggedIn = true;
 					args.Player.IgnoreActionsForInventory = "none";
 
 					if (!args.Player.IgnoreActionsForClearingTrashCan)
 					{
 						args.Player.PlayerData.CopyInventory(args.Player);
-						TPulse.InventoryDB.InsertPlayerData(args.Player);
+						tPulse.InventoryDB.InsertPlayerData(args.Player);
 					}
 					args.Player.SendSuccessMessage("Authenticated as " + user.Name + " successfully.");
 
 					Log.ConsoleInfo(args.Player.Name + " authenticated successfully as user: " + user.Name + ".");
 					if ((args.Player.LoginHarassed) && (tPulse.Config.RememberLeavePos))
 					{
-						if (TPulse.RememberedPos.GetLeavePos(args.Player.Name, args.Player.IP) != Vector2.Zero)
+						if (tPulse.RememberedPos.GetLeavePos(args.Player.Name, args.Player.IP) != Vector2.Zero)
 						{
-							Vector2 pos = TPulse.RememberedPos.GetLeavePos(args.Player.Name, args.Player.IP);
+							Vector2 pos = tPulse.RememberedPos.GetLeavePos(args.Player.Name, args.Player.IP);
 							args.Player.Teleport((int)pos.X, (int)pos.Y + 3);
 						}
 						args.Player.LoginHarassed = false;
@@ -420,12 +420,12 @@ namespace TPulseAPI
 			{
 				if (args.Player.IsLoggedIn && args.Parameters.Count == 2)
 				{
-					var user = TPulse.Users.GetUserByName(args.Player.UserAccountName);
+					var user = tPulse.Users.GetUserByName(args.Player.UserAccountName);
 					string encrPass = Utils.HashPassword(args.Parameters[0]);
 					if (user.Password.ToUpper() == encrPass.ToUpper())
 					{
 						args.Player.SendSuccessMessage("You changed your password to " + args.Parameters[1] + "!");
-						TPulse.Users.SetUserPassword(user, args.Parameters[1]); // SetUserPassword will hash it for you.
+						tPulse.Users.SetUserPassword(user, args.Parameters[1]); // SetUserPassword will hash it for you.
 						Log.ConsoleInfo(args.Player.IP + " named " + args.Player.Name + " changed the password of account " + user.Name + ".");
 					}
 					else
@@ -471,11 +471,11 @@ namespace TPulseAPI
 
 				user.Group = tPulse.Config.DefaultRegistrationGroupName; // FIXME -- we should get this from the DB. --Why?
 
-				if (TPulse.Users.GetUserByName(user.Name) == null) // Cheap way of checking for existance of a user
+				if (tPulse.Users.GetUserByName(user.Name) == null) // Cheap way of checking for existance of a user
 				{
 					args.Player.SendSuccessMessage("Account " + user.Name + " has been registered.");
 					args.Player.SendSuccessMessage("Your password is " + user.Password);
-					TPulse.Users.AddUser(user);
+					tPulse.Users.AddUser(user);
 					Log.ConsoleInfo(args.Player.Name + " registered an account: " + user.Name + ".");
 				}
 				else
@@ -528,13 +528,13 @@ namespace TPulseAPI
 						{
 							args.Player.SendSuccessMessage("IP address admin added. If they're logged in, tell them to rejoin.");
 							args.Player.SendSuccessMessage("WARNING: This is insecure! It would be better to use a user account instead.");
-							TPulse.Users.AddUser(user);
+							tPulse.Users.AddUser(user);
 							Log.ConsoleInfo(args.Player.Name + " added IP " + user.Address + " to group " + user.Group);
 						}
 						else
 						{
 							args.Player.SendSuccessMessage("Account " + user.Name + " has been added to group " + user.Group + "!");
-							TPulse.Users.AddUser(user);
+							tPulse.Users.AddUser(user);
 							Log.ConsoleInfo(args.Player.Name + " added Account " + user.Name + " to group " + user.Group);
 						}
 					}
@@ -563,7 +563,7 @@ namespace TPulseAPI
 
 				try
 				{
-					TPulse.Users.RemoveUser(user);
+					tPulse.Users.RemoveUser(user);
 					args.Player.SendSuccessMessage("Account removed successfully.");
 					Log.ConsoleInfo(args.Player.Name + " successfully deleted account: " + args.Parameters[1] + ".");
 				}
@@ -584,7 +584,7 @@ namespace TPulseAPI
 					if (args.Parameters.Count == 3)
 					{
 						args.Player.SendSuccessMessage("Password change succeeded for " + user.Name + ".");
-						TPulse.Users.SetUserPassword(user, args.Parameters[2]);
+						tPulse.Users.SetUserPassword(user, args.Parameters[2]);
 						Log.ConsoleInfo(args.Player.Name + " changed the password of account " + user.Name);
 					}
 					else
@@ -618,13 +618,13 @@ namespace TPulseAPI
 						if (!string.IsNullOrEmpty(user.Address))
 						{
 							args.Player.SendSuccessMessage("IP address " + user.Address + " has been changed to group " + args.Parameters[2] + "!");
-							TPulse.Users.SetUserGroup(user, args.Parameters[2]);
+							tPulse.Users.SetUserGroup(user, args.Parameters[2]);
 							Log.ConsoleInfo(args.Player.Name + " changed IP address " + user.Address + " to group " + args.Parameters[2] + ".");
 						}
 						else
 						{
 							args.Player.SendSuccessMessage("Account " + user.Name + " has been changed to group " + args.Parameters[2] + "!");
-							TPulse.Users.SetUserGroup(user, args.Parameters[2]);
+							tPulse.Users.SetUserGroup(user, args.Parameters[2]);
 							Log.ConsoleInfo(args.Player.Name + " changed account " + user.Name + " to group " + args.Parameters[2] + ".");
 						}
 					}
@@ -1072,7 +1072,7 @@ namespace TPulseAPI
 				{
 					if (player != null && player.IsLoggedIn && !player.IgnoreActionsForClearingTrashCan)
 					{
-						TPulse.InventoryDB.InsertPlayerData(player);
+						tPulse.InventoryDB.InsertPlayerData(player);
 					}
 				}
 			}
@@ -1100,7 +1100,7 @@ namespace TPulseAPI
 				if( players[0] != null && players[0].IsLoggedIn && !players[0].IgnoreActionsForClearingTrashCan)
 				{
 					args.Player.SendSuccessMessage( players[0].Name + " has been exempted and updated.");
-					TPulse.InventoryDB.InsertPlayerData(players[0]);
+					tPulse.InventoryDB.InsertPlayerData(players[0]);
 				}
 			}
 		}
@@ -1186,7 +1186,7 @@ namespace TPulseAPI
 					{
 						if (player != null && player.IsLoggedIn && !player.IgnoreActionsForClearingTrashCan)
 						{
-							TPulse.InventoryDB.InsertPlayerData(player);
+							tPulse.InventoryDB.InsertPlayerData(player);
 						}
 					}
 				}
@@ -1847,7 +1847,7 @@ namespace TPulseAPI
 				args.Parameters.RemoveAt(0);
 				String permissions = String.Join(",", args.Parameters);
 
-				String response = TPulse.Groups.AddGroup(groupname, permissions);
+				String response = tPulse.Groups.AddGroup(groupname, permissions);
 				if (response.Length > 0)
 					args.Player.SendSuccessMessage(response);
 			}
@@ -1863,7 +1863,7 @@ namespace TPulseAPI
 			{
 				String groupname = args.Parameters[0];
 
-				String response = TPulse.Groups.DeleteGroup(groupname);
+				String response = tPulse.Groups.DeleteGroup(groupname);
 				if (response.Length > 0)
 					args.Player.SendSuccessMessage(response);
 			}
@@ -1889,16 +1889,16 @@ namespace TPulseAPI
 					if( groupname == "*" )
 					{
 						int count = 0;
-						foreach( Group g in TPulse.Groups )
+						foreach( Group g in tPulse.Groups )
 						{
-							response = TPulse.Groups.AddPermissions(g.Name, args.Parameters);
+							response = tPulse.Groups.AddPermissions(g.Name, args.Parameters);
 							if (!response.StartsWith("Error:"))
 								count++;
 						}
 						args.Player.SendSuccessMessage(String.Format("{0} groups were modified.", count ));
 						return;
 					}
-					response = TPulse.Groups.AddPermissions(groupname, args.Parameters);
+					response = tPulse.Groups.AddPermissions(groupname, args.Parameters);
 					if (response.Length > 0)
 						args.Player.SendSuccessMessage(response);
 					return;
@@ -1909,16 +1909,16 @@ namespace TPulseAPI
 					if (groupname == "*")
 					{
 						int count = 0;
-						foreach (Group g in TPulse.Groups)
+						foreach (Group g in tPulse.Groups)
 						{
-							response = TPulse.Groups.DeletePermissions(g.Name, args.Parameters);
+							response = tPulse.Groups.DeletePermissions(g.Name, args.Parameters);
 							if (!response.StartsWith("Error:"))
 								count++;
 						}
 						args.Player.SendSuccessMessage(String.Format("{0} groups were modified.", count));
 						return;
 					}
-					response = TPulse.Groups.DeletePermissions(groupname, args.Parameters);
+					response = tPulse.Groups.DeletePermissions(groupname, args.Parameters);
 					if (response.Length > 0)
 						args.Player.SendSuccessMessage(response);
 					return;
@@ -1936,7 +1936,7 @@ namespace TPulseAPI
 				if( com == "list" )
 				{
 					string ret = "Groups: ";
-					foreach( Group g in TPulse.Groups.groups )
+					foreach( Group g in tPulse.Groups.groups )
 					{
 						if (ret.Length > 50)
 						{
@@ -1964,10 +1964,10 @@ namespace TPulseAPI
 					{
 						String groupname = args.Parameters[1];
 
-						if( TPulse.Groups.GroupExists( groupname ) )
+						if( tPulse.Groups.GroupExists( groupname ) )
 						{
 							string ret = String.Format("Permissions for {0}: ", groupname);
-							foreach (string p in Utils.GetGroup( groupname, tPulse ).permissions)
+							foreach (string p in tPulse.GetGroup( groupname ).permissions)
 							{
 								if (ret.Length > 50)
 								{
@@ -2023,7 +2023,7 @@ namespace TPulseAPI
 					var item = items[0];
 					if (item.type >= 1)
 					{
-						TPulse.Itembans.AddNewBan(item.name);
+						tPulse.Itembans.AddNewBan(item.name);
 						args.Player.SendErrorMessage(item.name + " has been banned.");
 					}
 					else
@@ -2056,7 +2056,7 @@ namespace TPulseAPI
 					var item = items[0];
 					if (item.type >= 1)
 					{
-						TPulse.Itembans.RemoveBan(item.name);
+						tPulse.Itembans.RemoveBan(item.name);
 						args.Player.SendSuccessMessage(item.name + " has been unbanned.");
 					}
 					else
@@ -2073,7 +2073,7 @@ namespace TPulseAPI
 		
 		private void ListItems(CommandArgs args)
 		{
-			args.Player.SendInfoMessage("The banned items are: " + String.Join(",", TPulse.Itembans.ItemBans) + ".");
+			args.Player.SendInfoMessage("The banned items are: " + String.Join(",", tPulse.Itembans.ItemBans) + ".");
 		}
 		
 		private void AddItemGroup(CommandArgs args)
@@ -2094,13 +2094,13 @@ namespace TPulseAPI
 					var item = items[0];
 					if (item.type >= 1)
 					{
-						if(TPulse.Groups.GroupExists(args.Parameters[1]))
+						if(tPulse.Groups.GroupExists(args.Parameters[1]))
 						{
-							ItemBan ban = TPulse.Itembans.GetItemBanByName(item.name);
+							ItemBan ban = tPulse.Itembans.GetItemBanByName(item.name);
 							
 							if(!ban.AllowedGroups.Contains(args.Parameters[1]))
 							{
-								TPulse.Itembans.AllowGroup(item.name, args.Parameters[1]);
+								tPulse.Itembans.AllowGroup(item.name, args.Parameters[1]);
 								args.Player.SendSuccessMessage("Banned item " + item.name + " has been allowed for group " + args.Parameters[1] + ".");
 							}
 							else
@@ -2143,13 +2143,13 @@ namespace TPulseAPI
 					var item = items[0];
 					if (item.type >= 1)
 					{
-						if(TPulse.Groups.GroupExists(args.Parameters[1]))
+						if(tPulse.Groups.GroupExists(args.Parameters[1]))
 						{
-							ItemBan ban = TPulse.Itembans.GetItemBanByName(item.name);
+							ItemBan ban = tPulse.Itembans.GetItemBanByName(item.name);
 							
 							if(ban.AllowedGroups.Contains(args.Parameters[1]))
 							{
-								TPulse.Itembans.RemoveGroup(item.name, args.Parameters[1]);
+								tPulse.Itembans.RemoveGroup(item.name, args.Parameters[1]);
 								args.Player.SendSuccessMessage("Removed access for group " + args.Parameters[1] + " to banned item " + item.name + ".");
 							}
 							else
@@ -2190,7 +2190,7 @@ namespace TPulseAPI
 		{
 			FileTools.SetupConfig(tPulse);
 			tPulse.HandleCommandLinePostConfigLoad(Environment.GetCommandLineArgs());
-			TPulse.Groups.LoadPermisions();
+			tPulse.Groups.LoadPermisions();
 			//todo: Create an event for reloads to propegate to plugins.
             TPulse.Regions.ReloadAllRegions();
 			args.Player.SendSuccessMessage(
@@ -2535,7 +2535,7 @@ namespace TPulseAPI
                                     regionName = regionName + " " + args.Parameters[i];
                                 }
                             }
-                            if (TPulse.Users.GetUserByName(playerName) != null)
+                            if (tPulse.Users.GetUserByName(playerName) != null)
                             {
                                 if (TPulse.Regions.AddNewUser(regionName, playerName))
                                 {
@@ -2570,7 +2570,7 @@ namespace TPulseAPI
                                 regionName = regionName + " " + args.Parameters[i];
                             }
                         }
-                        if (TPulse.Users.GetUserByName(playerName) != null)
+                        if (tPulse.Users.GetUserByName(playerName) != null)
                         {
                             if (TPulse.Regions.RemoveUser(regionName, playerName))
                             {
@@ -2605,7 +2605,7 @@ namespace TPulseAPI
                                     regionName = regionName + " " + args.Parameters[i];
                                 }
                             }
-                            if (TPulse.Groups.GroupExists(group))
+                            if (tPulse.Groups.GroupExists(group))
                             {
                                 if (TPulse.Regions.AllowGroup(regionName, group))
                                 {
@@ -2640,7 +2640,7 @@ namespace TPulseAPI
                                 regionName = regionName + " " + args.Parameters[i];
                             }
                         }
-                        if (TPulse.Groups.GroupExists(group))
+                        if (tPulse.Groups.GroupExists(group))
                         {
                             if (TPulse.Regions.RemoveGroup(regionName, group))
                             {
@@ -2735,7 +2735,7 @@ namespace TPulseAPI
                                                     r.Area.Width + " H: " + r.Area.Height);
                             foreach (int s in r.AllowedIDs)
                             {
-                                var user = TPulse.Users.GetUserByID(s);
+                                var user = tPulse.Users.GetUserByID(s);
                                 args.Player.SendMessage(r.Name + ": " + (user != null ? user.Name : "Unknown"));
                             }
                         }
@@ -2975,8 +2975,8 @@ namespace TPulseAPI
 			{
 				try
 				{
-					TPulse.Users.AddUser(new User(args.Player.IP, "", "", "superadmin"));
-					args.Player.Group = Utils.GetGroup("superadmin", tPulse);
+					tPulse.Users.AddUser(new User(args.Player.IP, "", "", "superadmin"));
+					args.Player.Group = tPulse.GetGroup("superadmin");
 					args.Player.SendInfoMessage("This IP address is now superadmin. Please perform the following command:");
 					args.Player.SendInfoMessage("/user add <username>:<password> superadmin");
 					args.Player.SendInfoMessage("Creates: <username> with the password <password> as part of the superadmin group.");

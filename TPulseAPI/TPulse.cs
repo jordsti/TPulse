@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -113,12 +114,12 @@ namespace TPulseAPI
 		public static BanManager Bans;
 		public static WarpManager Warps;
         public static RegionManager Regions;
-		public static BackupManager Backups;
-		public static GroupManager Groups;
-        public static UserManager Users { get; protected set; }
-		public static ItemManager Itembans;
-		public static RememberedPosManager RememberedPos;
-		public static InventoryManager InventoryDB;
+        public BackupManager Backups { get; protected set; }
+        public GroupManager Groups { get; protected set; }
+        public UserManager Users { get; protected set; }
+        public ItemManager Itembans { get; protected set; }
+        public RememberedPosManager RememberedPos { get; protected set; }
+        public InventoryManager InventoryDB { get; protected set; }
 		public ConfigFile Config { get; set; }
         public IDbConnection DBConnection { get; protected set; }
 		public bool OverridePort;
@@ -199,6 +200,41 @@ namespace TPulseAPI
         }
         #endregion
 
+        #region methods from utils
+
+        public string GetPlayersWithIds()
+        {
+            var sb = new StringBuilder();
+            foreach (TPPlayer player in TPulse.Players)
+            {
+                if (player != null && player.Active)
+                {
+                    if (sb.Length != 0)
+                    {
+                        sb.Append(", ");
+                    }
+                    sb.Append(player.Name);
+                    string id = "(ID: " + Convert.ToString(Users.GetUserID(player.UserAccountName)) + ", IX:" + player.Index + ")";
+                    sb.Append(id);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public Group GetGroup(string groupName)
+        {
+            //first attempt on cached groups
+            for (int i = 0; i < Groups.groups.Count; i++)
+            {
+                if (Groups.groups[i].Name.Equals(groupName))
+                {
+                    return Groups.groups[i];
+                }
+            }
+            return new Group(Config.DefaultGuestGroupName);
+        }
+
+        #endregion
 
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		public override void Initialize()
@@ -233,7 +269,6 @@ namespace TPulseAPI
             //{
                 showTPulseWelcome();                
             //}
-
 
 			try
 			{
@@ -287,7 +322,7 @@ namespace TPulseAPI
 				Backups.Interval = Config.BackupInterval;
 				Bans = new BanManager(DBConnection);
 				Warps = new WarpManager(DBConnection);
-                Regions = new RegionManager(DBConnection);
+                Regions = new RegionManager(DBConnection, this);
 				Users = new UserManager(DBConnection, this);
 				Groups = new GroupManager(DBConnection, this);
 				Itembans = new ItemManager(DBConnection);
@@ -386,7 +421,7 @@ namespace TPulseAPI
 						{Error = "Invalid username/password combination provided. Please re-submit your query with a correct pair."};
 			}
 
-			if (!Utils.GetGroup(userAccount.Group, this).HasPermission(Permissions.restapi) && userAccount.Group != "superadmin")
+			if (!GetGroup(userAccount.Group).HasPermission(Permissions.restapi) && userAccount.Group != "superadmin")
 			{
 				return new RestObject("403")
 						{
@@ -1378,7 +1413,7 @@ namespace TPulseAPI
 			}
 		}
 
-		public static bool CheckProjectilePermission(TPPlayer player, int index, int type)
+		public bool CheckProjectilePermission(TPPlayer player, int index, int type)
 		{
 			if (type == 43)
 			{

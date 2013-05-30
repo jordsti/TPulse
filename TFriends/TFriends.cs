@@ -311,7 +311,7 @@ namespace TFriends
 
                     if (args.Parameters.Count >= 2)
                     {
-                        User cu = TPulse.Users.GetUserByID(player.UserID);
+                        User cu = tPulse.Users.GetUserByID(player.UserID);
                         FriendList fl = GetListOrCreate(cu);
                         string prams = args.Parameters[0];
                         prams = prams.ToLower();
@@ -322,7 +322,7 @@ namespace TFriends
                             //Add
                             string adduser = args.Parameters[1];
 
-                            User u = TPulse.Users.GetUserByName(adduser);
+                            User u = tPulse.Users.GetUserByName(adduser);
 
                             if (u == null)
                             {
@@ -371,7 +371,7 @@ namespace TFriends
                         }
                         else if (prams == "list")
                         {
-                            User cu = TPulse.Users.GetUserByID(player.UserID);
+                            User cu = tPulse.Users.GetUserByID(player.UserID);
                             FriendList fl = GetListOrCreate(cu);
 
                             player.SendMessage(String.Format("Friends: {0} friend(s) in your list", fl.Friends.Count.ToString()), TextColor);

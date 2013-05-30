@@ -1318,7 +1318,7 @@ namespace TPulseAPI
 
 		private static bool HandleConnecting(GetDataHandlerArgs args)
 		{
-			var user = TPulse.Users.GetUserByName(args.Player.Name);
+			var user = tPulse.Users.GetUserByName(args.Player.Name);
 			if (user != null && !tPulse.Config.DisableLoginBeforeJoin)
 			{
 				args.Player.RequiresPassword = true;
@@ -1344,20 +1344,20 @@ namespace TPulseAPI
 				return true;
 
 			string password = Encoding.UTF8.GetString(args.Data.ReadBytes((int) (args.Data.Length - args.Data.Position - 1)));
-			var user = TPulse.Users.GetUserByName(args.Player.Name);
+			var user = tPulse.Users.GetUserByName(args.Player.Name);
             if (user != null && !tPulse.Config.DisableLoginBeforeJoin)
 			{
 				string encrPass = Utils.HashPassword(password);
 				if (user.Password.ToUpper() == encrPass.ToUpper())
 				{
 				    args.Player.RequiresPassword = false;
-				    args.Player.PlayerData = TPulse.InventoryDB.GetPlayerData(args.Player, TPulse.Users.GetUserID(args.Player.Name));
+				    args.Player.PlayerData = tPulse.InventoryDB.GetPlayerData(args.Player, tPulse.Users.GetUserID(args.Player.Name));
 
 				    if (args.Player.State == 1)
 				        args.Player.State = 2;
 				    NetMessage.SendData((int) PacketTypes.WorldInfo, args.Player.Index);
 
-                    var group = Utils.GetGroup(user.Group, tPulse);
+                    var group = tPulse.GetGroup(user.Group);
 
 				    if (tPulse.Config.ServerSideInventory)
 				    {
@@ -1381,14 +1381,14 @@ namespace TPulseAPI
 
 				    args.Player.Group = group;
 				    args.Player.UserAccountName = args.Player.Name;
-				    args.Player.UserID = TPulse.Users.GetUserID(args.Player.UserAccountName);
+				    args.Player.UserID = tPulse.Users.GetUserID(args.Player.UserAccountName);
 				    args.Player.IsLoggedIn = true;
 				    args.Player.IgnoreActionsForInventory = "none";
 
 				    if (!args.Player.IgnoreActionsForClearingTrashCan)
                     {
 				        args.Player.PlayerData.CopyInventory(args.Player);
-				        TPulse.InventoryDB.InsertPlayerData(args.Player);
+				        tPulse.InventoryDB.InsertPlayerData(args.Player);
 			        }
 			        args.Player.SendMessage("Authenticated as " + args.Player.Name + " successfully.", Color.LimeGreen);
 					Log.ConsoleInfo(args.Player.Name + " authenticated successfully as user " + args.Player.Name + ".");
@@ -1709,7 +1709,7 @@ namespace TPulseAPI
 					return true;
 				}
 				if (tiletype == 48 && !args.Player.Group.HasPermission(Permissions.usebanneditem) &&
-					TPulse.Itembans.ItemIsBanned("Spike", args.Player))
+					tPulse.Itembans.ItemIsBanned("Spike", args.Player))
 				{
 					args.Player.Disable("Used banned spikes without permission.");
 					args.Player.SendTileSquare(tileX, tileY);
@@ -1731,7 +1731,7 @@ namespace TPulseAPI
 					}
 				}
 				if (tiletype == 141 && !args.Player.Group.HasPermission(Permissions.usebanneditem) &&
-					TPulse.Itembans.ItemIsBanned("Explosives", args.Player))
+					tPulse.Itembans.ItemIsBanned("Explosives", args.Player))
 				{
 					args.Player.Disable("Used banned explosives tile without permission.");
 					args.Player.SendTileSquare(tileX, tileY);
@@ -1953,7 +1953,7 @@ namespace TPulseAPI
 			if ((control & 32) == 32)
 			{
 				if (!args.Player.Group.HasPermission(Permissions.usebanneditem) &&
-					TPulse.Itembans.ItemIsBanned(args.TPlayer.inventory[item].name, args.Player))
+					tPulse.Itembans.ItemIsBanned(args.TPlayer.inventory[item].name, args.Player))
 				{
 					control -= 32;
 					args.Player.Disable("Using banned item");
@@ -2049,7 +2049,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (!tPulse.Config.IgnoreProjUpdate && TPulse.CheckProjectilePermission(args.Player, index, type))
+			if (!tPulse.Config.IgnoreProjUpdate && tPulse.CheckProjectilePermission(args.Player, index, type))
 			{
 			if (type == 100)
 					{	//fix for skele prime
@@ -2119,7 +2119,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-            if (TPulse.CheckProjectilePermission(args.Player, index, type) && type != 102 && type != 100 && !tPulse.Config.IgnoreProjKill)
+            if (tPulse.CheckProjectilePermission(args.Player, index, type) && type != 102 && type != 100 && !tPulse.Config.IgnoreProjKill)
 			{
 				args.Player.Disable("Does not have projectile permission to kill projectile.");
 				args.Player.RemoveProjectile(ident, owner);
@@ -2202,7 +2202,7 @@ namespace TPulseAPI
 				}
 
 				if (lava && bucket != 2 && !args.Player.Group.HasPermission(Permissions.usebanneditem) &&
-					TPulse.Itembans.ItemIsBanned("Lava Bucket", args.Player))
+					tPulse.Itembans.ItemIsBanned("Lava Bucket", args.Player))
 				{
 					args.Player.Disable("Using banned lava bucket without permissions.");
 					args.Player.SendTileSquare(tileX, tileY);
@@ -2210,7 +2210,7 @@ namespace TPulseAPI
 				}
 
 				if (!lava && bucket != 1 && !args.Player.Group.HasPermission(Permissions.usebanneditem) &&
-					TPulse.Itembans.ItemIsBanned("Water Bucket", args.Player))
+					tPulse.Itembans.ItemIsBanned("Water Bucket", args.Player))
 				{
 					args.Player.Disable("Using banned water bucket without permissions.");
 					args.Player.SendTileSquare(tileX, tileY);
@@ -2363,7 +2363,7 @@ namespace TPulseAPI
 
 			Item item = new Item();
 			item.netDefaults(type);
-			if (stacks > item.maxStack || TPulse.Itembans.ItemIsBanned(item.name, args.Player))
+			if (stacks > item.maxStack || tPulse.Itembans.ItemIsBanned(item.name, args.Player))
 			{
 				return false;
 			}
@@ -2509,7 +2509,7 @@ namespace TPulseAPI
 
 			Item item = new Item();
 			item.netDefaults(type);
-			if (stacks > item.maxStack || TPulse.Itembans.ItemIsBanned(item.name, args.Player))
+			if (stacks > item.maxStack || tPulse.Itembans.ItemIsBanned(item.name, args.Player))
 			{
 				args.Player.SendData(PacketTypes.ItemDrop, "", id);
 				return true;
@@ -2699,7 +2699,7 @@ namespace TPulseAPI
 				if (buff == 10)
 				{
 					if (!args.Player.Group.HasPermission(Permissions.usebanneditem) &&
-						TPulse.Itembans.ItemIsBanned("Invisibility Potion", args.Player))
+						tPulse.Itembans.ItemIsBanned("Invisibility Potion", args.Player))
 						buff = 0;
 					else if (tPulse.Config.DisableInvisPvP && args.TPlayer.hostile)
 						buff = 0;

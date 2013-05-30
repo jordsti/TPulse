@@ -33,8 +33,11 @@ namespace TPulseAPI.DB
 
 		private IDbConnection database;
 
-		public RegionManager(IDbConnection db)
+        private TPulse tPulse;
+
+		public RegionManager(IDbConnection db, TPulse tPulse)
 		{
+            this.tPulse = tPulse;
 			database = db;
 			var table = new SqlTable("Regions",
 			                         new SqlColumn("X1", MySqlDbType.Int32),
@@ -375,7 +378,7 @@ namespace TPulseAPI.DB
 			Region r = GetRegionByName(regionName);
 			if (r != null)
 			{
-				r.RemoveID(TPulse.Users.GetUserID(userName));
+				r.RemoveID(tPulse.Users.GetUserID(userName));
 				string ids = string.Join(",", r.AllowedIDs);
 				int q = database.Query("UPDATE Regions SET UserIds=@0 WHERE RegionName=@1 AND WorldID=@2", ids,
 				                       regionName, Main.worldID.ToString());
@@ -399,9 +402,9 @@ namespace TPulseAPI.DB
 				}
 
 				if (string.IsNullOrEmpty(MergedIDs))
-					MergedIDs = Convert.ToString(TPulse.Users.GetUserID(userName));
+					MergedIDs = Convert.ToString(tPulse.Users.GetUserID(userName));
 				else
-					MergedIDs = MergedIDs + "," + Convert.ToString(TPulse.Users.GetUserID(userName));
+					MergedIDs = MergedIDs + "," + Convert.ToString(tPulse.Users.GetUserID(userName));
 
 				int q = database.Query("UPDATE Regions SET UserIds=@0 WHERE RegionName=@1 AND WorldID=@2", MergedIDs,
 				                       regionName, Main.worldID.ToString());

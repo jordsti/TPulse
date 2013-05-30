@@ -56,7 +56,7 @@ namespace TPulseAPI.DB
 		/// <param name="user">User user</param>
 		public void AddUser(User user)
 		{
-			if (!TPulse.Groups.GroupExists(user.Group))
+			if (!tPulse.Groups.GroupExists(user.Group))
 				throw new GroupNotExistsException(user.Group);
 
 			int ret;
@@ -134,7 +134,7 @@ namespace TPulseAPI.DB
 		{
 			try
 			{
-				Group grp = TPulse.Groups.GetGroupByName(group);
+				Group grp = tPulse.Groups.GetGroupByName(group);
 				if (null == grp)
 					throw new GroupNotExistsException(group);
 
@@ -185,7 +185,7 @@ namespace TPulseAPI.DB
 					if (reader.Read())
 					{
 						string group = reader.Get<string>("UserGroup");
-						return Utils.GetGroup(group, tPulse);
+						return tPulse.GetGroup(group);
 					}
 				}
 			}
@@ -193,7 +193,7 @@ namespace TPulseAPI.DB
 			{
 				Log.ConsoleError("GetGroupForIP SQL returned an error: " + ex);
 			}
-            return Utils.GetGroup(tPulse.Config.DefaultGuestGroupName, tPulse);
+            return tPulse.GetGroup(tPulse.Config.DefaultGuestGroupName);
 		}
 
 		public Group GetGroupForIPExpensive(string ip)
@@ -206,7 +206,7 @@ namespace TPulseAPI.DB
 					{
 						if (Utils.GetIPv4Address(reader.Get<string>("IP")) == ip)
 						{
-                            return Utils.GetGroup(reader.Get<string>("UserGroup"), tPulse);
+                            return tPulse.GetGroup(reader.Get<string>("UserGroup"));
 						}
 					}
 				}
@@ -215,7 +215,7 @@ namespace TPulseAPI.DB
 			{
 				Log.ConsoleError("GetGroupForIP SQL returned an error: " + ex);
 			}
-            return Utils.GetGroup(tPulse.Config.DefaultGuestGroupName, tPulse);
+            return tPulse.GetGroup(tPulse.Config.DefaultGuestGroupName);
 		}
 
 

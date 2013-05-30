@@ -1,6 +1,6 @@
 ﻿/*
-TShock, a server mod for Terraria
-Copyright (C) 2011-2012 The TShock Team
+TPulse, a server mod for Terraria
+Copyright (C) 2013 JordSti
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,5 +48,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      MMdd of the build
 
-[assembly: AssemblyVersion("0.1.0.20")]
-[assembly: AssemblyFileVersion("0.1.0.20")]
+[assembly: AssemblyVersion("0.1.0.21")]
+[assembly: AssemblyFileVersion("0.1.0.21")]
