@@ -32,7 +32,7 @@ namespace TPulseAPI
 	/// <summary>
 	/// Utilities and other TShock core calls that don't fit anywhere else
 	/// </summary>
-	public class Utils
+	public static class Utils
 	{
 	    /// <summary>
 	    /// The lowest id for a prefix.
@@ -44,12 +44,7 @@ namespace TPulseAPI
 	    /// </summary>
 	    private const int LastItemPrefix = 83;
 
-	    // Utils is a Singleton
-		private static readonly Utils instance = new Utils();
-		private Utils() {}
-		public static Utils Instance { get { return instance; } }
-
-		public Random Random = new Random();
+		public static Random Random = new Random();
 		//private static List<Group> groups = new List<Group>();
 
 		/// <summary>
@@ -57,12 +52,12 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="mess">A string IPv4 address in IP:PORT form.</param>
 		/// <returns>A string IPv4 address.</returns>
-		public string GetRealIP(string mess)
+		public static string GetRealIP(string mess)
 		{
 			return mess.Split(':')[0];
 		}
 
-		/// <summary>
+		/*/// <summary>
 		/// Used for some places where a list of players might be used.
 		/// </summary>
 		/// <returns>String of players seperated by commas.</returns>
@@ -82,14 +77,14 @@ namespace TPulseAPI
 				}
 			}
 			return sb.ToString();
-		}
+		}*/
 
         /// <summary>
         /// Returns a list of current players on the server
         /// </summary>
         /// <param name="includeIDs">bool includeIDs - whether or not the string of each player name should include ID data</param>
         /// <returns>List of strings with names</returns>
-        public List<string> GetPlayers(bool includeIDs)
+        public static List<string> GetPlayers(bool includeIDs)
         {
             var players = new List<string>();
 
@@ -116,7 +111,7 @@ namespace TPulseAPI
         /// </summary>
         /// <returns>String of players and their id seperated by commas.</returns>
         [Obsolete("Use GetPlayers and manually create strings. This should never have been kept as far as actual functions go.")]
-        public string GetPlayersWithIds()
+        public static string GetPlayersWithIds()
         {
             var sb = new StringBuilder();
             foreach (TPPlayer player in TPulse.Players)
@@ -139,7 +134,7 @@ namespace TPulseAPI
 		/// Finds a player and gets IP as string
 		/// </summary>
 		/// <param name="playername">string playername</param>
-		public string GetPlayerIP(string playername)
+		public static string GetPlayerIP(string playername)
 		{
 			foreach (TPPlayer player in TPulse.Players)
 			{
@@ -162,7 +157,7 @@ namespace TPulseAPI
 		/// <param name="max">Maximum bounds of the clamp</param>
 		/// <param name="min">Minimum bounds of the clamp</param>
 		/// <returns></returns>
-		public T Clamp<T>(T value, T max, T min)
+		public static T Clamp<T>(T value, T max, T min)
 			where T : IComparable<T>
 		{
 			T result = value;
@@ -176,7 +171,7 @@ namespace TPulseAPI
 		/// <summary>
 		/// Saves the map data
 		/// </summary>
-		public void SaveWorld()
+		public static void SaveWorld()
 		{
 			SaveManager.Instance.SaveWorld();
 		}
@@ -186,19 +181,19 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="msg">string message</param>
 		[Obsolete("Use TSPlayer.All and send a message via that method rather than using Broadcast.")]
-		public void Broadcast(string msg)
+		public static void Broadcast(string msg)
 		{
 			Broadcast(msg, Color.Green);
 		}
 
-		public void Broadcast(string msg, byte red, byte green, byte blue)
+		public static void Broadcast(string msg, byte red, byte green, byte blue)
 		{
 			TPPlayer.All.SendMessage(msg, red, green, blue);
 			TPPlayer.Server.SendMessage(msg, red, green, blue);
 			Log.Info(string.Format("Broadcast: {0}", msg));
 		}
 
-		public void Broadcast(string msg, Color color)
+		public static void Broadcast(string msg, Color color)
 		{
 			Broadcast(msg, color.R, color.G, color.B);
 		}
@@ -211,7 +206,7 @@ namespace TPulseAPI
         /// <param name="red">r</param>
         /// <param name="green">g</param>
         /// <param name="blue">b</param>
-        public void Broadcast(int ply, string msg, byte red, byte green, byte blue)
+        public static void Broadcast(int ply, string msg, byte red, byte green, byte blue)
         {
             TPPlayer.All.SendMessageFromPlayer(msg, red, green, blue, ply);
             TPPlayer.Server.SendMessage(Main.player[ply].name + ": " + msg, red, green, blue);
@@ -223,7 +218,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="log">Message to send</param>
 		/// <param name="color">Color of the message</param>
-		public void SendLogs(string log, Color color)
+		public static void SendLogs(string log, Color color)
 		{
 			Log.Info(log);
 			TPPlayer.Server.SendMessage(log, color);
@@ -239,7 +234,8 @@ namespace TPulseAPI
 		/// The number of active players on the server.
 		/// </summary>
 		/// <returns>int playerCount</returns>
-		public int ActivePlayers()
+        [Obsolete("Must put this method into TPulse")]
+		public static int ActivePlayers()
 		{
 			return Main.player.Where(p => null != p && p.active).Count();
 		}
@@ -249,7 +245,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="plr">Player name or ID</param>
 		/// <returns></returns>
-		public List<TPPlayer> FindPlayer(string plr)
+        [Obsolete("Must put this method into TPulse")]
+		public static List<TPPlayer> FindPlayer(string plr)
 		{
 			var found = new List<TPPlayer>();
 			// Avoid errors caused by null search
@@ -290,7 +287,8 @@ namespace TPulseAPI
 		/// <param name="tileYRange">Range on the Y axis</param>
 		/// <param name="tileX">X location</param>
 		/// <param name="tileY">Y location</param>
-		public void GetRandomClearTileWithInRange(int startTileX, int startTileY, int tileXRange, int tileYRange,
+        [Obsolete("Need to be placed into a maptools class")]
+		public static void GetRandomClearTileWithInRange(int startTileX, int startTileY, int tileXRange, int tileYRange,
 		                                          out int tileX, out int tileY)
 		{
 			int j = 0;
@@ -315,7 +313,8 @@ namespace TPulseAPI
 		/// <param name="tileX">Location X</param>
 		/// <param name="tileY">Location Y</param>
 		/// <returns>If the tile is valid</returns>
-		public bool TileValid(int tileX, int tileY)
+        [Obsolete("Need to be placed into a maptools class")]
+		public static bool TileValid(int tileX, int tileY)
 		{
 			return tileX >= 0 && tileX < Main.maxTilesX && tileY >= 0 && tileY < Main.maxTilesY;
 		}
@@ -326,7 +325,8 @@ namespace TPulseAPI
 		/// <param name="tileX">Location X</param>
 		/// <param name="tileY">Location Y</param>
 		/// <returns>The state of the tile</returns>
-		private bool TileClear(int tileX, int tileY)
+        [Obsolete("Need to be placed into a maptools class")]
+		private static bool TileClear(int tileX, int tileY)
 		{
 			return !Main.tile[tileX, tileY].active;
 		}
@@ -336,7 +336,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="idOrName">Item ID or name</param>
 		/// <returns>List of Items</returns>
-		public List<Item> GetItemByIdOrName(string idOrName)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<Item> GetItemByIdOrName(string idOrName)
 		{
 			int type = -1;
 			if (int.TryParse(idOrName, out type))
@@ -353,7 +354,9 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="id">ID</param>
 		/// <returns>Item</returns>
-		public Item GetItemById(int id)
+        /// 
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static Item GetItemById(int id)
 		{
 			Item item = new Item();
 			item.netDefaults(id);
@@ -365,7 +368,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="name">name</param>
 		/// <returns>List of Items</returns>
-		public List<Item> GetItemByName(string name)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<Item> GetItemByName(string name)
 		{
 			var found = new List<Item>();
 			Item item = new Item();
@@ -386,7 +390,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="idOrName"></param>
 		/// <returns>List of NPCs</returns>
-		public List<NPC> GetNPCByIdOrName(string idOrName)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<NPC> GetNPCByIdOrName(string idOrName)
 		{
 			int type = -1;
 			if (int.TryParse(idOrName, out type))
@@ -403,7 +408,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="id">ID</param>
 		/// <returns>NPC</returns>
-		public NPC GetNPCById(int id)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static NPC GetNPCById(int id)
 		{
 			NPC npc = new NPC();
 			npc.netDefaults(id);
@@ -415,7 +421,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="name">Name</param>
 		/// <returns>List of matching NPCs</returns>
-		public List<NPC> GetNPCByName(string name)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<NPC> GetNPCByName(string name)
 		{
 			var found = new List<NPC>();
 			NPC npc = new NPC();
@@ -436,7 +443,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="id">ID</param>
 		/// <returns>name</returns>
-		public string GetBuffName(int id)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static string GetBuffName(int id)
 		{
 			return (id > 0 && id < Main.maxBuffs) ? Main.buffName[id] : "null";
 		}
@@ -446,7 +454,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="id">ID</param>
 		/// <returns>description</returns>
-		public string GetBuffDescription(int id)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static string GetBuffDescription(int id)
 		{
 			return (id > 0 && id < Main.maxBuffs) ? Main.buffTip[id] : "null";
 		}
@@ -456,7 +465,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="name">name</param>
 		/// <returns>Matching list of buff ids</returns>
-		public List<int> GetBuffByName(string name)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<int> GetBuffByName(string name)
 		{
 			string nameLower = name.ToLower();
 			for (int i = 1; i < Main.maxBuffs; i++)
@@ -478,7 +488,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="id">ID</param>
 		/// <returns>Prefix name</returns>
-		public string GetPrefixById(int id)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static string GetPrefixById(int id)
 		{
 			var item = new Item();
 			item.SetDefaults(0);
@@ -492,7 +503,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="name">Name</param>
 		/// <returns>List of prefix IDs</returns>
-		public List<int> GetPrefixByName(string name)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<int> GetPrefixByName(string name)
 		{
 			Item item = new Item();
 			item.SetDefaults(0);
@@ -515,7 +527,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="idOrName">ID or name</param>
 		/// <returns>List of prefix IDs</returns>
-		public List<int> GetPrefixByIdOrName(string idOrName)
+        [Obsolete("Must put this into a game ressource finder, something like this")]
+		public static List<int> GetPrefixByIdOrName(string idOrName)
 		{
 			int type = -1;
 			if (int.TryParse(idOrName, out type) && type >= FirstItemPrefix && type <= LastItemPrefix)
@@ -530,7 +543,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="ply">int player</param>
 		/// <param name="reason">string reason</param>
-		public void ForceKickAll(string reason)
+		public static void ForceKickAll(string reason)
 		{
 			foreach (TPPlayer player in TPulse.Players)
 			{
@@ -546,7 +559,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="save">bool perform a world save before stop (default: true)</param>
 		/// <param name="reason">string reason (default: "Server shutting down!")</param>
-		public void StopServer(bool save = true, string reason = "Server shutting down!")
+		public static void StopServer(bool save = true, string reason = "Server shutting down!")
 		{
 			ForceKickAll(reason);
 			if (save)
@@ -556,7 +569,7 @@ namespace TPulseAPI
 			ForceKickAll(reason);
 
 			// Broadcast so console can see we are shutting down as well
-			TPulse.Utils.Broadcast(reason, Color.Red);
+			Utils.Broadcast(reason, Color.Red);
 
 			// Disconnect after kick as that signifies server is exiting and could cause a race
 			Netplay.disconnect = true;
@@ -564,7 +577,7 @@ namespace TPulseAPI
 
 #if COMPAT_SIGS
 		[Obsolete("This method is for signature compatibility for external code only")]
-		public void ForceKick(TPPlayer player, string reason)
+		public static void ForceKick(TPPlayer player, string reason)
 		{
 			Kick(player, reason, true, false, string.Empty);
 		}
@@ -575,14 +588,14 @@ namespace TPulseAPI
 		/// <param name="ply">int player</param>
 		/// <param name="reason">string reason</param>
 		/// <param name="silent">bool silent (default: false)</param>
-		public void ForceKick(TPPlayer player, string reason, bool silent = false, bool saveSSI = false)
+		public static void ForceKick(TPPlayer player, string reason, bool silent = false, bool saveSSI = false)
 		{
 			Kick(player, reason, true, silent, null, saveSSI);
 		}
 
 #if COMPAT_SIGS
 		[Obsolete("This method is for signature compatibility for external code only")]
-		public bool Kick(TPPlayer player, string reason, string adminUserName)
+		public static bool Kick(TPPlayer player, string reason, string adminUserName)
 		{
 			return Kick(player, reason, false, false, adminUserName);
 		}
@@ -596,7 +609,7 @@ namespace TPulseAPI
 		/// <param name="silent">bool silent (default: false)</param>
 		/// <param name="adminUserName">string adminUserName (default: null)</param>
 		/// <param name="saveSSI">bool saveSSI (default: false)</param>
-		public bool Kick(TPPlayer player, string reason, bool force = false, bool silent = false, string adminUserName = null, bool saveSSI = false)
+		public static bool Kick(TPPlayer player, string reason, bool force = false, bool silent = false, string adminUserName = null, bool saveSSI = false)
 		{
 			if (!player.ConnectionAlive)
 				return true;
@@ -623,7 +636,7 @@ namespace TPulseAPI
 
 #if COMPAT_SIGS
 		[Obsolete("This method is for signature compatibility for external code only")]
-		public bool Ban(TPPlayer player, string reason, string adminUserName)
+		public static bool Ban(TPPlayer player, string reason, string adminUserName)
 		{
 			return Ban(player, reason, false, adminUserName);
 		}
@@ -635,7 +648,7 @@ namespace TPulseAPI
 		/// <param name="reason">string reason</param>
 		/// <param name="force">bool force (default: false)</param>
 		/// <param name="adminUserName">bool silent (default: null)</param>
-		public bool Ban(TPPlayer player, string reason, bool force = false, string adminUserName = null)
+		public static bool Ban(TPPlayer player, string reason, bool force = false, string adminUserName = null)
 		{
 			if (!player.ConnectionAlive)
 				return true;
@@ -661,7 +674,8 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="ply">int player</param>
 		/// <param name="file">string filename reletave to savedir</param>
-		public void ShowFileToUser(TPPlayer player, string file)
+        [Obsolete("Need to rework this method")]
+		public static void ShowFileToUser(TPPlayer player, string file, string players)
 		{
 			string foo = "";
 			using (var tr = new StreamReader(Path.Combine(TPulse.SavePath, file)))
@@ -669,7 +683,7 @@ namespace TPulseAPI
 				while ((foo = tr.ReadLine()) != null)
 				{
 					foo = foo.Replace("%map%", Main.worldName);
-					foo = foo.Replace("%players%", GetPlayers());
+					foo = foo.Replace("%players%", players);
 					//foo = SanitizeString(foo);
 					if (foo.Substring(0, 1) == "%" && foo.Substring(12, 1) == "%") //Look for a beginning color code.
 					{
@@ -701,7 +715,7 @@ namespace TPulseAPI
 		/// Returns a Group from the name of the group
 		/// </summary>
 		/// <param name="ply">string groupName</param>
-		public Group GetGroup(string groupName)
+		public static Group GetGroup(string groupName)
 		{
 			//first attempt on cached groups
 			for (int i = 0; i < TPulse.Groups.groups.Count; i++)
@@ -718,7 +732,7 @@ namespace TPulseAPI
 		/// Returns an IPv4 address from a DNS query
 		/// </summary>
 		/// <param name="hostname">string ip</param>
-		public string GetIPv4Address(string hostname)
+		public static string GetIPv4Address(string hostname)
 		{
 			try
 			{
@@ -736,12 +750,12 @@ namespace TPulseAPI
         /// <summary>
         /// Default hashing algorithm.
         /// </summary>
-        public string HashAlgo = "sha512";
+        public static string HashAlgo = "sha512";
 
         /// <summary>
         /// A dictionary of hashing algortihms and an implementation object.
         /// </summary>
-		public readonly Dictionary<string, Func<HashAlgorithm>> HashTypes = new Dictionary<string, Func<HashAlgorithm>>
+		public static readonly Dictionary<string, Func<HashAlgorithm>> HashTypes = new Dictionary<string, Func<HashAlgorithm>>
 		                                                                    	{
 		                                                                    		{"sha512", () => new SHA512Managed()},
 		                                                                    		{"sha256", () => new SHA256Managed()},
@@ -756,7 +770,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="bytes">bytes to hash</param>
 		/// <returns>string sha256</returns>
-		public string HashPassword(byte[] bytes)
+		public static string HashPassword(byte[] bytes)
 		{
 			if (bytes == null)
 				throw new NullReferenceException("bytes");
@@ -776,7 +790,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="bytes">bytes to hash</param>
 		/// <returns>string sha256</returns>
-		public string HashPassword(string password)
+		public static string HashPassword(string password)
 		{
 			if (string.IsNullOrEmpty(password) || password == "non-existant password")
 				return "non-existant password";
@@ -788,7 +802,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="str">String to check</param>
 		/// <returns>True if the string only contains printable characters</returns>
-		public bool ValidString(string str)
+		public static bool ValidString(string str)
 		{
 			foreach (var c in str)
 			{
@@ -802,7 +816,7 @@ namespace TPulseAPI
 		/// Checks if world has hit the max number of chests
 		/// </summary>
 		/// <returns>True if the entire chest array is used</returns>
-		public bool MaxChests()
+		public static bool MaxChests()
 		{
 			for (int i = 0; i < Main.chest.Length; i++)
 			{
@@ -818,7 +832,7 @@ namespace TPulseAPI
 		/// <param name="identity">identity</param>
 		/// <param name="owner">owner</param>
 		/// <returns>projectile ID</returns>
-		public int SearchProjectile(short identity, int owner)
+		public static int SearchProjectile(short identity, int owner)
 		{
 			for (int i = 0; i < Main.maxProjectiles; i++)
 			{
@@ -833,7 +847,7 @@ namespace TPulseAPI
 		/// </summary>
 		/// <param name="str">string</param>
 		/// <returns>sanitized string</returns>
-		public string SanitizeString(string str)
+		public static string SanitizeString(string str)
 		{
 			var returnstr = str.ToCharArray();
 			for (int i = 0; i < str.Length; i++)

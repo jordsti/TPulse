@@ -282,7 +282,7 @@ namespace TPulseAPI
 						CacheIP =
 						RealPlayer
 							? (Netplay.serverSock[Index].tcpClient.Connected
-								? TPulse.Utils.GetRealIP(Netplay.serverSock[Index].tcpClient.Client.RemoteEndPoint.ToString())
+								? Utils.GetRealIP(Netplay.serverSock[Index].tcpClient.Client.RemoteEndPoint.ToString())
 								: "")
 							: "";
 				else
@@ -822,7 +822,7 @@ namespace TPulseAPI
 			{
 				int spawnTileX;
 				int spawnTileY;
-				TPulse.Utils.GetRandomClearTileWithInRange(startTileX, startTileY, tileXRange, tileYRange, out spawnTileX,
+				Utils.GetRandomClearTileWithInRange(startTileX, startTileY, tileXRange, tileYRange, out spawnTileX,
 														   out spawnTileY);
 				int npcid = NPC.NewNPC(spawnTileX*16, spawnTileY*16, type, 0);
 				// This is for special slimes

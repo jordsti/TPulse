@@ -130,7 +130,7 @@ namespace TPulseAPI
 		public static GeoIPCountry Geo;
 		public static SecureRest RestApi;
 		public static RestManager RestManager;
-		public static Utils Utils = Utils.Instance;
+		//public static Utils Utils = Utils.Instance;
 		//public static StatTracker StatTracker = new StatTracker();
 		/// <summary>
 		/// Used for implementing REST Tokens prior to the REST system starting up.
@@ -169,7 +169,7 @@ namespace TPulseAPI
 			Order = 0;
             PlugInHandler.AddPlugIn(this);
 
-            Commands = new Commands();
+            Commands = new Commands(this);
 		}
 
         #region PlayerHandling
@@ -436,7 +436,7 @@ namespace TPulseAPI
 
         void NetHooks_NameCollision(int who, string name, HandledEventArgs e)
         {
-            string ip = TPulse.Utils.GetRealIP(Netplay.serverSock[who].tcpClient.Client.RemoteEndPoint.ToString());
+            string ip = Utils.GetRealIP(Netplay.serverSock[who].tcpClient.Client.RemoteEndPoint.ToString());
             foreach (TPPlayer ply in TPulse.Players)
             {
                 if (ply == null)
@@ -1095,6 +1095,23 @@ namespace TPulseAPI
 			}
 		}
 
+
+        public string GetPlayersList()
+        {
+            string list = "";
+
+            foreach (TPPlayer p in Players)
+            {
+                if (p != null && p.Active)
+                {
+                    list += p.Name + ", ";
+                }
+            }
+
+            return list.TrimEnd(new char[] { ' ', ',' });
+        }
+
+
 		private void OnGreetPlayer(int who, HandledEventArgs e)
 		{
 			var player = Players[who];
@@ -1105,7 +1122,7 @@ namespace TPulseAPI
 			}
 			player.LoginMS= DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 			//some work to do on this method
-			Utils.ShowFileToUser(player, "motd.txt");
+			Utils.ShowFileToUser(player, "motd.txt", GetPlayersList());
 
 			if (Config.PvPMode == "always" && !player.TPlayer.hostile)
 			{

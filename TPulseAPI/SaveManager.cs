@@ -78,7 +78,7 @@ namespace TPulseAPI
 			// These can be caused by an unexpected error such as a bad or out of date plugin
 			try
 			{
-				TPulse.Utils.Broadcast("Saving world. Momentary lag might result from this.", Color.Red);
+				Utils.Broadcast("Saving world. Momentary lag might result from this.", Color.Red);
 
 			}
 			catch (Exception ex)
@@ -157,7 +157,7 @@ namespace TPulseAPI
                                 //throw the event here
                                 onWorldSaved(new WorldSavedEventArgs(DateTime.Now, Main.worldPathName));
 
-								TPulse.Utils.Broadcast("World saved.", Color.Yellow);
+								Utils.Broadcast("World saved.", Color.Yellow);
 								Log.Info(string.Format("World saved at ({0})", Main.worldPathName));
 							}
 							catch (Exception e)

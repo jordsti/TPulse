@@ -65,7 +65,7 @@ namespace TPulseAPI.DB
 			try
 			{
 				database.Query("INSERT INTO ItemBans (ItemName, AllowedGroups) VALUES (@0, @1);",
-				               TPulse.Utils.GetItemByName(itemname)[0].name, "");
+				               Utils.GetItemByName(itemname)[0].name, "");
 				if (!ItemIsBanned(itemname, null))
 					ItemBans.Add(new ItemBan(itemname));
 			}
@@ -81,7 +81,7 @@ namespace TPulseAPI.DB
 				return;
 			try
 			{
-				database.Query("DELETE FROM ItemBans WHERE ItemName=@0;", TPulse.Utils.GetItemByName(itemname)[0].name);
+				database.Query("DELETE FROM ItemBans WHERE ItemName=@0;", Utils.GetItemByName(itemname)[0].name);
 				ItemBans.Remove(new ItemBan(itemname));
 			}
 			catch (Exception ex)

@@ -184,10 +184,10 @@ namespace TPulseAPI.DB
 			if (database.Query(query, parentname, newgroup.Permissions, string.Format("{0},{1},{2}", newgroup.R, newgroup.G, newgroup.B), name) != 1)
 				throw new GroupManagerException("Failed to update group '" + name + "'");
 
-			Group group = TPulse.Utils.GetGroup(name);
+			Group group = Utils.GetGroup(name);
 			group.ChatColor = chatcolor;
 			group.Permissions = permissions;
-			group.Parent = TPulse.Utils.GetGroup(parentname);
+			group.Parent = Utils.GetGroup(parentname);
 		}
 
 #if COMPAT_SIGS
@@ -208,7 +208,7 @@ namespace TPulseAPI.DB
 
 			if (database.Query("DELETE FROM GroupList WHERE GroupName=@0", name) == 1)
 			{
-				groups.Remove(TPulse.Utils.GetGroup(name));
+				groups.Remove(Utils.GetGroup(name));
 				return "Group " + name + " has been deleted successfully.";
 			}
 			else if (exceptions)
@@ -222,7 +222,7 @@ namespace TPulseAPI.DB
 			if (!GroupExists(name))
 				return "Error: Group doesn't exist.";
 
-			var group = TPulse.Utils.GetGroup(name);
+			var group = Utils.GetGroup(name);
 			var oldperms = group.Permissions; // Store old permissions in case of error
 			permissions.ForEach(p => group.AddPermission(p));
  
@@ -239,7 +239,7 @@ namespace TPulseAPI.DB
 			if (!GroupExists(name))
 				return "Error: Group doesn't exist.";
 
-			var group = TPulse.Utils.GetGroup(name);
+			var group = Utils.GetGroup(name);
 			var oldperms = group.Permissions; // Store old permissions in case of error
 			permissions.ForEach(p => group.RemovePermission(p));
 

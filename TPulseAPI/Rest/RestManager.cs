@@ -107,7 +107,7 @@ namespace TPulseAPI
 
 			// Inform players the server is shutting down
 			var msg = string.IsNullOrWhiteSpace(parameters["message"]) ? "Server is shutting down" : parameters["message"];
-			TPulse.Utils.StopServer(!GetBool(parameters["nosave"], false), msg);
+			Utils.StopServer(!GetBool(parameters["nosave"], false), msg);
 
 			return RestResponse("The server is shutting down");
 		}
@@ -117,7 +117,7 @@ namespace TPulseAPI
 			var msg = parameters["msg"];
 			if (string.IsNullOrWhiteSpace(msg))
 				return RestMissingParam("msg");
-			TPulse.Utils.Broadcast(msg);
+			Utils.Broadcast(msg);
 			return RestResponse("The message was broadcasted successfully");
 		}
 
@@ -525,7 +525,7 @@ namespace TPulseAPI
 				return ret;
 
 			TPPlayer player = (TPPlayer)ret;
-			TPulse.Utils.ForceKick(player, null == parameters["reason"] ? "Kicked via web" : parameters["reason"], false, true);
+			Utils.ForceKick(player, null == parameters["reason"] ? "Kicked via web" : parameters["reason"], false, true);
 			return RestResponse("Player " + player.Name + " was kicked");
 		}
 
@@ -538,7 +538,7 @@ namespace TPulseAPI
 			TPPlayer player = (TPPlayer)ret;
 			var reason = null == parameters["reason"] ? "Banned via web" : parameters["reason"];
 			TPulse.Bans.AddBan(player.IP, player.Name, reason);
-			TPulse.Utils.ForceKick(player, reason, false, true);
+			Utils.ForceKick(player, reason, false, true);
 			return RestResponse("Player " + player.Name + " was banned");
 		}
 
@@ -685,7 +685,7 @@ namespace TPulseAPI
 			if (string.IsNullOrWhiteSpace(name))
 				return RestMissingParam("player");
 
-			var found = TPulse.Utils.FindPlayer(name);
+			var found = Utils.FindPlayer(name);
 			switch(found.Count)
 			{
 				case 1:

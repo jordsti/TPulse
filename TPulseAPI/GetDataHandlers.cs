@@ -1235,7 +1235,7 @@ namespace TPulseAPI
 
 			if (max > 400 && max > args.Player.FirstMaxHP)
 			{
-				TPulse.Utils.ForceKick(args.Player, "Hacked Client Detected.", true);
+				Utils.ForceKick(args.Player, "Hacked Client Detected.", true);
 				return false;
 			}
 
@@ -1261,7 +1261,7 @@ namespace TPulseAPI
 
 			if (max > 400 && max > args.Player.FirstMaxMP)
 			{
-				TPulse.Utils.ForceKick(args.Player, "Hacked Client Detected.", true);
+				Utils.ForceKick(args.Player, "Hacked Client Detected.", true);
 				return false;
 			}
 
@@ -1279,19 +1279,19 @@ namespace TPulseAPI
 
 			if (OnPlayerInfo(playerid, hair, male, difficulty, name))
 			{
-				TPulse.Utils.ForceKick(args.Player, "A plugin cancelled the event.", true);
+				Utils.ForceKick(args.Player, "A plugin cancelled the event.", true);
 				return true;
 			}
 
 			if (name.Trim().Length == 0)
 			{
-				TPulse.Utils.ForceKick(args.Player, "Empty Name.", true);
+				Utils.ForceKick(args.Player, "Empty Name.", true);
 				return true;
 			}
 			var ban = TPulse.Bans.GetBanByName(name);
 			if (ban != null)
 			{
-				TPulse.Utils.ForceKick(args.Player, string.Format("You are banned: {0}", ban.Reason), true);
+				Utils.ForceKick(args.Player, string.Format("You are banned: {0}", ban.Reason), true);
 				return true;
 			}
 			if (args.Player.ReceivedInfo)
@@ -1300,12 +1300,12 @@ namespace TPulseAPI
 			}
 			if (TPulse.Config.MediumcoreOnly && difficulty < 1)
 			{
-				TPulse.Utils.ForceKick(args.Player, "Server is set to mediumcore and above characters only!", true);
+				Utils.ForceKick(args.Player, "Server is set to mediumcore and above characters only!", true);
 				return true;
 			}
 			if (TPulse.Config.HardcoreOnly && difficulty < 2)
 			{
-				TPulse.Utils.ForceKick(args.Player, "Server is set to hardcore characters only!", true);
+				Utils.ForceKick(args.Player, "Server is set to hardcore characters only!", true);
 				return true;
 			}
 			args.Player.Difficulty = difficulty;
@@ -1346,7 +1346,7 @@ namespace TPulseAPI
 			var user = TPulse.Users.GetUserByName(args.Player.Name);
             if (user != null && !TPulse.Config.DisableLoginBeforeJoin)
 			{
-				string encrPass = TPulse.Utils.HashPassword(password);
+				string encrPass = Utils.HashPassword(password);
 				if (user.Password.ToUpper() == encrPass.ToUpper())
 				{
 				    args.Player.RequiresPassword = false;
@@ -1356,7 +1356,7 @@ namespace TPulseAPI
 				        args.Player.State = 2;
 				    NetMessage.SendData((int) PacketTypes.WorldInfo, args.Player.Index);
 
-				    var group = TPulse.Utils.GetGroup(user.Group);
+				    var group = Utils.GetGroup(user.Group);
 
 				    if (TPulse.Config.ServerSideInventory)
 				    {
@@ -1395,7 +1395,7 @@ namespace TPulseAPI
                     tPulse.Commands.HandlePlayerLogin(new PlayerLoginEventArgs(args.Player));
 					return true;
 				}
-				TPulse.Utils.ForceKick(args.Player, "Invalid user account password.", true);
+				Utils.ForceKick(args.Player, "Invalid user account password.", true);
 				return true;
 			}
 			if (!string.IsNullOrEmpty(TPulse.Config.ServerPassword))
@@ -1408,11 +1408,11 @@ namespace TPulseAPI
 					NetMessage.SendData((int) PacketTypes.WorldInfo, args.Player.Index);
 					return true;
 				}
-				TPulse.Utils.ForceKick(args.Player, "Incorrect server password", true);
+				Utils.ForceKick(args.Player, "Incorrect server password", true);
 				return true;
 			}
 
-			TPulse.Utils.ForceKick(args.Player, "Bad password attempt", true);
+			Utils.ForceKick(args.Player, "Bad password attempt", true);
 			return true;
 		}
 
@@ -1423,12 +1423,12 @@ namespace TPulseAPI
             args.Player.RequestedSection = true;
 			if (String.IsNullOrEmpty(args.Player.Name))
 			{
-				TPulse.Utils.ForceKick(args.Player, "Blank name.", true);
+				Utils.ForceKick(args.Player, "Blank name.", true);
 				return true;
 			}
 			if (TPulse.HackedHealth(args.Player) && !args.Player.Group.HasPermission(Permissions.ignorestathackdetection))
 			{
-				TPulse.Utils.ForceKick(args.Player, "You have hacked health/mana, please use a different character.", true);
+				Utils.ForceKick(args.Player, "You have hacked health/mana, please use a different character.", true);
 				return true;
 			}
 
@@ -1437,10 +1437,10 @@ namespace TPulseAPI
 				TPulse.HackedInventory(args.Player);
 			}
 
-			if (TPulse.Utils.ActivePlayers() + 1 > TPulse.Config.MaxSlots &&
+			if (Utils.ActivePlayers() + 1 > TPulse.Config.MaxSlots &&
 				!args.Player.Group.HasPermission(Permissions.reservedslot))
 			{
-				TPulse.Utils.ForceKick(args.Player, TPulse.Config.ServerFullReason, true);
+				Utils.ForceKick(args.Player, TPulse.Config.ServerFullReason, true);
 				return true;
 			}
 
@@ -1449,19 +1449,19 @@ namespace TPulseAPI
 			if (TPulse.Config.EnableGeoIP && TPulse.Geo != null)
 			{
 				Log.Info(string.Format("{0} ({1}) from '{2}' group from '{3}' joined. ({4}/{5})", args.Player.Name, args.Player.IP,
-									   args.Player.Group.Name, args.Player.Country, TPulse.Utils.ActivePlayers(),
+									   args.Player.Group.Name, args.Player.Country, Utils.ActivePlayers(),
 									   TPulse.Config.MaxSlots));
-				TPulse.Utils.Broadcast(string.Format("{0} ({1}) has joined.", args.Player.Name, args.Player.Country), Color.Yellow);
+				Utils.Broadcast(string.Format("{0} ({1}) has joined.", args.Player.Name, args.Player.Country), Color.Yellow);
 			}
 			else
 			{
 				Log.Info(string.Format("{0} ({1}) from '{2}' group joined. ({3}/{4})", args.Player.Name, args.Player.IP,
-									   args.Player.Group.Name, TPulse.Utils.ActivePlayers(), TPulse.Config.MaxSlots));
-				TPulse.Utils.Broadcast(args.Player.Name + " has joined.", Color.Yellow);
+									   args.Player.Group.Name, Utils.ActivePlayers(), TPulse.Config.MaxSlots));
+				Utils.Broadcast(args.Player.Name + " has joined.", Color.Yellow);
 			}
 
 			if (TPulse.Config.DisplayIPToAdmins)
-				TPulse.Utils.SendLogs(string.Format("{0} has joined. IP: {1}", args.Player.Name, args.Player.IP), Color.Blue);
+				Utils.SendLogs(string.Format("{0} has joined. IP: {1}", args.Player.Name, args.Player.IP), Color.Blue);
 
 			return false;
 		}
@@ -1662,7 +1662,7 @@ namespace TPulseAPI
 		    var fail = args.Data.ReadBoolean();
 			if (OnTileEdit(args.Player, tileX, tileY, tiletype, type, fail))
 				return true;
-			if (!TPulse.Utils.TileValid(tileX, tileY))
+			if (!Utils.TileValid(tileX, tileY))
 				return false;
 
             if (args.Player.Dead && TPulse.Config.PreventDeadModification)
@@ -1716,14 +1716,14 @@ namespace TPulseAPI
 				}
 				if (type == 1 && tiletype == 21)
 				{
-					if (TPulse.Utils.MaxChests())
+					if (Utils.MaxChests())
 					{
 						args.Player.SendMessage("Reached the world's max chest limit, unable to place more.", Color.Red);
 						args.Player.SendTileSquare(tileX, tileY);
 						return true;
 					}
-					if ((TPulse.Utils.TileValid(tileX, tileY + 1) && Main.tile[tileX, tileY + 1].type == 138) ||
-						(TPulse.Utils.TileValid(tileX + 1, tileY + 1) && Main.tile[tileX + 1, tileY + 1].type == 138))
+					if ((Utils.TileValid(tileX, tileY + 1) && Main.tile[tileX, tileY + 1].type == 138) ||
+						(Utils.TileValid(tileX + 1, tileY + 1) && Main.tile[tileX + 1, tileY + 1].type == 138))
 					{
 						args.Player.SendTileSquare(tileX, tileY);
 						return true;
@@ -2017,7 +2017,7 @@ namespace TPulseAPI
 			var owner = args.Data.ReadInt8();
 			var type = args.Data.ReadInt8();
 		    owner = (byte)args.Player.Index;
-			var index = TPulse.Utils.SearchProjectile(ident, owner);
+			var index = Utils.SearchProjectile(ident, owner);
 
 			if (OnNewProjectile(ident, pos, vel, knockback, dmg, owner, type, index))
 				return true;
@@ -2095,7 +2095,7 @@ namespace TPulseAPI
 			var ident = args.Data.ReadInt16();
 			var owner = args.Data.ReadInt8();
             owner = (byte)args.Player.Index;
-			var index = TPulse.Utils.SearchProjectile(ident, owner);
+			var index = Utils.SearchProjectile(ident, owner);
 
 			if (index > Main.maxProjectiles || index < 0)
 			{
@@ -2256,7 +2256,7 @@ namespace TPulseAPI
 				return true;
 			}
 
-			if (Main.tile[tileX, tileY].type != 0x15 && (!TPulse.Utils.MaxChests() && Main.tile[tileX, tileY].type != 0)) //Chest
+			if (Main.tile[tileX, tileY].type != 0x15 && (!Utils.MaxChests() && Main.tile[tileX, tileY].type != 0)) //Chest
 			{
 				args.Player.SendTileSquare(tileX, tileY);
 				return true;
@@ -2294,12 +2294,12 @@ namespace TPulseAPI
 					{
 						if (TPulse.Config.BanOnMediumcoreDeath)
 						{
-							if (!TPulse.Utils.Ban(args.Player, TPulse.Config.MediumcoreBanReason))
-								TPulse.Utils.ForceKick(args.Player, "Death results in a ban, but can't ban you.", true);
+							if (!Utils.Ban(args.Player, TPulse.Config.MediumcoreBanReason))
+								Utils.ForceKick(args.Player, "Death results in a ban, but can't ban you.", true);
 						}
 						else
 						{
-							TPulse.Utils.ForceKick(args.Player, TPulse.Config.MediumcoreKickReason, true, false);
+							Utils.ForceKick(args.Player, TPulse.Config.MediumcoreKickReason, true, false);
 						}
 						return true;
 					}
@@ -2790,7 +2790,7 @@ namespace TPulseAPI
                     break;
             }
 
-		    TPulse.Utils.SendLogs(string.Format("{0} summoned {1}", args.Player.Name, boss), Color.Red);
+		    Utils.SendLogs(string.Format("{0} summoned {1}", args.Player.Name, boss), Color.Red);
 		    return false;
 		}
 	}

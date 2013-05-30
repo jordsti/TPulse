@@ -13,6 +13,13 @@ using TPulseAPI.Events;
 namespace TFriends
 {
 
+    /* Idea :
+     *      Friend Message logger
+     *      More status like busy,afk
+     * To Do
+     *     Put the verbose message into the log file
+     */ 
+
     [APIVersion(1, 12)]
     public class TFriends : TerrariaPlugin
     {
@@ -147,7 +154,8 @@ namespace TFriends
         private void OnWorldSaved(WorldSavedEventArgs args)
         {
             //Need to save friend db
-            Console.Write("Saving friends list...");
+            //put this into the log file, when TPulse logger will not be static
+            Console.WriteLine("Saving friends list...");
             FriendsList.Save(FriendsDB.DefaultFile);
         }
 
@@ -277,6 +285,8 @@ namespace TFriends
             }
             catch (Exception ex)
             {
+                //put this into a log file or just remove it
+                //will see
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine(ex.Source);
@@ -298,12 +308,6 @@ namespace TFriends
             {
                 if (player.IsLoggedIn)
                 {
-                    Console.WriteLine(args.Parameters.Count);
-
-                    foreach (string p in args.Parameters)
-                    {
-                        Console.WriteLine(p);
-                    }
 
                     if (args.Parameters.Count >= 2)
                     {
@@ -311,7 +315,7 @@ namespace TFriends
                         FriendList fl = GetListOrCreate(cu);
                         string prams = args.Parameters[0];
                         prams = prams.ToLower();
-                        Console.WriteLine(prams);
+
                         if (prams == "add")
                         {
 

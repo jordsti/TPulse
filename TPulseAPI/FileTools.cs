@@ -114,7 +114,7 @@ namespace TPulseAPI
 			using (var tr = new StreamReader(WhitelistPath))
 			{
 				string whitelist = tr.ReadToEnd();
-				ip = TPulse.Utils.GetRealIP(ip);
+				ip = Utils.GetRealIP(ip);
 				bool contains = whitelist.Contains(ip);
 				if (!contains)
 				{
@@ -122,7 +122,7 @@ namespace TPulseAPI
 					{
 						if (string.IsNullOrWhiteSpace(line))
 							continue;
-						contains = TPulse.Utils.GetIPv4Address(line).Equals(ip);
+						contains = Utils.GetIPv4Address(line).Equals(ip);
 						if (contains)
 							return true;
 					}

@@ -60,7 +60,7 @@ namespace TPulseAPI
 				if (worldpath != null && !Directory.Exists(worldpath))
 					Directory.CreateDirectory(worldpath);
 
-				TPulse.Utils.Broadcast("Server map saving, potential lag spike.");
+				Utils.Broadcast("Server map saving, potential lag spike.");
 				Console.WriteLine("Backing up world...");
 
 				SaveManager.Instance.SaveWorld();

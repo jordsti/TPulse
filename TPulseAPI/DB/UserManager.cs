@@ -60,7 +60,7 @@ namespace TPulseAPI.DB
 			try
 			{
 				ret = database.Query("INSERT INTO Users (Username, Password, UserGroup, IP) VALUES (@0, @1, @2, @3);", user.Name,
-								   TPulse.Utils.HashPassword(user.Password), user.Group, user.Address);
+								   Utils.HashPassword(user.Password), user.Group, user.Address);
 			}
 			catch (Exception ex)
 			{
@@ -112,7 +112,7 @@ namespace TPulseAPI.DB
 			try
 			{
 				if (
-					database.Query("UPDATE Users SET Password = @0 WHERE Username = @1;", TPulse.Utils.HashPassword(password),
+					database.Query("UPDATE Users SET Password = @0 WHERE Username = @1;", Utils.HashPassword(password),
 					               user.Name) == 0)
 					throw new UserNotExistException(user.Name);
 			}
@@ -182,7 +182,7 @@ namespace TPulseAPI.DB
 					if (reader.Read())
 					{
 						string group = reader.Get<string>("UserGroup");
-						return TPulse.Utils.GetGroup(group);
+						return Utils.GetGroup(group);
 					}
 				}
 			}
@@ -190,7 +190,7 @@ namespace TPulseAPI.DB
 			{
 				Log.ConsoleError("GetGroupForIP SQL returned an error: " + ex);
 			}
-			return TPulse.Utils.GetGroup(TPulse.Config.DefaultGuestGroupName);
+			return Utils.GetGroup(TPulse.Config.DefaultGuestGroupName);
 		}
 
 		public Group GetGroupForIPExpensive(string ip)
@@ -201,9 +201,9 @@ namespace TPulseAPI.DB
 				{
 					while (reader.Read())
 					{
-						if (TPulse.Utils.GetIPv4Address(reader.Get<string>("IP")) == ip)
+						if (Utils.GetIPv4Address(reader.Get<string>("IP")) == ip)
 						{
-							return TPulse.Utils.GetGroup(reader.Get<string>("UserGroup"));
+							return Utils.GetGroup(reader.Get<string>("UserGroup"));
 						}
 					}
 				}
@@ -212,7 +212,7 @@ namespace TPulseAPI.DB
 			{
 				Log.ConsoleError("GetGroupForIP SQL returned an error: " + ex);
 			}
-			return TPulse.Utils.GetGroup(TPulse.Config.DefaultGuestGroupName);
+			return Utils.GetGroup(TPulse.Config.DefaultGuestGroupName);
 		}
 
 
