@@ -209,7 +209,7 @@ namespace TPulseAPI
 					string.Format(
 						@"\_TPulse_ver\{6}\mapname\{1}\sv_maxclients\{2}\clients\{3}\sv_privateClients\{4}\hconly\{5}\gamename\TERRARIA\protocol\100\sv_hostname\{0}\g_needPass\{7}",
 						tPulse.Config.ServerName, Main.worldName, Main.maxNetPlayers,
-						Utils.ActivePlayers(), Main.maxNetPlayers - tPulse.Config.MaxSlots,
+						tPulse.ActivePlayers(), Main.maxNetPlayers - tPulse.Config.MaxSlots,
 						tPulse.Config.HardcoreOnly ? 1 : 0, TPulse.VersionNum,
 						Netplay.password != "" ? 1 : 0);
 				if (challenge != "")
@@ -229,7 +229,7 @@ namespace TPulseAPI
 				var statusstring = string.Format(
 					@"\_TPulse_ver\{6}\mapname\{1}\sv_maxclients\{2}\clients\{3}\sv_privateClients\{4}\hconly\{5}\gamename\TERRARIA\protocol\100\sv_hostname\{0}\g_needPass\{7}",
 					tPulse.Config.ServerName, Main.worldName, Main.maxNetPlayers,
-					Utils.ActivePlayers(), Main.maxNetPlayers - tPulse.Config.MaxSlots,
+					tPulse.ActivePlayers(), Main.maxNetPlayers - tPulse.Config.MaxSlots,
 					tPulse.Config.HardcoreOnly ? 1 : 0, TPulse.VersionNum,
 					Netplay.password != "" ? 1 : 0) + "\n";
 				if (challenge != "")

@@ -214,7 +214,7 @@ namespace TPulseAPI
 
         #region methods from utils
 
-        public static int ActivePlayers()
+        public int ActivePlayers()
         {
             return Main.player.Where(p => null != p && p.active).Count();
         }

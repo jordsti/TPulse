@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPluginSample", "TPluginSam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TKit", "TKit\TKit.csproj", "{D50E2277-252F-469D-99B4-90EE8B67DFDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMapper", "TMapper\TMapper.csproj", "{816CC661-89FA-4650-966C-FC2EEB5E5C59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,16 @@ Global
 		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D50E2277-252F-469D-99B4-90EE8B67DFDB}.Release|x86.ActiveCfg = Release|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{816CC661-89FA-4650-966C-FC2EEB5E5C59}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

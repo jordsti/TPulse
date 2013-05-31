@@ -2904,7 +2904,7 @@ namespace TPulseAPI
 		private void GetVersion(CommandArgs args)
 		{
 			args.Player.SendInfoMessage(string.Format("TPulse: {0} ({1}): ({2}/{3})", TPulse.VersionNum, TPulse.VersionCodename,
-												  Utils.ActivePlayers(), tPulse.Config.MaxSlots));
+												  tPulse.ActivePlayers(), tPulse.Config.MaxSlots));
 		}
 
 		private void ListConnectedPlayers(CommandArgs args)
@@ -2941,7 +2941,7 @@ namespace TPulseAPI
 
 			//Display the current page and the number of pages.
 			args.Player.SendSuccessMessage(string.Format("Players: {0}/{1}",
-												  Utils.ActivePlayers(), tPulse.Config.MaxSlots));
+												  tPulse.ActivePlayers(), tPulse.Config.MaxSlots));
 			args.Player.SendSuccessMessage(string.Format("Current players page {0}/{1}:", page + 1, pagecount + 1));
 
 			//Add up to pagelimit names to a list

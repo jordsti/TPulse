@@ -1438,7 +1438,7 @@ namespace TPulseAPI
 				TPulse.HackedInventory(args.Player);
 			}
 
-			if (Utils.ActivePlayers() + 1 > tPulse.Config.MaxSlots &&
+			if (tPulse.ActivePlayers() + 1 > tPulse.Config.MaxSlots &&
 				!args.Player.Group.HasPermission(Permissions.reservedslot))
 			{
                 tPulse.PlayerHandle.ForceKick(args.Player, tPulse.Config.ServerFullReason, true);
@@ -1450,14 +1450,14 @@ namespace TPulseAPI
 			if (tPulse.Config.EnableGeoIP && tPulse.Geo != null)
 			{
 				Log.Info(string.Format("{0} ({1}) from '{2}' group from '{3}' joined. ({4}/{5})", args.Player.Name, args.Player.IP,
-									   args.Player.Group.Name, args.Player.Country, Utils.ActivePlayers(),
+									   args.Player.Group.Name, args.Player.Country, tPulse.ActivePlayers(),
 									   tPulse.Config.MaxSlots));
 				Utils.Broadcast(string.Format("{0} ({1}) has joined.", args.Player.Name, args.Player.Country), Color.Yellow);
 			}
 			else
 			{
 				Log.Info(string.Format("{0} ({1}) from '{2}' group joined. ({3}/{4})", args.Player.Name, args.Player.IP,
-									   args.Player.Group.Name, Utils.ActivePlayers(), tPulse.Config.MaxSlots));
+									   args.Player.Group.Name, tPulse.ActivePlayers(), tPulse.Config.MaxSlots));
 				Utils.Broadcast(args.Player.Name + " has joined.", Color.Yellow);
 			}
 
