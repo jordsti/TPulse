@@ -85,7 +85,7 @@ namespace TPulseAPI
             {
                 int spawnTileX;
                 int spawnTileY;
-                Utils.GetRandomClearTileWithInRange(startTileX, startTileY, tileXRange, tileYRange, out spawnTileX,
+                MapTools.GetRandomClearTileWithInRange(startTileX, startTileY, tileXRange, tileYRange, out spawnTileX,
                                                            out spawnTileY);
                 int npcid = NPC.NewNPC(spawnTileX * 16, spawnTileY * 16, type, 0);
                 // This is for special slimes

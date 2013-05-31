@@ -1663,7 +1663,7 @@ namespace TPulseAPI
 		    var fail = args.Data.ReadBoolean();
 			if (OnTileEdit(args.Player, tileX, tileY, tiletype, type, fail))
 				return true;
-			if (!Utils.TileValid(tileX, tileY))
+            if (!MapTools.TileValid(tileX, tileY))
 				return false;
 
             if (args.Player.Dead && tPulse.Config.PreventDeadModification)
@@ -1723,8 +1723,8 @@ namespace TPulseAPI
 						args.Player.SendTileSquare(tileX, tileY);
 						return true;
 					}
-					if ((Utils.TileValid(tileX, tileY + 1) && Main.tile[tileX, tileY + 1].type == 138) ||
-						(Utils.TileValid(tileX + 1, tileY + 1) && Main.tile[tileX + 1, tileY + 1].type == 138))
+                    if ((MapTools.TileValid(tileX, tileY + 1) && Main.tile[tileX, tileY + 1].type == 138) ||
+                        (MapTools.TileValid(tileX + 1, tileY + 1) && Main.tile[tileX + 1, tileY + 1].type == 138))
 					{
 						args.Player.SendTileSquare(tileX, tileY);
 						return true;
