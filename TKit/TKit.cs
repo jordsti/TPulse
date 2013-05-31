@@ -7,12 +7,6 @@ using TPulseAPI;
 
 namespace TKit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using Terraria;
-    using TPulseAPI;
 
     namespace TKit
     {
@@ -25,6 +19,7 @@ namespace TKit
                 : base(game)
             {
                 PlugInHandler.AddPlugIn(this);
+ 
             }
 
             public override Version Version

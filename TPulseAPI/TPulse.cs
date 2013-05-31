@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -212,6 +213,12 @@ namespace TPulseAPI
         #endregion
 
         #region methods from utils
+
+        public static int ActivePlayers()
+        {
+            return Main.player.Where(p => null != p && p.active).Count();
+        }
+
 
         //put this into a logtools maybe ?
         public void SendLogs(string log, Color color, TPulse tPulse)
@@ -928,7 +935,7 @@ namespace TPulseAPI
 		{
 		    Console.Title = string.Format("{0}{1}/{2} @ {3}:{4} (TPulse v{5})",
 		                                  !string.IsNullOrWhiteSpace(Config.ServerName) ? Config.ServerName + " - " : "",
-		                                  Utils.ActivePlayers(),
+		                                  ActivePlayers(),
 		                                  Config.MaxSlots, Netplay.serverListenIP, Netplay.serverPort, Version);
 		}
 
@@ -974,7 +981,7 @@ namespace TPulseAPI
 				player.Group = Users.GetGroupForIP(player.IP);
 			}
 
-			if (Utils.ActivePlayers() + 1 > Config.MaxSlots + 20)
+			if (ActivePlayers() + 1 > Config.MaxSlots + 20)
 			{
                 PlayerHandle.ForceKick(player, Config.ServerFullNoReservedReason, true, false);
 				handler.Handled = true;
@@ -1459,7 +1466,7 @@ namespace TPulseAPI
 			}
 			else
 			{
-				Main.invasionSize = 100 + (Config.InvasionMultiplier*Utils.ActivePlayers());
+				Main.invasionSize = 100 + (Config.InvasionMultiplier*ActivePlayers());
 			}
 
 			Main.invasionWarn = 0;
