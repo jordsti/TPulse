@@ -60,107 +60,170 @@ namespace TMapper.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap chest_b {
+        internal static System.Drawing.Bitmap Adamantite {
             get {
-                object obj = ResourceManager.GetObject("chest_b", resourceCulture);
+                object obj = ResourceManager.GetObject("Adamantite", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_base {
+        internal static System.Drawing.Bitmap Altar {
             get {
-                object obj = ResourceManager.GetObject("chest_base", resourceCulture);
+                object obj = ResourceManager.GetObject("Altar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_c {
+        internal static System.Drawing.Bitmap Amethyst {
             get {
-                object obj = ResourceManager.GetObject("chest_c", resourceCulture);
+                object obj = ResourceManager.GetObject("Amethyst", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_g {
+        internal static System.Drawing.Bitmap ArmsDealer {
             get {
-                object obj = ResourceManager.GetObject("chest_g", resourceCulture);
+                object obj = ResourceManager.GetObject("ArmsDealer", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_gl {
+        internal static System.Drawing.Bitmap Barrel {
             get {
-                object obj = ResourceManager.GetObject("chest_gl", resourceCulture);
+                object obj = ResourceManager.GetObject("Barrel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_s {
+        internal static System.Drawing.Bitmap Chest {
             get {
-                object obj = ResourceManager.GetObject("chest_s", resourceCulture);
+                object obj = ResourceManager.GetObject("Chest", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_sl {
+        internal static System.Drawing.Bitmap Clothier {
             get {
-                object obj = ResourceManager.GetObject("chest_sl", resourceCulture);
+                object obj = ResourceManager.GetObject("Clothier", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap chest_t {
+        internal static System.Drawing.Bitmap Cobalt {
             get {
-                object obj = ResourceManager.GetObject("chest_t", resourceCulture);
+                object obj = ResourceManager.GetObject("Cobalt", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_a {
+        internal static System.Drawing.Bitmap Containers {
             get {
-                object obj = ResourceManager.GetObject("gem_a", resourceCulture);
+                object obj = ResourceManager.GetObject("Containers", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_base {
+        internal static System.Drawing.Bitmap Copper {
             get {
-                object obj = ResourceManager.GetObject("gem_base", resourceCulture);
+                object obj = ResourceManager.GetObject("Copper", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_d {
+        internal static System.Drawing.Bitmap Demolitionist {
             get {
-                object obj = ResourceManager.GetObject("gem_d", resourceCulture);
+                object obj = ResourceManager.GetObject("Demolitionist", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_e {
+        internal static System.Drawing.Bitmap Demonite {
             get {
-                object obj = ResourceManager.GetObject("gem_e", resourceCulture);
+                object obj = ResourceManager.GetObject("Demonite", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_r {
+        internal static System.Drawing.Bitmap Diamond {
             get {
-                object obj = ResourceManager.GetObject("gem_r", resourceCulture);
+                object obj = ResourceManager.GetObject("Diamond", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_s {
+        internal static System.Drawing.Bitmap Dryad {
             get {
-                object obj = ResourceManager.GetObject("gem_s", resourceCulture);
+                object obj = ResourceManager.GetObject("Dryad", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap gem_t {
+        internal static System.Drawing.Bitmap Emerald {
             get {
-                object obj = ResourceManager.GetObject("gem_t", resourceCulture);
+                object obj = ResourceManager.GetObject("Emerald", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Gems {
+            get {
+                object obj = ResourceManager.GetObject("Gems", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap GoblinTinkerer {
+            get {
+                object obj = ResourceManager.GetObject("GoblinTinkerer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Gold {
+            get {
+                object obj = ResourceManager.GetObject("Gold", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap GoldChest {
+            get {
+                object obj = ResourceManager.GetObject("GoldChest", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Guide {
+            get {
+                object obj = ResourceManager.GetObject("Guide", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Heart {
+            get {
+                object obj = ResourceManager.GetObject("Heart", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Hellforge {
+            get {
+                object obj = ResourceManager.GetObject("Hellforge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Hellstone {
+            get {
+                object obj = ResourceManager.GetObject("Hellstone", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Iron {
+            get {
+                object obj = ResourceManager.GetObject("Iron", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,254 +246,191 @@ namespace TMapper.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap objects_altar {
+        internal static System.Drawing.Bitmap LockedGoldChest {
             get {
-                object obj = ResourceManager.GetObject("objects_altar", resourceCulture);
+                object obj = ResourceManager.GetObject("LockedGoldChest", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_base {
+        internal static System.Drawing.Bitmap LockedShadowChest {
             get {
-                object obj = ResourceManager.GetObject("objects_base", resourceCulture);
+                object obj = ResourceManager.GetObject("LockedShadowChest", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_heart {
+        internal static System.Drawing.Bitmap Mechanic {
             get {
-                object obj = ResourceManager.GetObject("objects_heart", resourceCulture);
+                object obj = ResourceManager.GetObject("Mechanic", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_hellforge {
+        internal static System.Drawing.Bitmap Merchant {
             get {
-                object obj = ResourceManager.GetObject("objects_hellforge", resourceCulture);
+                object obj = ResourceManager.GetObject("Merchant", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_shadow {
+        internal static System.Drawing.Bitmap Meteorite {
             get {
-                object obj = ResourceManager.GetObject("objects_shadow", resourceCulture);
+                object obj = ResourceManager.GetObject("Meteorite", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_sign {
+        internal static System.Drawing.Bitmap Mythril {
             get {
-                object obj = ResourceManager.GetObject("objects_sign", resourceCulture);
+                object obj = ResourceManager.GetObject("Mythril", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_statue {
+        internal static System.Drawing.Bitmap Nurse {
             get {
-                object obj = ResourceManager.GetObject("objects_statue", resourceCulture);
+                object obj = ResourceManager.GetObject("Nurse", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_tombstone {
+        internal static System.Drawing.Bitmap Objects {
             get {
-                object obj = ResourceManager.GetObject("objects_tombstone", resourceCulture);
+                object obj = ResourceManager.GetObject("Objects", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_torch {
+        internal static System.Drawing.Bitmap Obsidian {
             get {
-                object obj = ResourceManager.GetObject("objects_torch", resourceCulture);
+                object obj = ResourceManager.GetObject("Obsidian", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap objects_unknown {
+        internal static System.Drawing.Bitmap OldMan {
             get {
-                object obj = ResourceManager.GetObject("objects_unknown", resourceCulture);
+                object obj = ResourceManager.GetObject("OldMan", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_a {
+        internal static System.Drawing.Bitmap Ores {
             get {
-                object obj = ResourceManager.GetObject("ore_a", resourceCulture);
+                object obj = ResourceManager.GetObject("Ores", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_base {
+        internal static System.Drawing.Bitmap People {
             get {
-                object obj = ResourceManager.GetObject("ore_base", resourceCulture);
+                object obj = ResourceManager.GetObject("People", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_c {
+        internal static System.Drawing.Bitmap Ruby {
             get {
-                object obj = ResourceManager.GetObject("ore_c", resourceCulture);
+                object obj = ResourceManager.GetObject("Ruby", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_cob {
+        internal static System.Drawing.Bitmap SantaClaus {
             get {
-                object obj = ResourceManager.GetObject("ore_cob", resourceCulture);
+                object obj = ResourceManager.GetObject("SantaClaus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_d {
+        internal static System.Drawing.Bitmap Sapphire {
             get {
-                object obj = ResourceManager.GetObject("ore_d", resourceCulture);
+                object obj = ResourceManager.GetObject("Sapphire", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_g {
+        internal static System.Drawing.Bitmap ShadowChest {
             get {
-                object obj = ResourceManager.GetObject("ore_g", resourceCulture);
+                object obj = ResourceManager.GetObject("ShadowChest", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_h {
+        internal static System.Drawing.Bitmap ShadowOrb {
             get {
-                object obj = ResourceManager.GetObject("ore_h", resourceCulture);
+                object obj = ResourceManager.GetObject("ShadowOrb", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_i {
+        internal static System.Drawing.Bitmap Sign {
             get {
-                object obj = ResourceManager.GetObject("ore_i", resourceCulture);
+                object obj = ResourceManager.GetObject("Sign", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_m {
+        internal static System.Drawing.Bitmap Silver {
             get {
-                object obj = ResourceManager.GetObject("ore_m", resourceCulture);
+                object obj = ResourceManager.GetObject("Silver", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_myth {
+        internal static System.Drawing.Bitmap Spawn {
             get {
-                object obj = ResourceManager.GetObject("ore_myth", resourceCulture);
+                object obj = ResourceManager.GetObject("Spawn", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_o {
+        internal static System.Drawing.Bitmap Statue {
             get {
-                object obj = ResourceManager.GetObject("ore_o", resourceCulture);
+                object obj = ResourceManager.GetObject("Statue", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap ore_s {
+        internal static System.Drawing.Bitmap Tombstone {
             get {
-                object obj = ResourceManager.GetObject("ore_s", resourceCulture);
+                object obj = ResourceManager.GetObject("Tombstone", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap people_arms {
+        internal static System.Drawing.Bitmap Topaz {
             get {
-                object obj = ResourceManager.GetObject("people_arms", resourceCulture);
+                object obj = ResourceManager.GetObject("Topaz", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap people_base {
+        internal static System.Drawing.Bitmap Torch {
             get {
-                object obj = ResourceManager.GetObject("people_base", resourceCulture);
+                object obj = ResourceManager.GetObject("Torch", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap people_cloth {
+        internal static System.Drawing.Bitmap TrashCan {
             get {
-                object obj = ResourceManager.GetObject("people_cloth", resourceCulture);
+                object obj = ResourceManager.GetObject("TrashCan", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap people_demo {
+        internal static System.Drawing.Bitmap Unknown {
             get {
-                object obj = ResourceManager.GetObject("people_demo", resourceCulture);
+                object obj = ResourceManager.GetObject("Unknown", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap people_dryad {
+        internal static System.Drawing.Bitmap Wizard {
             get {
-                object obj = ResourceManager.GetObject("people_dryad", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_guide {
-            get {
-                object obj = ResourceManager.GetObject("people_guide", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_mech {
-            get {
-                object obj = ResourceManager.GetObject("people_mech", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_merch {
-            get {
-                object obj = ResourceManager.GetObject("people_merch", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_nurse {
-            get {
-                object obj = ResourceManager.GetObject("people_nurse", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_oldman {
-            get {
-                object obj = ResourceManager.GetObject("people_oldman", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_santa {
-            get {
-                object obj = ResourceManager.GetObject("people_santa", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_spawn {
-            get {
-                object obj = ResourceManager.GetObject("people_spawn", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_tinker {
-            get {
-                object obj = ResourceManager.GetObject("people_tinker", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap people_wizard {
-            get {
-                object obj = ResourceManager.GetObject("people_wizard", resourceCulture);
+                object obj = ResourceManager.GetObject("Wizard", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
