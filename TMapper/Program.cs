@@ -56,10 +56,11 @@ namespace TMapper
 
                 mapper.ProcessWorld(file, null);
                 mapper.CreatePreviewPNG("test.png", null);
-                
+                ImageCutter cutter = new ImageCutter("test.png");
+
+                cutter.Cuts();
             }
 
-            Console.Read();
         }
 
     }

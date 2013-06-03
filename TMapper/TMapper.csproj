@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Global.cs" />
+    <Compile Include="ImageCutter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
