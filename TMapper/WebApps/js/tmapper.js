@@ -10,6 +10,8 @@ var MapCols = 64
 var mapwidth = 0;
 var mapheight = 0;
 
+var ZoomRatio = 1.0;
+
 function pad(num, size) {
     var s = num+"";
     while (s.length < size) s = "0" + s;
@@ -39,7 +41,7 @@ function keyDown(event)
 	else if(event.keyCode == 39)
 	{
 		//right arrow
-		if(CurCol + 1 < MapCols - (mapwidth/TileWidth))
+		if(CurCol + 1 < MapCols - ( mapwidth / (TileWidth*ZoomRatio) ) )
 		{
 			CurCol++;
 			drawMap();
@@ -48,7 +50,7 @@ function keyDown(event)
 	else if(event.keyCode == 40)
 	{
 		//down arrow
-		if(CurRow + 1 < MapRows - (mapheight/TileHeight))
+		if(CurRow + 1 < MapRows - ( mapheight / (TileHeight*ZoomRatio) ) )
 		{
 			CurRow++;
 			drawMap();
@@ -72,6 +74,29 @@ function cleanImgs()
 	}
 }
 
+
+function updateZoomForm()
+{
+	var tzoom = document.getElementById("tzoomratio");
+	tzoom.value = ZoomRatio;
+}
+
+function onmouseWheel(event)
+{
+	if(event.wheelDelta == -120 && ZoomRatio > 0.5)
+	{
+		ZoomRatio = ZoomRatio - 0.1;
+		drawMap();
+		updateZoomForm();
+	}
+	else if(event.wheelDelta == 120 && ZoomRatio < 5)
+	{
+		ZoomRatio = ZoomRatio + 0.1;
+		drawMap();
+		updateZoomForm();
+	}
+}
+
 function onLoadMapper()
 {
 	//Getting the container
@@ -80,38 +105,52 @@ function onLoadMapper()
 var viewportWidth  = document.documentElement.clientWidth
   , viewportHeight = document.documentElement.clientHeight;
 	
-	mapheight = viewportHeight - 200;
-	mapwidth = viewportWidth - 350;
+	mapheight = viewportHeight - 150;
+	mapwidth = viewportWidth - 20;
 	
-	mapdiv.style.width = mapwidth;
-	mapdiv.style.height = mapheight;
 	
-	document.getElementById('leftcursor').style.minHeight = mapheight;
-	document.getElementById('rightcursor').style.minHeight = mapheight;
-	
-	var rows = mapheight / TileHeight;
-	var cols = mapwidth / TileWidth;
+	mapdiv.style.width = mapwidth + "px";
+	mapdiv.style.height = mapheight + "px";
+
+	var rows = mapheight / (TileHeight * ZoomRatio);
+	var cols = mapwidth / (TileWidth * ZoomRatio);
 	
 	for(var ir = 0; ir < rows; ir++)
 	{
 		var tr = ir + CurRow;
-		for(var ic = 0; ic < cols; ic++)
+		if(tr < MapRows)
 		{
-			var tc = ic + CurCol;
+			for(var ic = 0; ic < cols; ic++)
+			{
+				var tc = ic + CurCol;
+				if(tc < MapCols)
+				{
+					var imgid = pad(tc, 2) + "_" + pad(tr, 2);
+					
+					var element = document.getElementById(imgid);
+					
+					
+					if(!element)
+					{
+						element = document.createElement('img');
+						element.setAttribute('id',imgid);
+						element.src = "images/"+ pad(tc, 2) + "_" + pad(tr, 2) + ".png";
+						element.setAttribute('class','imgmap');
+						element.style.position = "relative";
+						mapdiv.appendChild(element);
+					}
+					
+					element.top = (ir*TileHeight * ZoomRatio) + "px";
+					element.left = (ic*TileWidth * ZoomRatio) + "px";
+					element.width = TileWidth * ZoomRatio;
+					element.height = TileHeight * ZoomRatio;
+				}
+			}
 			
-			var element = document.createElement('img');
-			element.src = "images/"+ pad(tc, 2) + "_" + pad(tr, 2) + ".png";
-			element.setAttribute('class','imgmap');
-			element.style.position = "relative";
-			element.top = ir*TileHeight + "px";
-			element.left = ic*TileWidth + "px";
+			var ebr = document.createElement('br');
 			
-			mapdiv.appendChild(element);
+			mapdiv.appendChild(ebr);
 		}
-		
-		var ebr = document.createElement('br');
-		
-		mapdiv.appendChild(ebr);
 	}
 	
 }

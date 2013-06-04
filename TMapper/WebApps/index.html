@@ -6,30 +6,19 @@
 		<link href="css/tmapper.css" rel="stylesheet">
 	</head>
 	
-	<body onload="onLoadMapper();" onkeydown="keyDown(event);">
+	<body onload="onLoadMapper();" onkeydown="keyDown(event);" onmousewheel="onmouseWheel(event)">
 	<div id="global">
 	
-		<div class="cursor" id="leftcursor">
-		left
-		</div>
-		
-				
-		<div class="cursor" id="rightcursor">
-			right
-		</div>
 		
 		<div class="middle">
-		
-			<div class="cursor" id="topcursor">
-			top
+			<div id="topbar">
+				<h3>My World</h3>
+				<div id="info">
+					<label>Zoom</label><input type="text" id="tzoomratio" value="1.0" size="1" />
+				</div>
 			</div>
-			
 			<div id="mapview">
 			
-			</div>
-		
-			<div class="cursor" id="botcursor">
-			bot
 			</div>
 		
 		</div>
