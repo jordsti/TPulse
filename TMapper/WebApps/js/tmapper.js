@@ -12,10 +12,31 @@ var mapheight = 0;
 
 var ZoomRatio = 1.0;
 
+var LegendVisible = false;
+
 function pad(num, size) {
     var s = num+"";
     while (s.length < size) s = "0" + s;
     return s;
+}
+
+function toggleLegend()
+{
+	var dlegend = document.getElementById('legend');
+	var btoggle = document.getElementById('legendtoggle');
+
+	if(LegendVisible)
+	{
+		dlegend.style.visibility = "hidden";
+		btoggle.innerHTML = 'Show Legend';
+		LegendVisible = false;
+	}
+	else
+	{
+		dlegend.style.visibility = "visible";
+		btoggle.innerHTML = 'Hide Legend';
+		LegendVisible = true;
+	}
 }
 
 function keyDown(event)
@@ -134,7 +155,7 @@ var viewportWidth  = document.documentElement.clientWidth
 					{
 						element = document.createElement('img');
 						element.setAttribute('id',imgid);
-						element.src = "images/"+ pad(tc, 2) + "_" + pad(tr, 2) + ".png";
+						element.src = "maps/"+ pad(tc, 2) + "_" + pad(tr, 2) + ".png";
 						element.setAttribute('class','imgmap');
 						element.style.position = "relative";
 						mapdiv.appendChild(element);

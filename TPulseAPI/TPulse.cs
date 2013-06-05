@@ -176,10 +176,10 @@ namespace TPulseAPI
             PlugInHandler.AddPlugIn(this);
             
             Commands = new Commands(this);
-
             ServerHandle = new ServerHandler(this);
             PlayerHandle = new PlayerHandler(this);
 		}
+
 
         #region PlayerHandling
         public bool IsUserOnline(int userId)
