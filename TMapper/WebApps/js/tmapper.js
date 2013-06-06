@@ -5,7 +5,7 @@ var CurRow = 0;
 var CurCol = 0;
 
 var MapRows = 18
-var MapCols = 64
+var MapCols = 63
 
 var mapwidth = 0;
 var mapheight = 0;
