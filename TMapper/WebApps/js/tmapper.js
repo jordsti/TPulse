@@ -18,6 +18,72 @@ var WaypointPlaced = false;
 var WaypointX = 0;
 var WaypointY = 0;
 
+function GetXMLHttp()
+{
+        var xmlhttp;
+        
+        if(window.XMLHttpRequest)
+        {
+                xmlhttp = new XMLHttpRequest();
+        }
+        else
+        {
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        
+        return xmlhttp;
+}
+
+function refreshimgs(date)
+{
+	var mapdiv = document.getElementById("mapview");
+	
+	for(var i=0; i<mapdiv.childNodes.length; i++)
+	{
+		var node = mapdiv.childNodes[i];
+		node.src = "maps/" + node.getAttribute('id') + ".png?stamp=" + date;
+		
+	}
+}
+
+function showNewMapNotification(date)
+{
+	var notif = document.getElementById('newmap');
+	
+	if(!notif)
+	{
+		notif = document.createElement('div');
+		notif.setAttribute('id', 'newmap');
+		notif.innerHTML = 'This map was updated recently ! <a onclick="refreshimgs("'+date+'");">Reload image(s)</a>';
+		//update the mapview image!
+		
+		var topbar = document.getElementById('topbar');
+		topbar.appendChild(notif);
+	}
+}
+
+function checkForNewMap()
+{
+	xmlhttp = GetXMLHttp();
+	xmlhttp.onreadystatechange = function() 
+	{
+		if(xmlhttp.readyState == 4)
+		{
+			var stamp = xmlhttp.responseText;
+			
+			if(stamp != GeneratedOn)
+			{
+				showNewMapNotification(stamp);
+			}
+			
+		}
+	}
+	
+	xmlhttp.open("GET", "maps/stamp.txt", true);
+	xmlhttp.send(null);
+	window.setInterval("checkForNewMap()", 1000*30);
+}
+
 function mouseclick(event)
 {
 	var mx = event.clientX;
@@ -48,6 +114,7 @@ function initTMapper()
 	var date = document.getElementById('generatedate');
 	
 	date.innerHTML = 'Generated on ' + GeneratedOn;
+	window.setInterval("checkForNewMap()", 1000*30);
 }
 
 function pad(num, size) {

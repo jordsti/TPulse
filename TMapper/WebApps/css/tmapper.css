@@ -54,6 +54,14 @@ h3
 	line-height: 0;
 }
 
+#newmap
+{
+	position: absolute;
+	top: 10px;
+	left: 200px;
+	font-size: 13px;
+}
+
 #topbar
 {
 	height: 65px;
