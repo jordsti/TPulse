@@ -9,6 +9,8 @@ using TMapper.Structures;
 
 namespace TMapper
 {
+
+    //Main flow example, at the moment, need to be placed into TPulse with a setting
     public class Program
     {
         public static bool mapperRunning = false;

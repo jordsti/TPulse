@@ -12,31 +12,48 @@ var mapheight = 0;
 
 var ZoomRatio = 1.0;
 
-var LegendVisible = false;
+
+var WaypointPlaced = false;
+
+var WaypointX = 0;
+var WaypointY = 0;
+
+function mouseclick(event)
+{
+	var mx = event.clientX;
+	var my = event.clientY - 400;
+	
+	//calculate tile pos
+	
+	var col = mx / (TileWidth*ZoomRatio);
+	var row = my / (TileHeight*ZoomRatio);
+	
+	WaypointX = Math.floor(col + CurCol);
+	WaypointY = Math.floor(row + CurRow);
+	
+	console.log(WaypointX + ";"+ WaypointY);
+	
+	WaypointPlaced = true;
+	
+	drawMap();
+}
+
+function initTMapper()
+{
+	var title = document.getElementById('worldname');
+	
+	title.innerHTML = WorldName;
+	onLoadMapper();
+	
+	var date = document.getElementById('generatedate');
+	
+	date.innerHTML = 'Generated on ' + GeneratedOn;
+}
 
 function pad(num, size) {
     var s = num+"";
     while (s.length < size) s = "0" + s;
     return s;
-}
-
-function toggleLegend()
-{
-	var dlegend = document.getElementById('legend');
-	var btoggle = document.getElementById('legendtoggle');
-
-	if(LegendVisible)
-	{
-		dlegend.style.visibility = "hidden";
-		btoggle.innerHTML = 'Show Legend';
-		LegendVisible = false;
-	}
-	else
-	{
-		dlegend.style.visibility = "visible";
-		btoggle.innerHTML = 'Hide Legend';
-		LegendVisible = true;
-	}
 }
 
 function keyDown(event)
@@ -172,6 +189,34 @@ var viewportWidth  = document.documentElement.clientWidth
 			
 			mapdiv.appendChild(ebr);
 		}
+	}
+	
+	//draw waypoint
+	
+	if(WaypointPlaced)
+	{
+		var waypoint = document.getElementById('waypoint');
+		if(!waypoint)
+		{
+			waypoint = document.createElement('img');
+			waypoint.setAttribute('id', 'waypoint');
+			waypoint.src = 'img/waypoint.png';
+			
+			mapdiv.appendChild(waypoint);
+		}
+		var relrow = (WaypointY-CurRow);
+		var relcol = (WaypointX-CurCol);
+		waypoint.style.top = (relrow*TileHeight*ZoomRatio) + "px";
+		waypoint.style.left = (relcol*TileWidth*ZoomRatio) + "px";
+	
+		//if(relrow < 0 || relrow > MapRows || relcol < 0 || relcol > MapsCols)
+		//{
+		//	waypoint.style.visibility = "hidden";
+		//}
+		//else
+		//{
+		//	waypoint.style.visibility = "visible";
+		//}
 	}
 	
 }

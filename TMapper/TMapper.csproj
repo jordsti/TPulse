@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{816CC661-89FA-4650-966C-FC2EEB5E5C59}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TMapper</RootNamespace>
     <AssemblyName>TMapper</AssemblyName>
@@ -59,6 +59,7 @@
     <Compile Include="Structures\ColorListData.cs" />
     <Compile Include="Structures\Footer.cs" />
     <Compile Include="Structures\Item.cs" />
+    <Compile Include="Structures\MapStaticInfo.cs" />
     <Compile Include="Structures\MarkerSettings.cs" />
     <Compile Include="Structures\MarkerType.cs" />
     <Compile Include="Structures\NPC.cs" />

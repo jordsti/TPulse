@@ -6,13 +6,14 @@
 		<link href="css/tmapper.css" rel="stylesheet">
 	</head>
 	
-	<body onload="onLoadMapper();" onkeydown="keyDown(event);" onmousewheel="onmouseWheel(event)">
+	<body onload="initTMapper();" onkeydown="keyDown(event);" onmousewheel="onmouseWheel(event)">
 	<div id="global">
 	
 		
 		<div class="middle">
 			<div id="topbar">
-				<h3>My World</h3>
+				<h3 id="worldname">My World</h3>
+				<span id="generatedate">Generation Date</span>
 				<div id="info">
 					<label>Zoom</label><input type="text" id="tzoomratio" value="1.0" size="1" />
 					<br />
@@ -27,23 +28,18 @@
 		
 		<div id="legend">
 			<h4>Legends</h4>
-				<ul>
-					<li>Ores</li>
-					<ul>
-						<li>Copper <img src="img/ore_c.png" class="legendicon" /></li>
-						<li>Iron <img src="img/ore_i.png" class="legendicon" /></li>
-						<li>Silver <img src="img/ore_s.png" class="legendicon" /></li>
-						<li>Gold <img src="img/ore_g.png" class="legendicon" /></li>
-						<li>Demonite <img src="img/ore_d.png" class="legendicon" /></li>
-						<li>Meteorite <img src="img/ore_m.png" class="legendicon" /></li>
-						<li>Hellstone <img src="img/ore_h.png" class="legendicon" /></li>
-						<li>Cobalt <img src="img/ore_cob.png" class="legendicon" /></li>
-						<li>Mythril <img src="img/ore_myth.png" class="legendicon" /></li>
-						<li>Adamantite <img src="img/ore_a.png" class="legendicon" /></li>
-					</ul>
+				<ul id="ullegend">
+					<li id="tores"><a onclick="toggleOres();">Ores</a></li>
+					<ul id="lores"></ul>
+					<li id="tgems"><a onclick="toggleGems();">Gems</a></li>
+					<ul id="lgems"></ul>
+					<li id="tobjs"><a onclick="toggleObjs();">Objects</a></li>
+					<ul id="lobjs"></ul>
 				</ul>
 		</div>
 	</div>
 		<script src="js/tmapper.js"></script>
+		<script src="js/legends.js"></script>
+		<script src="maps/maps.js"></script>
 	</body>
 </html>

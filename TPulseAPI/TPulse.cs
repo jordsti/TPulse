@@ -460,6 +460,9 @@ namespace TPulseAPI
 			    WorldHooks.ChristmasCheck += OnXmasCheck;
                 NetHooks.NameCollision += NetHooks_NameCollision;
 
+                //World Saved hook
+                OnWorldSaved += new WorldSavedHandler(WorldSaved);
+
 				GetDataHandlers.InitGetDataHandler();
 				Commands.InitCommands();
 				//RconHandler.StartThread();
@@ -483,6 +486,24 @@ namespace TPulseAPI
 				Environment.Exit(1);
 			}
 		}
+
+        private void WorldSaved(WorldSavedEventArgs args)
+        {
+            if (Config.GenerateMap)
+            {
+                try
+                {
+                    MapImageGenerator generator = new MapImageGenerator(Config.TMapperOutput);
+                    generator.ThreadGenerate();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error while generating the map");
+                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
 
 	    private static void showTPulseWelcome()
 	    {

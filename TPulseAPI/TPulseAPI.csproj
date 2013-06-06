@@ -93,6 +93,7 @@
     <Compile Include="Events\WorldSavedEvent.cs" />
     <Compile Include="Events\PlayerLoginEvent.cs" />
     <Compile Include="GameResources.cs" />
+    <Compile Include="MapImageGenerator.cs" />
     <Compile Include="MapTools.cs" />
     <Compile Include="PlugInHandler.cs" />
     <Compile Include="SaveManager.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="TPPlayer.cs" />
     <Compile Include="UpdateManager.cs" />
     <Compile Include="DB\WarpsManager.cs" />
+    <Compile Include="WorldInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config\groups.txt" />
@@ -190,7 +192,12 @@
   <ItemGroup>
     <Content Include="config\itembans.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\TMapper\TMapper.csproj">
+      <Project>{816CC661-89FA-4650-966C-FC2EEB5E5C59}</Project>
+      <Name>TMapper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
@@ -202,7 +209,7 @@
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_IncrementBeforeBuild="False" BuildVersion_StartDate="2011/6/17" BuildVersion_BuildVersioningStyle="None.None.None.MonthAndDayStamp" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildAction="Both" BuildVersion_BuildVersioningStyle="None.None.None.MonthAndDayStamp" BuildVersion_StartDate="2011/6/17" BuildVersion_IncrementBeforeBuild="False" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -18,14 +18,20 @@ namespace TMapper
         public string Source { get; protected set; }
         public string OutputFolder { get; set; }
 
+        public int Rows { get; protected set; }
+        public int Cols { get; protected set; }
+
         protected Image ImgSource;
         
-        public ImageCutter(string source)
+        public ImageCutter(string source, string outputFolder= "cuts")
         {
+            Rows = int.MinValue;
+            Cols = int.MinValue;
+
             CutWidth = DefaultCut;
             CutHeight = DefaultCut;
 
-            OutputFolder = "cuts";
+            OutputFolder = outputFolder;
 
             ImgSource = Image.FromFile(source);
             
@@ -45,6 +51,9 @@ namespace TMapper
 
             int rows = ImgSource.Height / CutHeight;
             int cols = ImgSource.Width / CutWidth;
+
+            Rows = rows;
+            Cols = cols;
 
             Rectangle destRect = new Rectangle(0,0, CutWidth, CutHeight);
 

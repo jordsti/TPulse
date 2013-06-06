@@ -6,10 +6,24 @@ body
 	background-color: #96C9E3;
 }
 
+h3
+{
+	margin-top: 2px;
+	margin-left: 10px;
+	margin-bottom: 2px;
+}
+
 .middle
 {
 	width: 100%;
 	padding: 0;
+}
+
+#generatedate
+{
+	font-size: 10px;
+	margin: 0px;
+	margin-left: 15px;
 }
 
 #mapview
@@ -40,12 +54,23 @@ body
 	line-height: 0;
 }
 
+#topbar
+{
+	height: 65px;
+}
+
 #legend
 {
 	position: absolute;
 	top: 50px;
 	right: 5px;
-	background: rgba(255,255,255,0.45);
+	background: rgba(255,255,255,0.75);
 	border: 1px solid black;
 	visibility: hidden;
+}
+
+#waypoint
+{
+	position: relative;
+	z-index: 10;
 }
