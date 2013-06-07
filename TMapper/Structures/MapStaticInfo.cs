@@ -22,7 +22,7 @@ namespace TMapper.Structures
 
         public String GetJavascript()
         {
-            return String.Format("//Automatically generated file\n MapsRows = {0}; MapsCols = {1}; WorldName = '{2}'; GeneratedOn = '{3}'\n", Rows, Cols, WorldName.Replace("'","\\'"), Generated.ToString());
+            return String.Format("//Automatically generated file\n var MapsRows = {0}; var MapsCols = {1}; var WorldName = '{2}'; var GeneratedOn = '{3}'\n", Rows, Cols, WorldName.Replace("'","\\'"), Generated.ToString());
         }
     }
 }

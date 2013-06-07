@@ -12,7 +12,6 @@ namespace TPulseAPI
         public String WorldPath { get; protected set; }
         public int WorldIndex { get; protected set; }
         public String WorldName { get; protected set; }
-        private static String error = Global.Instance.Initialize();
 
 
         public WorldInfo ()
