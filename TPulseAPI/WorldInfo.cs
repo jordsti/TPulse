@@ -15,9 +15,14 @@ namespace TPulseAPI
         private static String error = Global.Instance.Initialize();
 
 
-        public WorldInfo()
-        {
-            WorldPath = Path.Combine(Main.WorldPath, Main.worldPathName);
+        public WorldInfo ()
+		{
+
+			WorldPath = Main.worldPathName;
+
+			if (!Main.runningMono) {
+				WorldPath = Path.Combine(Main.WorldPath, WorldPath);
+			} 
             WorldIndex = Main.worldID;
             WorldName = Main.worldName;
         }

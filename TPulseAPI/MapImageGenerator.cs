@@ -65,6 +65,8 @@ namespace TPulseAPI
             {
                 Console.WriteLine("Generating the map image...");
 
+				Console.WriteLine("World Path: "+World.WorldPath);
+
                 WorldMapper mapper = new WorldMapper();
                 mapper.Initialize();
                 mapper.OpenWorld();
