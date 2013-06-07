@@ -26,9 +26,11 @@ namespace TPulseAPI
 
         public MapImageGenerator(string outputFolder)
         {
+            Console.WriteLine("MapImageGenerator Debug: " + outputFolder);
             OutputFolder = outputFolder;
 
             World = new WorldInfo();
+            Console.WriteLine(World.WorldPath);
             if (!File.Exists(World.WorldPath))
             {
                 throw new FileNotFoundException(World.WorldPath);

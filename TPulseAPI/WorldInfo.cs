@@ -22,7 +22,9 @@ namespace TPulseAPI
 
 			if (!Main.runningMono) {
 				WorldPath = Path.Combine(Main.WorldPath, WorldPath);
-			} 
+			}
+
+            Console.WriteLine("WorldInfo Debug: " + WorldPath);
             WorldIndex = Main.worldID;
             WorldName = Main.worldName;
         }
