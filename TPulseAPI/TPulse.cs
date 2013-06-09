@@ -459,7 +459,6 @@ namespace TPulseAPI
 				WorldHooks.SaveWorld += SaveManager.Instance.OnSaveWorld;
 			    WorldHooks.ChristmasCheck += OnXmasCheck;
                 NetHooks.NameCollision += NetHooks_NameCollision;
-
                 //World Saved hook
                 OnWorldSaved += new WorldSavedHandler(WorldSaved);
 

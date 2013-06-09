@@ -79,7 +79,7 @@ namespace TPulseAPI
 			try
 			{
 				Utils.Broadcast("Saving world. Momentary lag might result from this.", Color.Red);
-
+                onWorldSaved(new WorldSavedEventArgs(DateTime.Now, Main.worldPathName));
 			}
 			catch (Exception ex)
 			{
@@ -155,7 +155,7 @@ namespace TPulseAPI
 									WorldGen.saveWorld(task.resetTime);
 
                                 //throw the event here
-                                onWorldSaved(new WorldSavedEventArgs(DateTime.Now, Main.worldPathName));
+                                //onWorldSaved(new WorldSavedEventArgs(DateTime.Now, Main.worldPathName));
 
 								Utils.Broadcast("World saved.", Color.Yellow);
 								Log.Info(string.Format("World saved at ({0})", Main.worldPathName));
