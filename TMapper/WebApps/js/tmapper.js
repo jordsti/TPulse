@@ -14,6 +14,8 @@ var ZoomRatio = 1.0;
 
 
 var WaypointPlaced = false;
+var WorldName = "";
+var GeneratedOn = "";
 
 var WaypointX = 0;
 var WaypointY = 0;
@@ -102,6 +104,28 @@ function mouseclick(event)
 	WaypointPlaced = true;
 	
 	drawMap();
+}
+
+function loadMapInfo()
+{
+	xmlhttp = GetXMLHttp();
+	xmlhttp.onreadystatechange = function() 
+	{
+		if(xmlhttp.readyState == 4)
+		{
+			var data = xmlhttp.responseText;
+			var vars = data.split(';');
+			
+			MapRows = parseInt(vars[0]);
+			MapCols = parseInt(vars[1]);
+			WorldName = vars[2];
+			GeneratedOn = vars[3];
+			initTMapper();
+		}
+	}
+	
+	xmlhttp.open("GET", "maps/maps.txt", true);
+	xmlhttp.send(null);
 }
 
 function initTMapper()

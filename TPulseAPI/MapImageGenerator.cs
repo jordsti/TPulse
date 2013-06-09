@@ -15,7 +15,7 @@ namespace TPulseAPI
 
         public const String MapFileName = "maps.png";
         public const String CutsFolder = "maps";
-        public const String MapJSFile = "maps.js";
+        public const String MapInfoFile = "maps.txt";
         public const String StampFile = "stamp.txt";
 
         public WorldInfo World { get; protected set; }
@@ -93,7 +93,7 @@ namespace TPulseAPI
                 msi.Rows = cutter.Rows;
                 msi.WorldName = World.WorldName;
 
-                File.WriteAllText(Path.Combine(OutputFolder, CutsFolder, MapJSFile), msi.GetJavascript());
+                File.WriteAllText(Path.Combine(OutputFolder, CutsFolder, MapInfoFile), msi.ToString());
                 File.WriteAllText(Path.Combine(OutputFolder, CutsFolder, StampFile), msi.Generated.ToString());
                 Console.WriteLine("Map image generated!");
                 //Release thread ref

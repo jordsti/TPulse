@@ -20,9 +20,9 @@ namespace TMapper.Structures
             Generated = DateTime.Now;
         }
 
-        public String GetJavascript()
+        public override String ToString()
         {
-            return String.Format("//Automatically generated file\n var MapsRows = {0}; var MapsCols = {1}; var WorldName = '{2}'; var GeneratedOn = '{3}'\n", Rows, Cols, WorldName.Replace("'","\\'"), Generated.ToString());
+            return String.Format("{0};{1};{2};{3}", Rows, Cols, WorldName, Generated.ToString());
         }
     }
 }
