@@ -26,9 +26,9 @@ def copyFolder(src, dest):
 shutil.copy("TerrariaServerBins/TerrariaServer.exe", "deploy/TerrariaServer.exe")
 shutil.copy("TPulseAPI/bin/Release/TPulseAPI.dll","deploy/ServerPlugins/TPulseAPI.dll")
 shutil.copy("TFriends/bin/Release/TFriends.dll", "deploy/ServerPlugins/TFriends.dll")
-shutil.copy("TChestControl/bin/Release/TChestControl.dll", "deploy/ServerPlugins/TChestControl.dll")
+shutil.copy("TArena/bin/Release/TArena.dll", "deploy/ServerPlugins/TArena.dll")
 shutil.copy("TChatChannels/bin/Release/TChatChannels.dll", "deploy/ServerPlugins/TChatChannels.dll")
-shutil.copy("TMapper/bin/Release/TMapper.dll", "deploy/ServerPlugins/TMapper.dll")
+#shutil.copy("TMapper/bin/Release/TMapper.dll", "deploy/ServerPlugins/TMapper.dll")
 
 shutil.copy("HttpBins/HttpServer.dll", "deploy/ServerPlugins/HttpServer.dll")
 shutil.copy("HttpBins/HttpServer.xml", "deploy/ServerPlugins/HttpServer.xml")

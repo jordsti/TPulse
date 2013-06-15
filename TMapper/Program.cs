@@ -18,38 +18,25 @@ namespace TMapper
         public static void Main(string[] args)
         {
             String error = Global.Instance.Initialize();
-            string mappath = @"C:\Users\JordSti\Documents\My Games\Terraria\Worlds";
 
-            string[] files = Directory.GetFiles(mappath, "*.wld");
-
-            Console.WriteLine("TMapper");
-            Console.WriteLine("World(s): ");
-            int i = 1;
-            foreach (string f in files)
+            if (args.Length != 2)
             {
-                Console.WriteLine(String.Format("{0} : {1}", i, Path.GetFileNameWithoutExtension(f)));
-                i++;
-            }
-
-            Console.Write("World id :");
-
-            string data = Console.ReadLine();
-
-            int wid = 0;
-
-            int.TryParse(data, out wid);
-
-            if (wid > files.Length || wid <= 0)
-            {
-                Console.WriteLine("Invalid world id");
+                Console.WriteLine("TMapper");
+                Console.WriteLine("You must specify a world and a image filename output");
+                Console.WriteLine("TMapper.exe [worldpath] [imageout]");
             }
             else
             {
+
+
+                string mappath = args[0];
+
+
                 TileProperties.Initialize();
                 ResourceManager.Instance.Initialize();
                 SettingsManager.Instance.Initialize();
 
-                string file = files[wid-1];
+                string file = mappath;
                 Console.WriteLine(file);
                 Global.Instance.InConsole = true;
                 WorldMapper mapper = new WorldMapper();
@@ -57,10 +44,7 @@ namespace TMapper
                 mapper.OpenWorld();
 
                 mapper.ProcessWorld(file, null);
-                mapper.CreatePreviewPNG("test.png", null);
-                ImageCutter cutter = new ImageCutter("test.png");
-
-                cutter.Cuts();
+                mapper.CreatePreviewPNG(args[1], null);
             }
 
         }
