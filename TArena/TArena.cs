@@ -22,8 +22,13 @@ namespace TArena
         protected string ArenaSettingFile = TPulsePaths.Combine(TPulsePath.SavePath, "arena.xml");
         protected List<TPPlayer> Team1 = new List<TPPlayer>();
         protected List<TPPlayer> Team2 = new List<TPPlayer>();
+        protected List<TPPlayer> Team1Alive = new List<TPPlayer>();
+        protected List<TPPlayer> Team2Alive = new List<TPPlayer>();
         protected bool InBattle = false;
         protected ArenaState State = ArenaState.Idle;
+
+        protected int Team1Point = 0;
+        protected int Team2Point = 0;
 
         protected List<APoint> stones = new List<APoint>();
 
@@ -77,10 +82,15 @@ namespace TArena
             tPulse.Commands.ChatCommands.Add(new Command("", PreparePlayers, "aprepare"));
             tPulse.Commands.ChatCommands.Add(new Command("", AssignPlayerTeam, "aassign"));
             tPulse.Commands.ChatCommands.Add(new Command("", ResetTeams, "areset"));
-            tPulse.Commands.ChatCommands.Add(new Command("", ScanSwitch, "ascan"));
+            tPulse.Commands.ChatCommands.Add(new Command("", SetArenaHall, "asethall"));
+            tPulse.Commands.ChatCommands.Add(new Command("", SetAterMatch, "asetroom"));
 
-            Hooks.NetHooks.SendData += new Hooks.NetHooks.SendDataD(NetHooks_SendData);
             Hooks.GameHooks.Update += new Action(GameHooks_Update);
+
+            //Team Color
+            //Console.WriteLine(Main.teamColor.Length);
+            Main.teamColor[1] = Color.Blue;
+            Main.teamColor[2] = Color.Pink;
         }
 
         protected bool IsParticipantId(int id)
@@ -102,41 +112,6 @@ namespace TArena
             }
 
             return false;
-        }
-
-        protected void NetHooks_SendData(Hooks.SendDataEventArgs e)
-        {
-            if (e.MsgID == PacketTypes.PlayerDamage)
-            {
-                if (IsParticipantId(e.number))
-                {
-                    Console.WriteLine("PlayerDamage Packet");
-                    Console.WriteLine((int)e.number3);
-                    Console.WriteLine((int)e.number4);
-                    Console.WriteLine(e.text);
-                }
-            }
-            else if (e.MsgID == PacketTypes.PlayerHp)
-            {
-                TPPlayer player = tPulse.Players[e.number];
-                if (IsParticipantId(e.number))
-                {
-                    Console.WriteLine("PlayerHP : "+player.Name);
-                    Console.WriteLine((short)e.number2);
-                    Console.WriteLine((short)e.number3);
-                }
-            }
-            else if (e.MsgID == PacketTypes.PlayerKillMe)
-            {
-                TPPlayer player = tPulse.Players[e.number];
-                if (IsParticipantId(e.number))
-                {
-                    Console.WriteLine("PlayerHP : " + player.Name);
-
-                    Console.WriteLine((short)e.number3);
-                    Console.WriteLine(e.text);
-                }
-            }
         }
 
         protected Stopwatch timer = new Stopwatch();
@@ -164,24 +139,31 @@ namespace TArena
             }
         }
 
+
         protected void StartBattle()
         {
             ChangePvpStatus();
+            Team1Alive.Clear();
+            Team2Alive.Clear();
 
             foreach (TPPlayer p in Team1)
             {
                 p.Teleport(Setting.TeamStart1.X, Setting.TeamStart1.Y);
-                p.SetTeam(0);
-                p.TPlayer.StatusPvP(122, p.Index);
+                p.SetTeam(1);
+                //p.TPlayer.StatusPvP(122, p.Index);
+                Team1Alive.Add(p);
                 
             }
 
             foreach (TPPlayer p in Team2)
             {
                 p.Teleport(Setting.TeamStart2.X, Setting.TeamStart2.Y);
-                p.SetTeam(1);
-                p.TPlayer.StatusPvP(122, p.Index);
+                p.SetTeam(2);
+                //p.TPlayer.StatusPvP(122, p.Index);
+                Team2Alive.Add(p);
             }
+
+            State = ArenaState.Battle;
         }
 
         protected void ChangePvpStatus(bool pvp = true)
@@ -216,7 +198,7 @@ namespace TArena
                     {
                         if (!SecMessageSended.Contains(sec))
                         {
-                            MessageParticipant(String.Format("Battle starting in {0}", (Setting.PreparationTime / 1000) - sec));
+                            MessageParticipant(String.Format("Battle starting in {0} seconds", (Setting.PreparationTime / 1000) - sec));
                             SecMessageSended.Add(sec);
                         }
                     }
@@ -224,7 +206,7 @@ namespace TArena
                 else
                 {
                     SecMessageSended.Clear();
-                    State = ArenaState.Battle;
+                    //State = ArenaState.Battle;
                     timer.Stop();
                     timer.Reset();
                     BuffPlayers();
@@ -236,65 +218,85 @@ namespace TArena
             }
             else if (State == ArenaState.Battle)
             {
+                foreach (TPPlayer p in Team1)
+                {
+                    if (p.TPlayer.dead || p.TPlayer.statLife == 0)
+                    {
+                        Team1Alive.Remove(p);
+                        Utils.Broadcast(String.Format("Arena: {0} is dead !",p.Name));
+                    }
+                }
+
                 foreach (TPPlayer p in Team2)
                 {
-                    if (p.TPlayer.statLife == 0)
+                    if (p.TPlayer.dead || p.TPlayer.statLife == 0)
                     {
-                        MessageParticipant(String.Format("{0} is dead, {1} has won !",p.Name,"Team 1"));
+                        Team2Alive.Remove(p);
+                        Utils.Broadcast(String.Format("Arena: {0} is dead !", p.Name));
                     }
+                }
+
+                if (Team1Alive.Count == 0)
+                {
+                    //Team 1 defeated
+                    Utils.Broadcast("Arena: Team 1 was defeated !");
+                    Team2Point++;
+                }
+                else if(Team2Alive.Count == 0)
+                {
+                    //Team 2 defeated
+                    Utils.Broadcast("Arena: Team 2 was defeated !");
+                    Team1Point++;
+                }
+
+                if (Team1Point < Setting.PointsToWin && Team2Point < Setting.PointsToWin && 
+                    (Team1Alive.Count == 0 || Team2Alive.Count == 0)
+                    )
+                {
+                    //another battle
+                    PrepareBattle();
+                }
+                else if (Team1Point == Setting.PointsToWin)
+                {
+                    //team1 win
+                    Utils.Broadcast(String.Format("Arena: Team 1 has win ! {0} to {1}", Team1Point, Team2Point));
+                    ClearingBattle();
+                    State = ArenaState.Idle;
+                }
+                else if (Team2Point == Setting.PointsToWin)
+                {
+                    //team2 win
+                    Utils.Broadcast(String.Format("Arena: Team 2 has win ! {0} to {1}", Team2Point, Team1Point));
+                    ClearingBattle();
+                    State = ArenaState.Idle;
                 }
             }
         }
 
-
-        protected void ScanSwitch(CommandArgs args)
+        protected void ClearingBattle()
         {
-            if (args.Player.Group.ContainsGroup("superadmin"))
+            ChangePvpStatus(false);
+
+            foreach (TPPlayer p in Team1)
             {
-                List<APoint> pts = new List<APoint>();
-                //scanning 20 tiles in x, and 5 in y for switch
-                int sx = args.Player.TileX;
-                int sy = args.Player.TileY;
-
-                for (int i = sx; i < sx + 20; i++)
-                {
-                    if (i < Main.maxTilesX)
-                    {
-                        for (int j = sy; j < sy + 10; j++)
-                        {
-                            if (j < Main.maxTilesY)
-                            {
-                                Tile t = Main.tile[i, j];
-                                if (t.type == (int)BlockType.Switch || t.type == (int)BlockType.Lever)
-                                {
-                                    APoint pt = new APoint(i, j);
-                                    Setting.BattleSwitch.Add(pt);
-                                    pts.Add(pt);
-                                }
-                                else if (t.type == (int)BlockType.XSecondTimer)
-                                {
-                                    APoint pt = new APoint(i, j);
-                                    Setting.BattleSwitch.Add(pt);
-                                    pts.Add(pt);
-                                }
-                                else if (t.type == (int)BlockType.ActiveStone)
-                                {
-                                    stones.Add(new APoint(i, j));
-                                }
-
-                            }
-                        }
-                    }
-                }
-
-                args.Player.SendInfoMessage(String.Format("Arena: {0} switches found!", pts.Count));
-
-                foreach (APoint ap in pts)
-                {
-                    args.Player.SendInfoMessage(String.Format("Arena: [{0}, {1}]", ap.X, ap.Y));
-                }
+                p.Teleport(Setting.AfterMatchRoom.X, Setting.AfterMatchRoom.Y);
             }
+
+            foreach (TPPlayer p in Team2)
+            {
+                p.Teleport(Setting.AfterMatchRoom.X, Setting.AfterMatchRoom.Y);
+            }
+
+            Team2Point = 0;
+            Team1Point = 0;
+
+            //Team1.Clear();
+            //Team2.Clear();
+
+            //teleporting out of the arena too
+            //clearing teams ? maybe
         }
+
 
         protected void MessageParticipant(string message)
         {
@@ -379,29 +381,34 @@ namespace TArena
             }
         }
 
+        protected void PrepareBattle()
+        {
+            Utils.Broadcast("Arena: A battle is preparing!");
+
+            foreach (TPPlayer p in Team1)
+            {
+                p.Teleport(Setting.TeamPrepare1.X, Setting.TeamPrepare1.Y);
+                p.TPlayer.HealEffect(400);
+            }
+
+            foreach (TPPlayer p in Team2)
+            {
+                p.Teleport(Setting.TeamPrepare2.X, Setting.TeamPrepare2.Y);
+                p.TPlayer.HealEffect(400);
+            }
+
+            State = ArenaState.Preparation;
+            MessageParticipant(String.Format("Battle starting in {0} seconds", Setting.PreparationTime / 1000));
+            timer.Reset();
+            timer.Start();
+        }
+
         protected void PreparePlayers(CommandArgs args)
         {
             if (args.Player.Group.ContainsGroup("superadmin") && State == ArenaState.Idle)
             {
-                Utils.Broadcast("Arena: A battle is preparing!");
-
-                foreach (TPPlayer p in Team1)
-                {
-                    p.Teleport(Setting.TeamPrepare1.X, Setting.TeamPrepare1.Y);
-                }
-
-                foreach (TPPlayer p in Team2)
-                {
-                    p.Teleport(Setting.TeamPrepare2.X, Setting.TeamPrepare2.Y);
-                }
-
-                State = ArenaState.Preparation;
-                MessageParticipant(String.Format("Battle starting in {0} seconds", Setting.PreparationTime/1000));
-                timer.Reset();
-                timer.Start();
+                PrepareBattle();
             }
-
-            //starting a timer
         }
 
         protected void SetPrepare(CommandArgs args)
@@ -440,6 +447,36 @@ namespace TArena
                 }
 
 
+            }
+            else
+            {
+                args.Player.SendErrorMessage("Only superadmin can use this command!");
+            }
+        }
+
+        protected void SetAterMatch(CommandArgs args)
+        {
+            if (args.Player.Group.ContainsGroup("superadmin"))
+            {
+                Setting.AfterMatchRoom.X = args.Player.TileX;
+                Setting.AfterMatchRoom.Y = args.Player.TileY;
+                args.Player.SendInfoMessage(String.Format("Arena: After Match Room setted at [{0}, {1}]", Setting.AfterMatchRoom.X, Setting.AfterMatchRoom.Y));
+                Setting.Save(ArenaSettingFile);
+            }
+            else
+            {
+                args.Player.SendErrorMessage("Only superadmin can use this command!");
+            }
+        }
+
+        protected void SetArenaHall(CommandArgs args)
+        {
+            if (args.Player.Group.ContainsGroup("superadmin"))
+            {
+                Setting.ArenaHall.X = args.Player.TileX;
+                Setting.ArenaHall.Y = args.Player.TileY;
+                args.Player.SendInfoMessage(String.Format("Arena: Arena hall setted at [{0}, {1}]", Setting.ArenaHall.X, Setting.ArenaHall.Y));
+                Setting.Save(ArenaSettingFile);
             }
             else
             {

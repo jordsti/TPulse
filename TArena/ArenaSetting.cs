@@ -14,24 +14,29 @@ namespace TArena
         public APoint TeamStart2 { get; set; }
         public APoint TeamPrepare1 { get; set; }
         public APoint TeamPrepare2 { get; set; }
-        public List<APoint> BattleSwitch { get; set; }
+        public APoint ArenaHall { get; set; }
+        public APoint AfterMatchRoom { get; set; }
         public int PreparationTime { get; set; }
         public List<BuffType> Buffs { get; set; }
+        public int PointsToWin { get; set; }
 
         public ArenaSetting()
         {
             PreparationTime = 15 * 1000;
+            PointsToWin = 2;
             TeamStart1 = new APoint();
             TeamStart2 = new APoint();
             TeamPrepare1 = new APoint();
             TeamPrepare2 = new APoint();
-            BattleSwitch = new List<APoint>();
+            ArenaHall = new APoint();
+            AfterMatchRoom = new APoint();
+
             Buffs = new List<BuffType>();
 
-            Buffs.Add(BuffType.WellFed);
-            Buffs.Add(BuffType.Ironskin);
-            Buffs.Add(BuffType.Regeneration);
-            Buffs.Add(BuffType.ManaRegeneration);
+            //Buffs.Add(BuffType.WellFed);
+            //Buffs.Add(BuffType.Ironskin);
+           //Buffs.Add(BuffType.Regeneration);
+            //Buffs.Add(BuffType.ManaRegeneration);
 
         }
 
