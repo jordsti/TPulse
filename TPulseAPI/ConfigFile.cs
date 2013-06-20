@@ -26,12 +26,6 @@ namespace TPulseAPI
 {
 	public class ConfigFile
 	{
-        //TMapper field
-        [Description("TMapper output folder")]
-        public string TMapperOutput = "tmapper";
-
-        [Description("If you want to generate a map automatically with TMapper")]
-        public bool GenerateMap = true;
 
 		[Description(
 			"The equation for calculating invasion size is 100 + (multiplier * (number of active players with greater than 200 health))."

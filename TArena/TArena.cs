@@ -14,7 +14,8 @@ namespace TArena
         {
             Idle,
             Preparation,
-            Battle
+            Battle,
+            InMatchWait,
         }
 
         protected TPulse tPulse;
@@ -148,6 +149,7 @@ namespace TArena
 
             foreach (TPPlayer p in Team1)
             {
+                p.TPlayer.HealEffect(400);
                 p.Teleport(Setting.TeamStart1.X, Setting.TeamStart1.Y);
                 p.SetTeam(1);
                 //p.TPlayer.StatusPvP(122, p.Index);
@@ -157,6 +159,7 @@ namespace TArena
 
             foreach (TPPlayer p in Team2)
             {
+                p.TPlayer.HealEffect(400);
                 p.Teleport(Setting.TeamStart2.X, Setting.TeamStart2.Y);
                 p.SetTeam(2);
                 //p.TPlayer.StatusPvP(122, p.Index);

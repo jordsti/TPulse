@@ -10,6 +10,9 @@ namespace TArena
 {
     public class ArenaSetting
     {
+        //need to implement a wait time betwwen to battle ;
+        //  first : let the time to respawn for the dead player
+        //  second : tp doesn't work well when the player is dead
         public APoint TeamStart1 { get; set; }
         public APoint TeamStart2 { get; set; }
         public APoint TeamPrepare1 { get; set; }
@@ -19,6 +22,7 @@ namespace TArena
         public int PreparationTime { get; set; }
         public List<BuffType> Buffs { get; set; }
         public int PointsToWin { get; set; }
+        public int BetweenBattleTime { get; set; }
 
         public ArenaSetting()
         {
@@ -30,12 +34,14 @@ namespace TArena
             TeamPrepare2 = new APoint();
             ArenaHall = new APoint();
             AfterMatchRoom = new APoint();
+            BetweenBattleTime = 3 * 1000;
+
 
             Buffs = new List<BuffType>();
 
             //Buffs.Add(BuffType.WellFed);
             //Buffs.Add(BuffType.Ironskin);
-           //Buffs.Add(BuffType.Regeneration);
+            //Buffs.Add(BuffType.Regeneration);
             //Buffs.Add(BuffType.ManaRegeneration);
 
         }
