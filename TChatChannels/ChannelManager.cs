@@ -147,7 +147,7 @@ namespace TChatChannels
                 writer.Flush();
                 writer.Close();
 
-                LoadChannelsFile();
+                Channels.Add(new Channel("General", 175, 224, 27));
             }
             
         }
